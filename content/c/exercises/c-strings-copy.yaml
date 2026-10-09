@@ -1,0 +1,115 @@
+id: c-strings-copy
+language: c
+module: strings
+title: 02 · Capacity-aware copying
+order: 190
+prerequisites:
+- c-strings-length
+concepts:
+- strings
+- capacity
+- safe-copy
+- pointers
+assignment: |
+  Write `int copy_text(char *dest, int capacity, const char *src)`. capacity is nonnegative; src is a valid
+  string. If capacity > 0, copy at most capacity-1 characters and always terminate dest. Return 1 if the
+  entire source fits, else 0. With capacity 0 return 0 without touching dest (which may be NULL).
+  Include a main. Do not use unsafe strcpy.
+
+  ## Workflow
+  Create `main.c` yourself. No learner source is supplied.
+
+  ```sh
+  python3 test_exercise.py
+  syntaxlab check
+  ```
+docs: c/docs/strings.md
+hints:
+- Reserve one byte for the terminator.
+- Return whether the next source character was already the terminator when copying stopped.
+files:
+  test_exercise.c: |
+    #include <assert.h>
+    #include <stddef.h>
+    #include <stdlib.h>
+    #include <string.h>
+    #include <stdio.h>
+    int copy_text(char*, int, const char*);
+    int main(void) {
+    char buffer[5]; assert(copy_text(buffer, 5, "cat") == 1); assert(strcmp(buffer, "cat") == 0); assert(copy_text(buffer, 5, "abcdef") == 0); assert(strcmp(buffer, "abcd") == 0); assert(copy_text(NULL, 0, "x") == 0); assert(copy_text(buffer, 1, "x") == 0 && buffer[0] == '\0'); assert(copy_text(buffer, 1, "") == 1);
+    return 0;
+    }
+  test_exercise.py: |
+    """Run with python3 test_exercise.py. GCC diagnostics are printed unchanged."""
+    from pathlib import Path
+    import os
+    import subprocess
+    import sys
+
+    root = Path(__file__).resolve().parent
+    build = root / ".syntaxlab-build" / "test_exercise"
+    build.mkdir(parents=True, exist_ok=True)
+    cc = os.environ.get("CC", "gcc")
+    flags = ["-std=c17", "-Wall", "-Wextra", "-Wpedantic", "-Werror", "-g"]
+    expected = None
+
+    def execute(args, capture=False):
+        print("+ " + " ".join(str(a) for a in args), flush=True)
+        return subprocess.run(args, cwd=root, check=True, timeout=10,
+                              text=True, capture_output=capture)
+
+    try:
+        sources = sorted(p for p in root.glob("*.c") if not p.name.startswith("test_"))
+        if not sources:
+            raise RuntimeError("Create main.c first")
+        executable = build / "program"
+        execute([cc, *flags, *map(str, sources), "-o", str(executable)])
+        result = execute([str(executable)], capture=True)
+        if expected is not None:
+            assert result.stdout.strip() == expected.strip(), (
+                f"Expected {expected!r}, got {result.stdout!r}")
+        else:
+            objects = []
+            for source in sources:
+                obj = build / (source.stem + ".o")
+                execute([cc, *flags, "-Dmain=learner_main", "-c", str(source), "-o", str(obj)])
+                objects.append(str(obj))
+            harness = build / "tests"
+            execute([cc, *flags, "test_exercise.c", *objects, "-o", str(harness)])
+            execute([str(harness)])
+        print("All behavior checks passed.")
+    except (OSError, subprocess.SubprocessError, AssertionError, RuntimeError) as error:
+        print(error, file=sys.stderr)
+        if isinstance(error, subprocess.CalledProcessError):
+            print(error.stdout or "", error.stderr or "", file=sys.stderr)
+        sys.exit(1)
+  ASSIGNMENT.md: |
+    Write `int copy_text(char *dest, int capacity, const char *src)`. capacity is nonnegative; src is a valid
+    string. If capacity > 0, copy at most capacity-1 characters and always terminate dest. Return 1 if the
+    entire source fits, else 0. With capacity 0 return 0 without touching dest (which may be NULL).
+    Include a main. Do not use unsafe strcpy.
+
+    ## Workflow
+    Create `main.c` yourself. No learner source is supplied.
+
+    ```sh
+    python3 test_exercise.py
+    syntaxlab check
+    ```
+checks:
+- type: file
+  path: main.c
+  label: main.c exists
+- type: command
+  args:
+  - python3
+  - test_exercise.py
+  requires:
+  - $cc
+  label: GCC warnings, linking and behavior tests
+solution:
+  main.c: |
+    int copy_text(char *dest, int capacity, const char *src) { if (capacity <= 0) return 0; int i = 0; while (i < capacity - 1 && src[i] != '\0') { dest[i] = src[i]; ++i; } dest[i] = '\0'; return src[i] == '\0'; }
+    int main(void) { return 0; }
+project: ''
+difficulty: 3

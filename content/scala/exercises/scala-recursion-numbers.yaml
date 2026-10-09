@@ -1,0 +1,78 @@
+id: scala-recursion-numbers
+language: scala
+module: recursion
+title: 01 · Base case and recursive step
+order: 270
+prerequisites:
+- scala-match-list
+concepts:
+- recursion
+- base-cases
+- Long
+assignment: |
+  Write recursive `def factorial(n: Int): Long` for n in 0..20. factorial(0) = 1.
+  Do not use product or a loop. Add a main and explain the smaller subproblem in a comment.
+
+  ## Workflow
+  Create `Main.scala` yourself. No learner source is supplied.
+
+  ```sh
+  scala-cli run .
+  scala-cli test .
+  syntaxlab check
+  ```
+docs: scala/docs/recursion.md
+hints:
+- What result requires no smaller subproblem?
+- Multiply n by the answer for n - 1, keeping the arithmetic Long.
+files:
+  project.scala: |
+    //> using scala "3.3.7"
+    //> using test.dep "org.scalameta::munit:1.0.4"
+  Exercise.test.scala: |
+    class ExerciseTests extends munit.FunSuite:
+      test("factorials") { assertEquals(factorial(0), 1L); assertEquals(factorial(1), 1L); assertEquals(factorial(6), 720L); assertEquals(factorial(13), 6227020800L) }
+  ASSIGNMENT.md: |
+    Write recursive `def factorial(n: Int): Long` for n in 0..20. factorial(0) = 1.
+    Do not use product or a loop. Add a main and explain the smaller subproblem in a comment.
+
+    ## Workflow
+    Create `Main.scala` yourself. No learner source is supplied.
+
+    ```sh
+    scala-cli run .
+    scala-cli test .
+    syntaxlab check
+    ```
+checks:
+- type: file
+  path: Main.scala
+  label: Main.scala exists
+- type: command
+  args:
+  - $scala
+  - test
+  - .
+  - --server=false
+  timeout: 240
+  label: Scala compilation and MUnit behavior tests
+- type: command
+  args:
+  - $scala
+  - run
+  - .
+  - --server=false
+  timeout: 240
+  label: Application entry point runs
+- type: construct
+  path: Main.scala
+  pattern: (?s)def factorial.*factorial\(n\s*-\s*1\)
+  label: Required lesson construct (heuristic; behavior checked above)
+solution:
+  Main.scala: |
+    def factorial(n: Int): Long =
+      // n - 1 is closer to the base case.
+      if n == 0 then 1L else n.toLong * factorial(n - 1)
+    @main def demo(): Unit = println(factorial(5))
+project: ''
+difficulty: 3

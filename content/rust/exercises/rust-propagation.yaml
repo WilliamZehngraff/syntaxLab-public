@@ -1,0 +1,92 @@
+id: rust-propagation
+language: rust
+module: errors
+title: 02 · The question-mark operator
+order: 250
+prerequisites:
+- rust-result
+concepts:
+- question-mark
+- checked-arithmetic
+- map_err
+- Result
+difficulty: 4
+assignment: |
+  Write `pub fn double_number(text: &str) -> Result<u32, String>`. Parse trimmed u32 text, reporting `invalid number` on parse failure. Use checked_mul(2), reporting `overflow` if the result cannot fit. Use ? to propagate at least one error. Zero is valid here. Add a demo.
+
+  ## Workflow
+  Create `src/lib.rs` with the public API and `src/main.rs` with a runnable demo yourself. No learner implementation is supplied.
+  Read `syntaxlab docs rust errors` for syntax and independent examples.
+
+  ```sh
+  cargo run
+  cargo test
+  syntaxlab check
+  ```
+docs: rust/docs/errors.md
+hints:
+- '? returns early with Err; it is not an unchecked unwrap.'
+- checked_mul returns Option, which can be turned into Result with ok_or_else.
+files:
+  Cargo.toml: |
+    [package]
+    name = "syntaxlab_exercise"
+    version = "0.1.0"
+    edition = "2021"
+    rust-version = "1.70"
+  tests/exercise.rs: |
+    use syntaxlab_exercise::*;
+
+    #[test]
+    fn contract() {
+    assert_eq!(double_number(" 21 "), Ok(42)); assert_eq!(double_number("0"), Ok(0)); assert_eq!(double_number("bad"), Err("invalid number".to_owned())); assert_eq!(double_number("4294967295"), Err("overflow".to_owned()));
+    }
+  ASSIGNMENT.md: |
+    Write `pub fn double_number(text: &str) -> Result<u32, String>`. Parse trimmed u32 text, reporting `invalid number` on parse failure. Use checked_mul(2), reporting `overflow` if the result cannot fit. Use ? to propagate at least one error. Zero is valid here. Add a demo.
+
+    ## Workflow
+    Create `src/lib.rs` with the public API and `src/main.rs` with a runnable demo yourself. No learner implementation is supplied.
+    Read `syntaxlab docs rust errors` for syntax and independent examples.
+
+    ```sh
+    cargo run
+    cargo test
+    syntaxlab check
+    ```
+checks:
+- type: file
+  path: src/main.rs
+  label: Learner src/main.rs exists
+- type: file
+  path: src/lib.rs
+  label: Learner library exists
+- type: command
+  args:
+  - $cargo
+  - test
+  - --offline
+  label: Cargo compilation and behavior tests
+  requires:
+  - $cargo
+  - $rustc
+- type: command
+  args:
+  - $cargo
+  - run
+  - --offline
+  - --quiet
+  label: Application runs
+  requires:
+  - $cargo
+  - $rustc
+- type: construct
+  path: src/lib.rs
+  pattern: \?
+  label: Required lesson construct (heuristic; behavior tested separately)
+solution:
+  src/lib.rs: |
+    pub fn double_number(text: &str) -> Result<u32, String> { let number = text.trim().parse::<u32>().map_err(|_| "invalid number".to_owned())?; number.checked_mul(2).ok_or_else(|| "overflow".to_owned()) }
+  src/main.rs: |
+    use syntaxlab_exercise::*;
+    fn main() { println!("{:?}", double_number("21")); }
+project: ''

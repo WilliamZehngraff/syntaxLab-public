@@ -1,0 +1,78 @@
+id: scala-else-if
+language: scala
+module: control-flow
+title: 02 · Several branches
+order: 150
+prerequisites:
+- scala-if-expression
+concepts:
+- if
+- else
+- boundary-testing
+assignment: |
+  Write `def temperatureLabel(c: Int): String`: below 0 → frozen; 0 through 24 → mild; 25 or above → hot.
+  Use an if/else-if chain and add a runnable example.
+
+  ## Workflow
+  Create `Main.scala` yourself. No learner source is supplied.
+
+  ```sh
+  scala-cli run .
+  scala-cli test .
+  syntaxlab check
+  ```
+docs: scala/docs/control-flow.md
+hints:
+- Choose non-overlapping branches.
+- Test just below and exactly at each threshold.
+files:
+  project.scala: |
+    //> using scala "3.3.7"
+    //> using test.dep "org.scalameta::munit:1.0.4"
+  Exercise.test.scala: |
+    class ExerciseTests extends munit.FunSuite:
+      test("thresholds") {
+               assertEquals(temperatureLabel(-1), "frozen"); assertEquals(temperatureLabel(0), "mild")
+               assertEquals(temperatureLabel(24), "mild"); assertEquals(temperatureLabel(25), "hot")
+             }
+  ASSIGNMENT.md: |
+    Write `def temperatureLabel(c: Int): String`: below 0 → frozen; 0 through 24 → mild; 25 or above → hot.
+    Use an if/else-if chain and add a runnable example.
+
+    ## Workflow
+    Create `Main.scala` yourself. No learner source is supplied.
+
+    ```sh
+    scala-cli run .
+    scala-cli test .
+    syntaxlab check
+    ```
+checks:
+- type: file
+  path: Main.scala
+  label: Main.scala exists
+- type: command
+  args:
+  - $scala
+  - test
+  - .
+  - --server=false
+  timeout: 240
+  label: Scala compilation and MUnit behavior tests
+- type: command
+  args:
+  - $scala
+  - run
+  - .
+  - --server=false
+  timeout: 240
+  label: Application entry point runs
+solution:
+  Main.scala: |
+    def temperatureLabel(c: Int): String =
+      if c < 0 then "frozen"
+      else if c < 25 then "mild"
+      else "hot"
+    @main def demo(): Unit = println(temperatureLabel(12))
+project: ''
+difficulty: 2

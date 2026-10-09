@@ -1,0 +1,118 @@
+id: c-makefile
+language: c
+module: building
+title: 01 · A repeatable build
+order: 340
+prerequisites:
+- c-headers
+concepts:
+- Makefile
+- targets
+- dependencies
+- warnings
+assignment: |
+  Write a program printing `Built with Make`. Create a Makefile with default target program, a rule
+  compiling main.c with -std=c17 -Wall -Wextra -Wpedantic, and a phony clean target removing program.
+  Run make, ./program, and make clean. Recipes start with a real tab, not spaces.
+
+  ## Workflow
+  Create `main.c` yourself. No learner source is supplied.
+
+  ```sh
+  python3 test_exercise.py
+  syntaxlab check
+  ```
+docs: c/docs/building.md
+hints:
+- A target lists its prerequisites after a colon.
+- The compiler recipe runs only when a prerequisite is newer than the target.
+files:
+  test_exercise.py: |
+    """Run with python3 test_exercise.py. GCC diagnostics are printed unchanged."""
+    from pathlib import Path
+    import os
+    import subprocess
+    import sys
+
+    root = Path(__file__).resolve().parent
+    build = root / ".syntaxlab-build" / "test_exercise"
+    build.mkdir(parents=True, exist_ok=True)
+    cc = os.environ.get("CC", "gcc")
+    flags = ["-std=c17", "-Wall", "-Wextra", "-Wpedantic", "-Werror", "-g"]
+    expected = 'Built with Make'
+
+    def execute(args, capture=False):
+        print("+ " + " ".join(str(a) for a in args), flush=True)
+        return subprocess.run(args, cwd=root, check=True, timeout=10,
+                              text=True, capture_output=capture)
+
+    try:
+        sources = sorted(p for p in root.glob("*.c") if not p.name.startswith("test_"))
+        if not sources:
+            raise RuntimeError("Create main.c first")
+        executable = build / "program"
+        execute([cc, *flags, *map(str, sources), "-o", str(executable)])
+        result = execute([str(executable)], capture=True)
+        if expected is not None:
+            assert result.stdout.strip() == expected.strip(), (
+                f"Expected {expected!r}, got {result.stdout!r}")
+        else:
+            objects = []
+            for source in sources:
+                obj = build / (source.stem + ".o")
+                execute([cc, *flags, "-Dmain=learner_main", "-c", str(source), "-o", str(obj)])
+                objects.append(str(obj))
+            harness = build / "tests"
+            execute([cc, *flags, "test_exercise.c", *objects, "-o", str(harness)])
+            execute([str(harness)])
+        print("All behavior checks passed.")
+    except (OSError, subprocess.SubprocessError, AssertionError, RuntimeError) as error:
+        print(error, file=sys.stderr)
+        if isinstance(error, subprocess.CalledProcessError):
+            print(error.stdout or "", error.stderr or "", file=sys.stderr)
+        sys.exit(1)
+  ASSIGNMENT.md: |
+    Write a program printing `Built with Make`. Create a Makefile with default target program, a rule
+    compiling main.c with -std=c17 -Wall -Wextra -Wpedantic, and a phony clean target removing program.
+    Run make, ./program, and make clean. Recipes start with a real tab, not spaces.
+
+    ## Workflow
+    Create `main.c` yourself. No learner source is supplied.
+
+    ```sh
+    python3 test_exercise.py
+    syntaxlab check
+    ```
+checks:
+- type: file
+  path: main.c
+  label: main.c exists
+- type: command
+  args:
+  - python3
+  - test_exercise.py
+  requires:
+  - $cc
+  label: GCC warnings, linking and behavior tests
+- type: command
+  args:
+  - make
+  label: Makefile builds program
+- type: command
+  args:
+  - ./program
+  stdout: Built with Make
+  label: Built application runs
+- type: command
+  args:
+  - make
+  - clean
+  label: Clean target succeeds
+solution:
+  main.c: |
+    #include <stdio.h>
+    int main(void) { puts("Built with Make"); return 0; }
+  Makefile: "CC = gcc\nCFLAGS = -std=c17 -Wall -Wextra -Wpedantic\nprogram: main.c\n\t$(CC) $(CFLAGS)\
+    \ main.c -o program\n.PHONY: clean\nclean:\n\trm -f program\n"
+project: ''
+difficulty: 4

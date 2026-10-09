@@ -1,0 +1,98 @@
+id: python-if
+language: python
+module: control-flow
+title: 01 · If, elif, else
+order: 110
+prerequisites:
+- python-functions-local
+concepts:
+- if
+- elif
+- else
+- boundaries
+difficulty: 2
+assignment: |
+  Write clamp(value: int, low: int, high: int) -> int returning low below the interval, high above it, and value inside it. Endpoints are inclusive and low <= high. Use conditional statements and include a main-guarded demo.
+
+  ## Workflow
+  Create `main.py` yourself. No learner implementation is supplied.
+  Read `syntaxlab docs python control-flow` for syntax and independent examples.
+
+  ```sh
+  python3 main.py
+  python3 -m unittest discover -s tests -v
+  syntaxlab check
+  ```
+docs: python/docs/control-flow.md
+hints:
+- Check both boundaries, not only a middle value.
+- An early return ends this call, not the whole program.
+files:
+  tests/test_exercise.py: |
+    import contextlib
+    import importlib
+    import io
+    import json
+    import subprocess
+    import sys
+    import tempfile
+    import unittest
+    from pathlib import Path
+    import main as learner
+
+    class ExerciseTests(unittest.TestCase):
+        def test_boundaries(self):
+            for value, expected in [(-4, 0), (0, 0), (4, 4), (10, 10), (11, 10)]:
+                self.assertEqual(learner.clamp(value, 0, 10), expected)
+  ASSIGNMENT.md: |
+    Write clamp(value: int, low: int, high: int) -> int returning low below the interval, high above it, and value inside it. Endpoints are inclusive and low <= high. Use conditional statements and include a main-guarded demo.
+
+    ## Workflow
+    Create `main.py` yourself. No learner implementation is supplied.
+    Read `syntaxlab docs python control-flow` for syntax and independent examples.
+
+    ```sh
+    python3 main.py
+    python3 -m unittest discover -s tests -v
+    syntaxlab check
+    ```
+checks:
+- type: file
+  path: main.py
+  label: Learner main.py exists
+- type: command
+  args:
+  - $python
+  - -c
+  - import main
+  label: Import has no I/O side effects
+  stdout: ''
+- type: command
+  args:
+  - $python
+  - -m
+  - unittest
+  - discover
+  - -s
+  - tests
+  - -v
+  label: Python behavior tests (unittest)
+- type: command
+  args:
+  - $python
+  - main.py
+  label: Application runs
+  stdin: ''
+solution:
+  main.py: |
+    def clamp(value: int, low: int, high: int) -> int:
+        if value < low:
+            return low
+        elif value > high:
+            return high
+        else:
+            return value
+
+    if __name__ == "__main__":
+        print(clamp(12, 0, 10))
+project: ''

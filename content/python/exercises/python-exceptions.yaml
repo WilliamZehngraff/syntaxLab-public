@@ -1,0 +1,97 @@
+id: python-exceptions
+language: python
+module: errors
+title: 01 · Deliberate exceptions
+order: 190
+prerequisites:
+- python-tuples
+concepts:
+- raise
+- ValueError
+- exceptions
+- testing
+difficulty: 3
+assignment: |
+  Write divide(a: float, b: float) -> float. Return a / b for nonzero b; for zero b raise ValueError with message `zero divisor`. Do not print an error or silently return zero. Add a successful main-guarded demo, and test the failure contract with assertRaises.
+
+  ## Workflow
+  Create `main.py` yourself. No learner implementation is supplied.
+  Read `syntaxlab docs python errors` for syntax and independent examples.
+
+  ```sh
+  python3 main.py
+  python3 -m unittest discover -s tests -v
+  syntaxlab check
+  ```
+docs: python/docs/errors.md
+hints:
+- An exception communicates that the normal result is unavailable.
+- Raise the requested exception before performing invalid arithmetic.
+files:
+  tests/test_exercise.py: |
+    import contextlib
+    import importlib
+    import io
+    import json
+    import subprocess
+    import sys
+    import tempfile
+    import unittest
+    from pathlib import Path
+    import main as learner
+
+    class ExerciseTests(unittest.TestCase):
+        def test_value_and_failure(self):
+            self.assertEqual(learner.divide(7, 2), 3.5)
+            self.assertEqual(learner.divide(-6, 3), -2.0)
+            with self.assertRaisesRegex(ValueError, "zero divisor"):
+                learner.divide(1, 0)
+  ASSIGNMENT.md: |
+    Write divide(a: float, b: float) -> float. Return a / b for nonzero b; for zero b raise ValueError with message `zero divisor`. Do not print an error or silently return zero. Add a successful main-guarded demo, and test the failure contract with assertRaises.
+
+    ## Workflow
+    Create `main.py` yourself. No learner implementation is supplied.
+    Read `syntaxlab docs python errors` for syntax and independent examples.
+
+    ```sh
+    python3 main.py
+    python3 -m unittest discover -s tests -v
+    syntaxlab check
+    ```
+checks:
+- type: file
+  path: main.py
+  label: Learner main.py exists
+- type: command
+  args:
+  - $python
+  - -c
+  - import main
+  label: Import has no I/O side effects
+  stdout: ''
+- type: command
+  args:
+  - $python
+  - -m
+  - unittest
+  - discover
+  - -s
+  - tests
+  - -v
+  label: Python behavior tests (unittest)
+- type: command
+  args:
+  - $python
+  - main.py
+  label: Application runs
+  stdin: ''
+solution:
+  main.py: |
+    def divide(a: float, b: float) -> float:
+        if b == 0:
+            raise ValueError("zero divisor")
+        return a / b
+
+    if __name__ == "__main__":
+        print(divide(7, 2))
+project: ''

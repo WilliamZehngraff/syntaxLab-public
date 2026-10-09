@@ -1,0 +1,364 @@
+id: c-task-ledger-15
+language: c
+module: projects
+title: 15 · A usable persistent CLI
+order: 352
+prerequisites:
+- c-file-io
+- c-task-ledger-14
+concepts:
+- command-line-arguments
+- file-io
+- ownership
+- error-handling
+assignment: |
+  Extend main to accept `list FILE`, `add FILE TITLE`, `done FILE ID`. list prints `ID [ ] TITLE` or `ID [x] TITLE`, one task per line; add uses max existing ID + 1, stores the task and prints `Added ID`; done marks an existing task, saves, and prints `Completed`. A missing file is an empty ledger; malformed/unreadable existing files, unknown commands, invalid titles/IDs, missing IDs and bad arguments must produce a nonzero exit status and a diagnostic. Support up to 1000 tasks, allocate storage on the heap, and free it on every exit. No arguments still prints the original banner. Quotes in the shell keep a multiword TITLE together. The supplied CLI test runs the built program as a real subprocess.
+
+  ## Workflow
+  Create `main.c` yourself. Keep all previously implemented behavior.
+
+  ```sh
+  python3 test_15.py
+  syntaxlab check
+  ```
+docs: c/docs/projects.md
+hints:
+- Add the new operation without breaking the older stage tests.
+- Decide who owns each value, and check boundary/failure cases before the happy path.
+files:
+  test_15.c: |
+    #include <assert.h>
+    #include <stdlib.h>
+    #include <string.h>
+    #include <stdio.h>
+    #include "tasks.h"
+    int main(void) {
+    assert(valid_title("CLI"));
+    return 0;
+    }
+  test_15.py: |
+    """Run with python3 test_15.py. GCC diagnostics are printed unchanged."""
+    from pathlib import Path
+    import os
+    import subprocess
+    import sys
+
+    root = Path(__file__).resolve().parent
+    build = root / ".syntaxlab-build" / "test_15"
+    build.mkdir(parents=True, exist_ok=True)
+    cc = os.environ.get("CC", "gcc")
+    flags = ["-std=c17", "-Wall", "-Wextra", "-Wpedantic", "-Werror", "-g"]
+    expected = None
+
+    def execute(args, capture=False):
+        print("+ " + " ".join(str(a) for a in args), flush=True)
+        return subprocess.run(args, cwd=root, check=True, timeout=10,
+                              text=True, capture_output=capture)
+
+    try:
+        sources = sorted(p for p in root.glob("*.c") if not p.name.startswith("test_"))
+        if not sources:
+            raise RuntimeError("Create main.c first")
+        executable = build / "program"
+        execute([cc, *flags, *map(str, sources), "-o", str(executable)])
+        result = execute([str(executable)], capture=True)
+        if expected is not None:
+            assert result.stdout.strip() == expected.strip(), (
+                f"Expected {expected!r}, got {result.stdout!r}")
+        else:
+            objects = []
+            for source in sources:
+                obj = build / (source.stem + ".o")
+                execute([cc, *flags, "-Dmain=learner_main", "-c", str(source), "-o", str(obj)])
+                objects.append(str(obj))
+            harness = build / "tests"
+            execute([cc, *flags, "test_15.c", *objects, "-o", str(harness)])
+            execute([str(harness)])
+        print("All behavior checks passed.")
+    except (OSError, subprocess.SubprocessError, AssertionError, RuntimeError) as error:
+        print(error, file=sys.stderr)
+        if isinstance(error, subprocess.CalledProcessError):
+            print(error.stdout or "", error.stderr or "", file=sys.stderr)
+        sys.exit(1)
+  test_cli.py: |
+    from pathlib import Path
+    import subprocess
+    import tempfile
+
+    root = Path(__file__).resolve().parent
+    with tempfile.TemporaryDirectory(dir=root / ".syntaxlab-build") as temporary:
+        data = str(Path(temporary) / "ledger.txt")
+        def call(*args, success=True):
+            result = subprocess.run([str(root / "program"), *args], capture_output=True, text=True, timeout=5)
+            assert (result.returncode == 0) == success, (args, result.stdout, result.stderr)
+            return result.stdout.strip()
+        assert call("list", data) == ""
+        assert call("add", data, "Read book") == "Added 1"
+        assert call("add", data, "Write tests") == "Added 2"
+        assert call("list", data) == "1 [ ] Read book\n2 [ ] Write tests"
+        assert call("done", data, "1") == "Completed"
+        assert call("list", data) == "1 [x] Read book\n2 [ ] Write tests"
+        call("done", data, "99", success=False)
+        call("done", data, "oops", success=False)
+        call("add", data, "", success=False)
+        Path(data).write_text("malformed\n")
+        call("list", data, success=False)
+    print("CLI round-trip passed")
+  STAGE-15.md: |
+    Extend main to accept `list FILE`, `add FILE TITLE`, `done FILE ID`. list prints `ID [ ] TITLE` or `ID [x] TITLE`, one task per line; add uses max existing ID + 1, stores the task and prints `Added ID`; done marks an existing task, saves, and prints `Completed`. A missing file is an empty ledger; malformed/unreadable existing files, unknown commands, invalid titles/IDs, missing IDs and bad arguments must produce a nonzero exit status and a diagnostic. Support up to 1000 tasks, allocate storage on the heap, and free it on every exit. No arguments still prints the original banner. Quotes in the shell keep a multiword TITLE together. The supplied CLI test runs the built program as a real subprocess.
+
+    ## Workflow
+    Create `main.c` yourself. Keep all previously implemented behavior.
+
+    ```sh
+    python3 test_15.py
+    syntaxlab check
+    ```
+checks:
+- type: file
+  path: tasks.c
+  label: Storage in tasks.c
+- type: file
+  path: main.c
+  label: main.c exists
+- type: command
+  args:
+  - python3
+  - test_01.py
+  requires:
+  - $cc
+  label: GCC warnings, linking and behavior tests
+- type: command
+  args:
+  - python3
+  - test_02.py
+  requires:
+  - $cc
+  label: GCC warnings, linking and behavior tests
+- type: command
+  args:
+  - python3
+  - test_03.py
+  requires:
+  - $cc
+  label: GCC warnings, linking and behavior tests
+- type: command
+  args:
+  - python3
+  - test_04.py
+  requires:
+  - $cc
+  label: GCC warnings, linking and behavior tests
+- type: command
+  args:
+  - python3
+  - test_05.py
+  requires:
+  - $cc
+  label: GCC warnings, linking and behavior tests
+- type: command
+  args:
+  - python3
+  - test_06.py
+  requires:
+  - $cc
+  label: GCC warnings, linking and behavior tests
+- type: command
+  args:
+  - python3
+  - test_07.py
+  requires:
+  - $cc
+  label: GCC warnings, linking and behavior tests
+- type: command
+  args:
+  - python3
+  - test_08.py
+  requires:
+  - $cc
+  label: GCC warnings, linking and behavior tests
+- type: command
+  args:
+  - python3
+  - test_09.py
+  requires:
+  - $cc
+  label: GCC warnings, linking and behavior tests
+- type: command
+  args:
+  - python3
+  - test_10.py
+  requires:
+  - $cc
+  label: GCC warnings, linking and behavior tests
+- type: command
+  args:
+  - python3
+  - test_11.py
+  requires:
+  - $cc
+  label: GCC warnings, linking and behavior tests
+- type: command
+  args:
+  - python3
+  - test_12.py
+  requires:
+  - $cc
+  label: GCC warnings, linking and behavior tests
+- type: command
+  args:
+  - python3
+  - test_13.py
+  requires:
+  - $cc
+  label: GCC warnings, linking and behavior tests
+- type: command
+  args:
+  - python3
+  - test_14.py
+  requires:
+  - $cc
+  label: GCC warnings, linking and behavior tests
+- type: command
+  args:
+  - python3
+  - test_15.py
+  requires:
+  - $cc
+  label: GCC warnings, linking and behavior tests
+- type: command
+  args:
+  - make
+  label: Make builds program
+- type: command
+  args:
+  - python3
+  - test_cli.py
+  label: Persistent CLI round-trip and error paths
+solution:
+  main.c: |
+    #include <stdio.h>
+    #include <stddef.h>
+    #include <stdlib.h>
+    #include <string.h>
+    #include <errno.h>
+    #include <limits.h>
+    #include "tasks.h"
+
+    int main(int argc, char **argv) {
+        if (argc == 1) { puts("Task Ledger ready"); return 0; }
+        if (argc < 3 || argc > 4) { fputs("Usage: program list FILE | add FILE TITLE | done FILE ID\n", stderr); return 1; }
+        Task *tasks = tasks_allocate(1000);
+        if (!tasks) { fputs("Allocation failed\n", stderr); return 1; }
+        int count = 0;
+        int status = 1;
+        FILE *probe = fopen(argv[2], "r");
+        if (probe) {
+            fclose(probe);
+            count = tasks_load(argv[2], tasks, 1000);
+            if (count < 0) { fputs("Invalid task file\n", stderr); goto cleanup; }
+        } else if (errno != ENOENT) { perror("Cannot open task file"); goto cleanup; }
+        if (strcmp(argv[1], "list") == 0 && argc == 3) {
+            for (int i = 0; i < count; ++i)
+                printf("%d [%c] %s\n", tasks[i].id, tasks[i].done ? 'x' : ' ', tasks[i].title);
+            status = 0;
+        } else if (strcmp(argv[1], "add") == 0 && argc == 4 && valid_title(argv[3]) && count < 1000) {
+            int max_id = 0;
+            for (int i = 0; i < count; ++i) if (tasks[i].id > max_id) max_id = tasks[i].id;
+            if (max_id == INT_MAX) { fputs("ID space exhausted\n", stderr); goto cleanup; }
+            tasks[count] = task_create(max_id + 1, argv[3]);
+            if (tasks_save(argv[2], tasks, count + 1)) { printf("Added %d\n", max_id + 1); status = 0; }
+        } else if (strcmp(argv[1], "done") == 0 && argc == 4) {
+            char *end;
+            errno = 0;
+            long id = strtol(argv[3], &end, 10);
+            if (errno || *end || end == argv[3] || id <= 0 || id > INT_MAX) goto cleanup;
+            for (int i = 0; i < count; ++i) if (tasks[i].id == id) {
+                task_complete(&tasks[i]);
+                if (tasks_save(argv[2], tasks, count)) { puts("Completed"); status = 0; }
+                break;
+            }
+        }
+    cleanup:
+        tasks_release(&tasks);
+        if (status) fputs("Command failed: check arguments, task ID and file permissions\n", stderr);
+        return status;
+    }
+  tasks.h: |
+    #ifndef TASKS_H
+    #define TASKS_H
+    typedef struct { int id; int done; char title[64]; } Task;
+
+    int free_slots(int);
+    int can_add(int);
+    int id_total(int);
+    int normalized_done(int);
+    int pending_count(const int[], int);
+    int valid_title(const char*);
+
+    Task task_create(int, const char*);
+
+    int task_complete(Task*);
+
+    Task *tasks_allocate(int);
+    void tasks_release(Task**);
+
+    int tasks_grow(Task**, int, int);
+
+
+
+    int tasks_save(const char*, const Task*, int);
+    int tasks_load(const char*, Task*, int);
+
+    #endif
+  tasks.c: |
+    #include <stdio.h>
+    #include <stddef.h>
+    #include <stdlib.h>
+    #include <string.h>
+    #include "tasks.h"
+    int free_slots(int used) { const int capacity = 10; return capacity - used; }
+    int can_add(int used) { if (used >= 0 && used < 10) return 1; return 0; }
+    int id_total(int count) { int total = 0; for (int i = 1; i <= count; ++i) total += i; return total; }
+    int normalized_done(int value) { return value != 0; }
+    int pending_count(const int done[], int count) { int pending = 0; for (int i = 0; i < count; ++i) if (!normalized_done(done[i])) ++pending; return pending; }
+    int valid_title(const char *title) { size_t n = strlen(title); return n > 0 && n < 64 && strpbrk(title, "\n\t\r") == NULL; }
+    Task task_create(int id, const char *title) { Task t = {0}; t.id = id; snprintf(t.title, sizeof t.title, "%s", title); return t; }
+    int task_complete(Task *task) { if (!task) return 0; task->done = 1; return 1; }
+    Task *tasks_allocate(int count) { if (count <= 0) return NULL; return calloc((size_t)count, sizeof(Task)); }
+    void tasks_release(Task **owner) { free(*owner); *owner = NULL; }
+    int tasks_grow(Task **owner, int old_count, int new_count) { Task *p = realloc(*owner, (size_t)new_count * sizeof *p); if (!p) return 0; memset(p + old_count, 0, (size_t)(new_count - old_count) * sizeof *p); *owner = p; return 1; }
+
+    int tasks_save(const char *path, const Task *tasks, int count) {
+        FILE *f = fopen(path, "w");
+        if (!f) return 0;
+        int ok = 1;
+        for (int i = 0; i < count; ++i)
+            if (fprintf(f, "%d\t%d\t%s\n", tasks[i].id, tasks[i].done, tasks[i].title) < 0) ok = 0;
+        if (fclose(f) != 0) ok = 0;
+        return ok;
+    }
+    int tasks_load(const char *path, Task *tasks, int capacity) {
+        FILE *f = fopen(path, "r");
+        if (!f) return -1;
+        char line[128];
+        int count = 0;
+        int ok = 1;
+        while (fgets(line, sizeof line, f)) {
+            Task t = {0};
+            int consumed = 0;
+            if (count >= capacity || sscanf(line, "%d\t%d\t%63[^\n]%n", &t.id, &t.done, t.title, &consumed) != 3
+                || (line[consumed] != '\n' && line[consumed] != '\0')
+                || t.id <= 0 || (t.done != 0 && t.done != 1) || !valid_title(t.title)) {
+                ok = 0; break;
+            }
+            tasks[count++] = t;
+        }
+        if (ferror(f)) ok = 0;
+        if (fclose(f) != 0) ok = 0;
+        return ok ? count : -1;
+    }
+  Makefile: "CC = gcc\nCFLAGS = -std=c17 -Wall -Wextra -Wpedantic\nprogram: main.c tasks.c tasks.h\n\t\
+    $(CC) $(CFLAGS) main.c tasks.c -o program\n.PHONY: clean\nclean:\n\trm -f program\n"
+project: task-ledger
+difficulty: 5

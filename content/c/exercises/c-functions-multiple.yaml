@@ -1,0 +1,110 @@
+id: c-functions-multiple
+language: c
+module: functions
+title: 02 · Multiple parameters and return values
+order: 130
+prerequisites:
+- c-break-continue
+concepts:
+- parameters
+- return-values
+- if
+assignment: |
+  Write `int clamp(int value, int low, int high)` returning low below the interval, high above it,
+  otherwise value. low <= high. Include a main returning 0. Do not print from clamp.
+
+  ## Workflow
+  Create `main.c` yourself. No learner source is supplied.
+
+  ```sh
+  python3 test_exercise.py
+  syntaxlab check
+  ```
+docs: c/docs/functions.md
+hints:
+- Each C parameter has its own type.
+- Early returns make the two out-of-range cases explicit.
+files:
+  test_exercise.c: |
+    #include <assert.h>
+    #include <stddef.h>
+    #include <stdlib.h>
+    #include <string.h>
+    #include <stdio.h>
+    int clamp(int, int, int);
+    int main(void) {
+    assert(clamp(-9, -2, 5) == -2); assert(clamp(3, -2, 5) == 3); assert(clamp(8, -2, 5) == 5); assert(clamp(2, 2, 2) == 2);
+    return 0;
+    }
+  test_exercise.py: |
+    """Run with python3 test_exercise.py. GCC diagnostics are printed unchanged."""
+    from pathlib import Path
+    import os
+    import subprocess
+    import sys
+
+    root = Path(__file__).resolve().parent
+    build = root / ".syntaxlab-build" / "test_exercise"
+    build.mkdir(parents=True, exist_ok=True)
+    cc = os.environ.get("CC", "gcc")
+    flags = ["-std=c17", "-Wall", "-Wextra", "-Wpedantic", "-Werror", "-g"]
+    expected = None
+
+    def execute(args, capture=False):
+        print("+ " + " ".join(str(a) for a in args), flush=True)
+        return subprocess.run(args, cwd=root, check=True, timeout=10,
+                              text=True, capture_output=capture)
+
+    try:
+        sources = sorted(p for p in root.glob("*.c") if not p.name.startswith("test_"))
+        if not sources:
+            raise RuntimeError("Create main.c first")
+        executable = build / "program"
+        execute([cc, *flags, *map(str, sources), "-o", str(executable)])
+        result = execute([str(executable)], capture=True)
+        if expected is not None:
+            assert result.stdout.strip() == expected.strip(), (
+                f"Expected {expected!r}, got {result.stdout!r}")
+        else:
+            objects = []
+            for source in sources:
+                obj = build / (source.stem + ".o")
+                execute([cc, *flags, "-Dmain=learner_main", "-c", str(source), "-o", str(obj)])
+                objects.append(str(obj))
+            harness = build / "tests"
+            execute([cc, *flags, "test_exercise.c", *objects, "-o", str(harness)])
+            execute([str(harness)])
+        print("All behavior checks passed.")
+    except (OSError, subprocess.SubprocessError, AssertionError, RuntimeError) as error:
+        print(error, file=sys.stderr)
+        if isinstance(error, subprocess.CalledProcessError):
+            print(error.stdout or "", error.stderr or "", file=sys.stderr)
+        sys.exit(1)
+  ASSIGNMENT.md: |
+    Write `int clamp(int value, int low, int high)` returning low below the interval, high above it,
+    otherwise value. low <= high. Include a main returning 0. Do not print from clamp.
+
+    ## Workflow
+    Create `main.c` yourself. No learner source is supplied.
+
+    ```sh
+    python3 test_exercise.py
+    syntaxlab check
+    ```
+checks:
+- type: file
+  path: main.c
+  label: main.c exists
+- type: command
+  args:
+  - python3
+  - test_exercise.py
+  requires:
+  - $cc
+  label: GCC warnings, linking and behavior tests
+solution:
+  main.c: |
+    int clamp(int value, int low, int high) { if (value < low) return low; if (value > high) return high; return value; }
+    int main(void) { return 0; }
+project: ''
+difficulty: 2

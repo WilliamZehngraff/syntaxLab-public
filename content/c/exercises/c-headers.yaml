@@ -1,0 +1,122 @@
+id: c-headers
+language: c
+module: organization
+title: 01 · Separate compilation units
+order: 330
+prerequisites:
+- c-memory-realloc
+concepts:
+- headers
+- include-guards
+- compilation-units
+- linking
+- declarations
+assignment: |
+  Create math_ops.h with include guards and the declaration `int square(int n);`.
+  Implement it in math_ops.c. Include the header in main.c and return success iff square(5) is 25.
+  Build manually with `gcc -Wall -Wextra -Wpedantic main.c math_ops.c -o program`.
+
+  ## Workflow
+  Create `main.c` yourself. No learner source is supplied.
+
+  ```sh
+  python3 test_exercise.py
+  syntaxlab check
+  ```
+docs: c/docs/organization.md
+hints:
+- Declarations go in the header; one definition goes in the .c file.
+- 'An undefined-reference error comes from the linker: check that all implementation files are compiled.'
+files:
+  test_exercise.c: |
+    #include <assert.h>
+    #include <stddef.h>
+    #include <stdlib.h>
+    #include <string.h>
+    #include <stdio.h>
+    #include "math_ops.h"
+    int main(void) {
+    assert(square(-3) == 9); assert(square(0) == 0); assert(square(8) == 64);
+    return 0;
+    }
+  test_exercise.py: |
+    """Run with python3 test_exercise.py. GCC diagnostics are printed unchanged."""
+    from pathlib import Path
+    import os
+    import subprocess
+    import sys
+
+    root = Path(__file__).resolve().parent
+    build = root / ".syntaxlab-build" / "test_exercise"
+    build.mkdir(parents=True, exist_ok=True)
+    cc = os.environ.get("CC", "gcc")
+    flags = ["-std=c17", "-Wall", "-Wextra", "-Wpedantic", "-Werror", "-g"]
+    expected = None
+
+    def execute(args, capture=False):
+        print("+ " + " ".join(str(a) for a in args), flush=True)
+        return subprocess.run(args, cwd=root, check=True, timeout=10,
+                              text=True, capture_output=capture)
+
+    try:
+        sources = sorted(p for p in root.glob("*.c") if not p.name.startswith("test_"))
+        if not sources:
+            raise RuntimeError("Create main.c first")
+        executable = build / "program"
+        execute([cc, *flags, *map(str, sources), "-o", str(executable)])
+        result = execute([str(executable)], capture=True)
+        if expected is not None:
+            assert result.stdout.strip() == expected.strip(), (
+                f"Expected {expected!r}, got {result.stdout!r}")
+        else:
+            objects = []
+            for source in sources:
+                obj = build / (source.stem + ".o")
+                execute([cc, *flags, "-Dmain=learner_main", "-c", str(source), "-o", str(obj)])
+                objects.append(str(obj))
+            harness = build / "tests"
+            execute([cc, *flags, "test_exercise.c", *objects, "-o", str(harness)])
+            execute([str(harness)])
+        print("All behavior checks passed.")
+    except (OSError, subprocess.SubprocessError, AssertionError, RuntimeError) as error:
+        print(error, file=sys.stderr)
+        if isinstance(error, subprocess.CalledProcessError):
+            print(error.stdout or "", error.stderr or "", file=sys.stderr)
+        sys.exit(1)
+  ASSIGNMENT.md: |
+    Create math_ops.h with include guards and the declaration `int square(int n);`.
+    Implement it in math_ops.c. Include the header in main.c and return success iff square(5) is 25.
+    Build manually with `gcc -Wall -Wextra -Wpedantic main.c math_ops.c -o program`.
+
+    ## Workflow
+    Create `main.c` yourself. No learner source is supplied.
+
+    ```sh
+    python3 test_exercise.py
+    syntaxlab check
+    ```
+checks:
+- type: file
+  path: main.c
+  label: main.c exists
+- type: command
+  args:
+  - python3
+  - test_exercise.py
+  requires:
+  - $cc
+  label: GCC warnings, linking and behavior tests
+solution:
+  main.c: |
+    #include "math_ops.h"
+    int main(void) { return square(5) == 25 ? 0 : 1; }
+  math_ops.h: |
+    #ifndef MATH_OPS_H
+    #define MATH_OPS_H
+    int square(int n);
+    #endif
+  math_ops.c: |
+    #include "math_ops.h"
+    int square(int n) { return n * n; }
+project: ''
+difficulty: 4

@@ -1,0 +1,101 @@
+id: python-iterators
+language: python
+module: organization
+title: 02 · Lazy generators
+order: 270
+prerequisites:
+- python-modules
+concepts:
+- yield
+- generators
+- iteration
+- laziness
+difficulty: 4
+assignment: |
+  Write evens_up_to(n: int), a generator yielding even numbers from 0 through n inclusive; negative n yields nothing. Use yield rather than building a list. Add a guarded demo that explicitly consumes the generator. Compare creating an iterator with requesting its next value.
+
+  ## Workflow
+  Create `main.py` yourself. No learner implementation is supplied.
+  Read `syntaxlab docs python organization` for syntax and independent examples.
+
+  ```sh
+  python3 main.py
+  python3 -m unittest discover -s tests -v
+  syntaxlab check
+  ```
+docs: python/docs/organization.md
+hints:
+- Calling a generator function creates an iterator without running the whole body.
+- yield pauses a function; return ends it.
+files:
+  tests/test_exercise.py: |
+    import contextlib
+    import importlib
+    import io
+    import json
+    import subprocess
+    import sys
+    import tempfile
+    import unittest
+    from pathlib import Path
+    import main as learner
+
+    class ExerciseTests(unittest.TestCase):
+        def test_lazy_iterator(self):
+            iterator = learner.evens_up_to(6)
+            self.assertIs(iter(iterator), iterator)
+            self.assertEqual(next(iterator), 0)
+            self.assertEqual(list(iterator), [2, 4, 6])
+            self.assertEqual(list(learner.evens_up_to(-1)), [])
+  ASSIGNMENT.md: |
+    Write evens_up_to(n: int), a generator yielding even numbers from 0 through n inclusive; negative n yields nothing. Use yield rather than building a list. Add a guarded demo that explicitly consumes the generator. Compare creating an iterator with requesting its next value.
+
+    ## Workflow
+    Create `main.py` yourself. No learner implementation is supplied.
+    Read `syntaxlab docs python organization` for syntax and independent examples.
+
+    ```sh
+    python3 main.py
+    python3 -m unittest discover -s tests -v
+    syntaxlab check
+    ```
+checks:
+- type: file
+  path: main.py
+  label: Learner main.py exists
+- type: command
+  args:
+  - $python
+  - -c
+  - import main
+  label: Import has no I/O side effects
+  stdout: ''
+- type: command
+  args:
+  - $python
+  - -m
+  - unittest
+  - discover
+  - -s
+  - tests
+  - -v
+  label: Python behavior tests (unittest)
+- type: command
+  args:
+  - $python
+  - main.py
+  label: Application runs
+  stdin: ''
+- type: construct
+  path: main.py
+  pattern: \byield\b
+  label: Required lesson construct (heuristic; behavior tested separately)
+solution:
+  main.py: |
+    def evens_up_to(n: int):
+        for value in range(0, n + 1, 2):
+            yield value
+
+    if __name__ == "__main__":
+        print(list(evens_up_to(7)))
+project: ''

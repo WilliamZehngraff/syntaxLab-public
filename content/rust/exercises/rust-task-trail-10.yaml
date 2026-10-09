@@ -1,0 +1,251 @@
+id: rust-task-trail-10
+language: rust
+module: projects
+title: 10 · Modules and a persistent CLI
+order: 301
+prerequisites:
+- rust-testing
+- rust-task-trail-09
+concepts:
+- modules
+- CLI
+- file-io
+- Result
+- testing
+difficulty: 4
+assignment: |
+  Move Board and its impl into src/board.rs and re-export Board from lib.rs. Add `pub fn save_board(path: &std::path::Path, board: &Board) -> Result<(), String>` writing one stage-09 record per line, and `pub fn load_board(path: &std::path::Path) -> Result<Board, String>`. A missing file means an empty board; malformed, duplicate-ID or unreadable existing files fail. Preserve IDs/order; the next add uses max existing ID + 1. Implement binary commands `list FILE`, `add FILE TITLE`, `done FILE ID`: list prints `ID [ ] TITLE` or `ID [x] TITLE`; add saves and prints `Added ID`; done saves and prints `Completed`. Bad arguments, blank/control-character titles, missing IDs, exhausted u32 IDs and I/O errors exit nonzero with a stderr diagnostic. Do not overwrite corrupt files on failure. Keep no-argument banner and earlier APIs. Add tests/learner.rs with your own error-path test. No external crates are needed.
+
+  ## Workflow
+  Create `src/lib.rs` with the public API and `src/main.rs` with a runnable demo yourself. Extend the same project; preserve earlier APIs and stage tests.
+  Read `syntaxlab docs rust projects` for syntax and independent examples.
+
+  ```sh
+  cargo run
+  cargo test
+  syntaxlab check
+  ```
+docs: rust/docs/projects.md
+hints:
+- Preserve earlier APIs; let the accumulated tests protect them during each extension.
+- Decide which values are owned, borrowed or fallible before choosing the function signatures.
+files:
+  Cargo.toml: |
+    [package]
+    name = "task_trail"
+    version = "0.1.0"
+    edition = "2021"
+    rust-version = "1.70"
+  tests/stage_10.rs: |
+    use task_trail::*;
+
+    #[test]
+    fn stage_contract() {
+    assert!(Board::new().tasks().is_empty());
+    }
+  STAGE-10.md: |
+    Move Board and its impl into src/board.rs and re-export Board from lib.rs. Add `pub fn save_board(path: &std::path::Path, board: &Board) -> Result<(), String>` writing one stage-09 record per line, and `pub fn load_board(path: &std::path::Path) -> Result<Board, String>`. A missing file means an empty board; malformed, duplicate-ID or unreadable existing files fail. Preserve IDs/order; the next add uses max existing ID + 1. Implement binary commands `list FILE`, `add FILE TITLE`, `done FILE ID`: list prints `ID [ ] TITLE` or `ID [x] TITLE`; add saves and prints `Added ID`; done saves and prints `Completed`. Bad arguments, blank/control-character titles, missing IDs, exhausted u32 IDs and I/O errors exit nonzero with a stderr diagnostic. Do not overwrite corrupt files on failure. Keep no-argument banner and earlier APIs. Add tests/learner.rs with your own error-path test. No external crates are needed.
+
+    ## Workflow
+    Create `src/lib.rs` with the public API and `src/main.rs` with a runnable demo yourself. Extend the same project; preserve earlier APIs and stage tests.
+    Read `syntaxlab docs rust projects` for syntax and independent examples.
+
+    ```sh
+    cargo run
+    cargo test
+    syntaxlab check
+    ```
+  tests/cli.rs: |
+    use std::{path::Path, process::{Command, Output}};
+    fn call(path: &Path, command: &str, extra: Option<&str>) -> Output {
+        let mut process = Command::new(env!("CARGO_BIN_EXE_task_trail"));
+        process.arg(command).arg(path);
+        if let Some(value) = extra { process.arg(value); }
+        process.output().unwrap()
+    }
+    fn successful(output: Output) -> String {
+        assert!(output.status.success(), "{}", String::from_utf8_lossy(&output.stderr));
+        String::from_utf8(output.stdout).unwrap().trim().to_owned()
+    }
+    #[test]
+    fn cli_round_trip_and_failure_paths() {
+        let path = std::env::temp_dir().join(format!("syntaxlab-cli-{}-{}.txt", std::process::id(),
+            std::time::SystemTime::now().duration_since(std::time::UNIX_EPOCH).unwrap().as_nanos()));
+        assert_eq!(successful(call(&path, "list", None)), "");
+        assert_eq!(successful(call(&path, "add", Some("Read café"))), "Added 1");
+        assert_eq!(successful(call(&path, "add", Some("Write tests"))), "Added 2");
+        assert_eq!(successful(call(&path, "done", Some("1"))), "Completed");
+        assert_eq!(successful(call(&path, "list", None)), "1 [x] Read café\n2 [ ] Write tests");
+        for (command, extra) in [("done", "99"), ("done", "oops"), ("add", " "), ("add", "A\tB")] {
+            let output = call(&path, command, Some(extra));
+            assert!(!output.status.success());
+            assert!(!output.stderr.is_empty());
+        }
+        std::fs::write(&path, "broken").unwrap();
+        assert!(!call(&path, "add", Some("Keep data")).status.success());
+        assert_eq!(std::fs::read_to_string(&path).unwrap(), "broken");
+        std::fs::write(&path, "4294967295\t0\tLast ID\n").unwrap();
+        assert!(!call(&path, "add", Some("Overflow")).status.success());
+        std::fs::remove_file(&path).unwrap();
+    }
+  tests/persistence.rs: |
+    use task_trail::*;
+    #[test]
+    fn persistence_preserves_ids_and_rejects_duplicates() {
+        let path = std::env::temp_dir().join(format!("syntaxlab-board-{}-{}.txt", std::process::id(),
+            std::time::SystemTime::now().duration_since(std::time::UNIX_EPOCH).unwrap().as_nanos()));
+        assert!(load_board(&path).unwrap().tasks().is_empty());
+        std::fs::write(&path, "7\t1\tExisting\n").unwrap();
+        let mut board = load_board(&path).unwrap();
+        assert_eq!(board.add("New".to_owned()), 8);
+        save_board(&path, &board).unwrap();
+        assert_eq!(load_board(&path).unwrap().tasks(), board.tasks());
+        std::fs::write(&path, "1\t0\tA\n1\t1\tB\n").unwrap();
+        assert!(load_board(&path).is_err());
+        std::fs::remove_file(&path).unwrap();
+    }
+checks:
+- type: file
+  path: tests/learner.rs
+  label: Learner tests/learner.rs exists
+- type: file
+  path: src/board.rs
+  label: Learner src/board.rs exists
+- type: file
+  path: src/main.rs
+  label: Learner src/main.rs exists
+- type: file
+  path: src/lib.rs
+  label: Learner library exists
+- type: command
+  args:
+  - $cargo
+  - test
+  - --offline
+  label: Cargo compilation and behavior tests
+  requires:
+  - $cargo
+  - $rustc
+- type: command
+  args:
+  - $cargo
+  - run
+  - --offline
+  - --quiet
+  label: Application runs
+  requires:
+  - $cargo
+  - $rustc
+solution:
+  src/lib.rs: |
+    pub fn remaining(used: u32) -> u32 { 10 - used }
+    pub fn can_add(used: i32) -> bool { used >= 0 && used < 10 }
+    pub fn add_title(titles: &[String], title: String) -> Vec<String> { let mut result = titles.to_vec(); result.push(title); result }
+    pub fn render_titles(titles: &[String]) -> String { titles.iter().map(|title| format!("[ ] {title}")).collect::<Vec<_>>().join("\n") }
+    #[derive(Debug, Clone, PartialEq, Eq)]
+    pub struct Task { pub id: u32, pub title: String, pub done: bool }
+    pub fn task_create(id: u32, title: String) -> Task { Task { id, title, done: false } }
+    pub fn render_task(task: &Task) -> String {
+        format!("{}\t{}\t{}", task.id, if task.done { 1 } else { 0 }, task.title)
+    }
+    pub fn parse_task(line: &str) -> Result<Task, String> {
+        let fields: Vec<&str> = line.split('\t').collect();
+        if fields.len() != 3 { return Err("expected three fields".to_owned()); }
+        let id = fields[0].parse::<u32>().map_err(|_| "invalid ID".to_owned())?;
+        if id == 0 { return Err("ID must be positive".to_owned()); }
+        let done = match fields[1] { "0" => false, "1" => true, _ => return Err("invalid status".to_owned()) };
+        let title = fields[2];
+        if title.trim().is_empty() || title.chars().any(|c| c == '\n' || c == '\r') {
+            return Err("invalid title".to_owned());
+        }
+        Ok(Task { id, title: title.to_owned(), done })
+    }
+
+    mod board;
+    pub use board::Board;
+    use std::{fs, io, path::Path};
+    use std::collections::HashSet;
+
+    pub fn save_board(path: &Path, board: &Board) -> Result<(), String> {
+        let text: String = board.tasks().iter().map(|task| format!("{}\n", render_task(task))).collect();
+        fs::write(path, text).map_err(|error| error.to_string())
+    }
+    pub fn load_board(path: &Path) -> Result<Board, String> {
+        let text = match fs::read_to_string(path) {
+            Ok(text) => text,
+            Err(error) if error.kind() == io::ErrorKind::NotFound => return Ok(Board::new()),
+            Err(error) => return Err(error.to_string()),
+        };
+        let mut tasks = Vec::new();
+        let mut ids = HashSet::new();
+        for line in text.lines() {
+            let task = parse_task(line)?;
+            if !ids.insert(task.id) { return Err("duplicate ID".to_owned()); }
+            tasks.push(task);
+        }
+        Ok(Board::from_tasks(tasks))
+    }
+  src/main.rs: |
+    use std::path::Path;
+    use task_trail::{load_board, save_board, parse_task};
+
+    fn execute(args: &[String]) -> Result<(), String> {
+        if args.is_empty() { println!("Task Trail ready"); return Ok(()); }
+        if args.len() < 2 { return Err("Usage: list FILE | add FILE TITLE | done FILE ID".to_owned()); }
+        let path = Path::new(&args[1]);
+        let mut board = load_board(path)?;
+        match args[0].as_str() {
+            "list" if args.len() == 2 => {
+                for task in board.tasks() {
+                    println!("{} [{}] {}", task.id, if task.done { "x" } else { " " }, task.title);
+                }
+            }
+            "add" if args.len() == 3 => {
+                parse_task(&format!("1\t0\t{}", args[2]))?;
+                if board.tasks().iter().any(|task| task.id == u32::MAX) { return Err("ID space exhausted".to_owned()); }
+                let id = board.add(args[2].clone());
+                save_board(path, &board)?;
+                println!("Added {id}");
+            }
+            "done" if args.len() == 3 => {
+                let id = args[2].parse::<u32>().map_err(|_| "invalid ID".to_owned())?;
+                if !board.complete(id) { return Err("task not found".to_owned()); }
+                save_board(path, &board)?;
+                println!("Completed");
+            }
+            _ => return Err("invalid command or arguments".to_owned()),
+        }
+        Ok(())
+    }
+    fn main() {
+        let args: Vec<String> = std::env::args().skip(1).collect();
+        if let Err(error) = execute(&args) { eprintln!("Task Trail: {error}"); std::process::exit(1); }
+    }
+  src/board.rs: |
+    use crate::{Task, task_create};
+    pub struct Board { tasks: Vec<Task> }
+    impl Board {
+        pub fn new() -> Self { Self { tasks: Vec::new() } }
+        pub fn tasks(&self) -> &[Task] { &self.tasks }
+        pub fn add(&mut self, title: String) -> u32 {
+            let mut id = 1;
+            for task in &self.tasks { if task.id >= id { id = task.id + 1; } }
+            self.tasks.push(task_create(id, title));
+            id
+        }
+
+        pub fn find(&self, id: u32) -> Option<&Task> { self.tasks.iter().find(|task| task.id == id) }
+        pub fn complete(&mut self, id: u32) -> bool {
+            for task in &mut self.tasks {
+                if task.id == id { task.done = true; return true; }
+            }
+            false
+        }
+
+        pub fn from_tasks(tasks: Vec<Task>) -> Self { Self { tasks } }
+    }
+  tests/learner.rs: |
+    use task_trail::parse_task;
+    #[test]
+    fn malformed_record() { assert!(parse_task("invalid").is_err()); }
+project: task-trail

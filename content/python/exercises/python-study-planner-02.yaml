@@ -1,0 +1,98 @@
+id: python-study-planner-02
+language: python
+module: projects
+title: 02 · A capacity calculation
+order: 71
+prerequisites:
+- python-functions-basic
+- python-study-planner-01
+concepts:
+- functions
+- parameters
+- return
+difficulty: 1
+assignment: |
+  Add remaining(used: int) -> int returning 10 - used for used in 0..10. Put printing behind a main guard so importing main is silent, while running main.py still prints the original banner. This establishes a calculation that later features can reuse.
+
+  ## Workflow
+  Create `main.py` yourself. Extend the same project; preserve earlier APIs and stage tests.
+  Read `syntaxlab docs python projects` for syntax and independent examples.
+
+  ```sh
+  python3 main.py
+  python3 -m unittest discover -s tests -v
+  syntaxlab check
+  ```
+docs: python/docs/projects.md
+hints:
+- Keep earlier stage tests green while adding the new behavior.
+- Separate the data calculation from file and terminal I/O; test failure paths deliberately.
+files:
+  tests/test_02.py: |
+    import contextlib
+    import importlib
+    import io
+    import json
+    import subprocess
+    import sys
+    import tempfile
+    import unittest
+    from pathlib import Path
+    import main as learner
+
+    class ExerciseTests(unittest.TestCase):
+        def test_stage_contract(self):
+            self.assertEqual(learner.remaining(0), 10)
+            self.assertEqual(learner.remaining(7), 3)
+            self.assertEqual(learner.remaining(10), 0)
+  STAGE-02.md: |
+    Add remaining(used: int) -> int returning 10 - used for used in 0..10. Put printing behind a main guard so importing main is silent, while running main.py still prints the original banner. This establishes a calculation that later features can reuse.
+
+    ## Workflow
+    Create `main.py` yourself. Extend the same project; preserve earlier APIs and stage tests.
+    Read `syntaxlab docs python projects` for syntax and independent examples.
+
+    ```sh
+    python3 main.py
+    python3 -m unittest discover -s tests -v
+    syntaxlab check
+    ```
+checks:
+- type: file
+  path: main.py
+  label: Learner main.py exists
+- type: command
+  args:
+  - $python
+  - -c
+  - import main
+  label: Import has no I/O side effects
+  stdout: ''
+- type: command
+  args:
+  - $python
+  - -m
+  - unittest
+  - discover
+  - -s
+  - tests
+  - -v
+  label: Python behavior tests (unittest)
+- type: command
+  args:
+  - $python
+  - main.py
+  label: Application runs
+  stdin: ''
+solution:
+  main.py: |
+    def banner() -> str:
+        return "Study Planner ready"
+
+
+    def remaining(used: int) -> int:
+        return 10 - used
+
+    if __name__ == "__main__":
+        print(banner())
+project: study-planner

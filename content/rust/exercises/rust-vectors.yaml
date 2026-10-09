@@ -1,0 +1,90 @@
+id: rust-vectors
+language: rust
+module: collections
+title: 01 · Vec, iterators and closures
+order: 160
+prerequisites:
+- rust-slices
+concepts:
+- Vec
+- iterator
+- closure
+- filter
+- map
+- collect
+difficulty: 3
+assignment: |
+  Implement `pub fn positive_squares(values: &[i32]) -> Vec<i32>` for values within -1000..1000. Retain strictly positive inputs and square them, preserving order and duplicates. Use iter/filter/map/collect and leave the input unchanged. Read closure syntax in the collection reference and add a demo.
+
+  ## Workflow
+  Create `src/lib.rs` with the public API and `src/main.rs` with a runnable demo yourself. No learner implementation is supplied.
+  Read `syntaxlab docs rust collections` for syntax and independent examples.
+
+  ```sh
+  cargo run
+  cargo test
+  syntaxlab check
+  ```
+docs: rust/docs/collections.md
+hints:
+- iter borrows elements; copied makes a sequence of copied i32 values.
+- filter's closure borrows its candidate even when the iterator yields owned values.
+files:
+  Cargo.toml: |
+    [package]
+    name = "syntaxlab_exercise"
+    version = "0.1.0"
+    edition = "2021"
+    rust-version = "1.70"
+  tests/exercise.rs: |
+    use syntaxlab_exercise::*;
+
+    #[test]
+    fn contract() {
+    let values = [-2, 3, 0, 2, 3]; assert_eq!(positive_squares(&values), vec![9, 4, 9]); assert_eq!(values, [-2, 3, 0, 2, 3]); assert!(positive_squares(&[]).is_empty());
+    }
+  ASSIGNMENT.md: |
+    Implement `pub fn positive_squares(values: &[i32]) -> Vec<i32>` for values within -1000..1000. Retain strictly positive inputs and square them, preserving order and duplicates. Use iter/filter/map/collect and leave the input unchanged. Read closure syntax in the collection reference and add a demo.
+
+    ## Workflow
+    Create `src/lib.rs` with the public API and `src/main.rs` with a runnable demo yourself. No learner implementation is supplied.
+    Read `syntaxlab docs rust collections` for syntax and independent examples.
+
+    ```sh
+    cargo run
+    cargo test
+    syntaxlab check
+    ```
+checks:
+- type: file
+  path: src/main.rs
+  label: Learner src/main.rs exists
+- type: file
+  path: src/lib.rs
+  label: Learner library exists
+- type: command
+  args:
+  - $cargo
+  - test
+  - --offline
+  label: Cargo compilation and behavior tests
+  requires:
+  - $cargo
+  - $rustc
+- type: command
+  args:
+  - $cargo
+  - run
+  - --offline
+  - --quiet
+  label: Application runs
+  requires:
+  - $cargo
+  - $rustc
+solution:
+  src/lib.rs: |
+    pub fn positive_squares(values: &[i32]) -> Vec<i32> { values.iter().copied().filter(|n| *n > 0).map(|n| n * n).collect() }
+  src/main.rs: |
+    use syntaxlab_exercise::*;
+    fn main() { println!("{:?}", positive_squares(&[-2, 3, 0, 2])); }
+project: ''

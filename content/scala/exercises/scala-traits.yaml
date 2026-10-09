@@ -1,0 +1,82 @@
+id: scala-traits
+language: scala
+module: oop
+title: 04 · Traits and polymorphism
+order: 340
+prerequisites:
+- scala-companions
+concepts:
+- traits
+- inheritance
+- polymorphism
+- methods
+assignment: |
+  Define trait `Named` with abstract `def name: String` and concrete `def greeting: String` returning
+  `Hello, <name>`. Define `class Person(val name: String) extends Named`. Add a main using a Named reference.
+
+  ## Workflow
+  Create `Main.scala` yourself. No learner source is supplied.
+
+  ```sh
+  scala-cli run .
+  scala-cli test .
+  syntaxlab check
+  ```
+docs: scala/docs/oop.md
+hints:
+- A trait can combine abstract requirements with implemented methods.
+- A val can implement an abstract parameterless def.
+files:
+  project.scala: |
+    //> using scala "3.3.7"
+    //> using test.dep "org.scalameta::munit:1.0.4"
+  Exercise.test.scala: |
+    class ExerciseTests extends munit.FunSuite:
+      test("polymorphic greeting") { val n: Named = new Person("Lin"); assertEquals(n.greeting, "Hello, Lin"); assertEquals(n.name, "Lin") }
+  ASSIGNMENT.md: |
+    Define trait `Named` with abstract `def name: String` and concrete `def greeting: String` returning
+    `Hello, <name>`. Define `class Person(val name: String) extends Named`. Add a main using a Named reference.
+
+    ## Workflow
+    Create `Main.scala` yourself. No learner source is supplied.
+
+    ```sh
+    scala-cli run .
+    scala-cli test .
+    syntaxlab check
+    ```
+checks:
+- type: file
+  path: Main.scala
+  label: Main.scala exists
+- type: command
+  args:
+  - $scala
+  - test
+  - .
+  - --server=false
+  timeout: 240
+  label: Scala compilation and MUnit behavior tests
+- type: command
+  args:
+  - $scala
+  - run
+  - .
+  - --server=false
+  timeout: 240
+  label: Application entry point runs
+- type: construct
+  path: Main.scala
+  pattern: trait\s+Named
+  label: Required lesson construct (heuristic; behavior checked above)
+solution:
+  Main.scala: |
+    trait Named:
+      def name: String
+      def greeting: String = s"Hello, $name"
+    class Person(val name: String) extends Named
+    @main def demo(): Unit =
+      val n: Named = new Person("Ada")
+      println(n.greeting)
+project: ''
+difficulty: 4

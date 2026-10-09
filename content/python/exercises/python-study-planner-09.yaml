@@ -1,0 +1,195 @@
+id: python-study-planner-09
+language: python
+module: projects
+title: 09 · Modules and persistence
+order: 292
+prerequisites:
+- python-json
+- python-study-planner-08
+concepts:
+- modules
+- imports
+- pathlib
+- persistence
+difficulty: 4
+assignment: |
+  Move reusable types and helpers to planner.py and explicitly re-export them with imports in main.py, preserving earlier tests. Add save_planner(path, planner: Planner) -> None and load_planner(path) -> Planner. Store UTF-8 JSON using the stage-08 functions. A missing file means an empty Planner; malformed or unreadable existing files must raise. Loaded IDs are preserved and the next add uses max existing ID + 1. Keep main import-safe and its banner unchanged.
+
+  ## Workflow
+  Create `main.py` yourself. Extend the same project; preserve earlier APIs and stage tests.
+  Read `syntaxlab docs python projects` for syntax and independent examples.
+
+  ```sh
+  python3 main.py
+  python3 -m unittest discover -s tests -v
+  syntaxlab check
+  ```
+docs: python/docs/projects.md
+hints:
+- Keep earlier stage tests green while adding the new behavior.
+- Separate the data calculation from file and terminal I/O; test failure paths deliberately.
+files:
+  tests/test_09.py: |
+    import contextlib
+    import importlib
+    import io
+    import json
+    import subprocess
+    import sys
+    import tempfile
+    import unittest
+    from pathlib import Path
+    import main as learner
+
+    class ExerciseTests(unittest.TestCase):
+        def test_stage_contract(self):
+            with tempfile.TemporaryDirectory() as folder:
+                path = Path(folder) / "tasks.json"
+                self.assertEqual(learner.load_planner(path).tasks(), [])
+                path.write_text(learner.dumps_tasks([learner.Task(7, "Existing", True)]), encoding="utf-8")
+                planner = learner.load_planner(path)
+                self.assertEqual(planner.add("New").id, 8)
+                learner.save_planner(path, planner)
+                self.assertEqual(learner.load_planner(path).tasks(), planner.tasks())
+                path.write_text("bad json", encoding="utf-8")
+                with self.assertRaises(ValueError):
+                    learner.load_planner(path)
+  STAGE-09.md: |
+    Move reusable types and helpers to planner.py and explicitly re-export them with imports in main.py, preserving earlier tests. Add save_planner(path, planner: Planner) -> None and load_planner(path) -> Planner. Store UTF-8 JSON using the stage-08 functions. A missing file means an empty Planner; malformed or unreadable existing files must raise. Loaded IDs are preserved and the next add uses max existing ID + 1. Keep main import-safe and its banner unchanged.
+
+    ## Workflow
+    Create `main.py` yourself. Extend the same project; preserve earlier APIs and stage tests.
+    Read `syntaxlab docs python projects` for syntax and independent examples.
+
+    ```sh
+    python3 main.py
+    python3 -m unittest discover -s tests -v
+    syntaxlab check
+    ```
+checks:
+- type: file
+  path: planner.py
+  label: Reusable planner module exists
+- type: file
+  path: main.py
+  label: Learner main.py exists
+- type: command
+  args:
+  - $python
+  - -c
+  - import main
+  label: Import has no I/O side effects
+  stdout: ''
+- type: command
+  args:
+  - $python
+  - -m
+  - unittest
+  - discover
+  - -s
+  - tests
+  - -v
+  label: Python behavior tests (unittest)
+- type: command
+  args:
+  - $python
+  - main.py
+  label: Application runs
+  stdin: ''
+solution:
+  main.py: |
+    from planner import (Task, Planner, banner, remaining, task_label, add_title, make_record,
+                         dumps_tasks, loads_tasks, save_planner, load_planner)
+
+    if __name__ == "__main__":
+        print(banner())
+  planner.py: |
+    def banner() -> str:
+        return "Study Planner ready"
+
+
+    def remaining(used: int) -> int:
+        return 10 - used
+
+    def task_label(title: str, done: bool = False) -> str:
+        mark = "x" if done else " "
+        return f"[{mark}] {title}"
+
+    def add_title(titles: list[str], title: str) -> list[str]:
+        return titles + [title]
+
+    def make_record(identifier: int, title: str) -> dict:
+        return {"id": identifier, "title": title, "done": False}
+
+    from dataclasses import dataclass, replace
+
+    @dataclass(frozen=True)
+    class Task:
+        id: int
+        title: str
+        done: bool = False
+
+    class Planner:
+        def __init__(self, name: str = "Inbox"):
+            self.name = name
+            self._tasks = []
+
+        def tasks(self) -> list[Task]:
+            return self._tasks.copy()
+
+        def add(self, title: str) -> Task:
+            next_id = 1
+            for task in self._tasks:
+                next_id = max(next_id, task.id + 1)
+            task = Task(next_id, title)
+            self._tasks.append(task)
+            return task
+
+        def find(self, identifier: int) -> Task | None:
+            for task in self._tasks:
+                if task.id == identifier:
+                    return task
+            return None
+
+        def complete(self, identifier: int) -> bool:
+            for index, task in enumerate(self._tasks):
+                if task.id == identifier:
+                    self._tasks[index] = replace(task, done=True)
+                    return True
+            return False
+
+    import json
+
+    def dumps_tasks(tasks: list[Task]) -> str:
+        return json.dumps([{"id": task.id, "title": task.title, "done": task.done} for task in tasks], ensure_ascii=False)
+
+    def loads_tasks(text: str) -> list[Task]:
+        records = json.loads(text)
+        if not isinstance(records, list):
+            raise ValueError("expected a list of tasks")
+        tasks = []
+        seen = set()
+        for record in records:
+            if (not isinstance(record, dict) or set(record) != {"id", "title", "done"}
+                or type(record["id"]) is not int or record["id"] <= 0 or record["id"] in seen
+                or not isinstance(record["title"], str) or not record["title"].strip()
+                or type(record["done"]) is not bool):
+                raise ValueError("invalid task record")
+            seen.add(record["id"])
+            tasks.append(Task(record["id"], record["title"], record["done"]))
+        return tasks
+
+    from pathlib import Path
+
+    def save_planner(path, planner: Planner) -> None:
+        Path(path).write_text(dumps_tasks(planner.tasks()) + "\n", encoding="utf-8")
+
+    def load_planner(path) -> Planner:
+        planner = Planner()
+        try:
+            text = Path(path).read_text(encoding="utf-8")
+        except FileNotFoundError:
+            return planner
+        planner._tasks = loads_tasks(text)
+        return planner
+project: study-planner

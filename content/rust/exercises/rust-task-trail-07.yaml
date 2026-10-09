@@ -1,0 +1,105 @@
+id: rust-task-trail-07
+language: rust
+module: projects
+title: 07 · A Board owns the tasks
+order: 201
+prerequisites:
+- rust-methods
+- rust-task-trail-06
+concepts:
+- impl
+- self
+- constructors
+- encapsulation
+difficulty: 3
+assignment: |
+  Add public Board with private storage. Provide `pub fn new() -> Self`, `pub fn tasks(&self) -> &[Task]`, and `pub fn add(&mut self, title: String) -> u32`, storing a new task and returning its ID. IDs start at 1 and increase. Two boards must be independent; inputs are valid titles and fewer than 1000 tasks.
+
+  ## Workflow
+  Create `src/lib.rs` with the public API and `src/main.rs` with a runnable demo yourself. Extend the same project; preserve earlier APIs and stage tests.
+  Read `syntaxlab docs rust projects` for syntax and independent examples.
+
+  ```sh
+  cargo run
+  cargo test
+  syntaxlab check
+  ```
+docs: rust/docs/projects.md
+hints:
+- Preserve earlier APIs; let the accumulated tests protect them during each extension.
+- Decide which values are owned, borrowed or fallible before choosing the function signatures.
+files:
+  Cargo.toml: |
+    [package]
+    name = "task_trail"
+    version = "0.1.0"
+    edition = "2021"
+    rust-version = "1.70"
+  tests/stage_07.rs: |
+    use task_trail::*;
+
+    #[test]
+    fn stage_contract() {
+    let mut a = Board::new(); let b = Board::new(); assert_eq!(a.add("Read".to_owned()), 1); assert_eq!(a.add("Write".to_owned()), 2); assert_eq!(a.tasks().len(), 2); assert!(b.tasks().is_empty());
+    }
+  STAGE-07.md: |
+    Add public Board with private storage. Provide `pub fn new() -> Self`, `pub fn tasks(&self) -> &[Task]`, and `pub fn add(&mut self, title: String) -> u32`, storing a new task and returning its ID. IDs start at 1 and increase. Two boards must be independent; inputs are valid titles and fewer than 1000 tasks.
+
+    ## Workflow
+    Create `src/lib.rs` with the public API and `src/main.rs` with a runnable demo yourself. Extend the same project; preserve earlier APIs and stage tests.
+    Read `syntaxlab docs rust projects` for syntax and independent examples.
+
+    ```sh
+    cargo run
+    cargo test
+    syntaxlab check
+    ```
+checks:
+- type: file
+  path: src/main.rs
+  label: Learner src/main.rs exists
+- type: file
+  path: src/lib.rs
+  label: Learner library exists
+- type: command
+  args:
+  - $cargo
+  - test
+  - --offline
+  label: Cargo compilation and behavior tests
+  requires:
+  - $cargo
+  - $rustc
+- type: command
+  args:
+  - $cargo
+  - run
+  - --offline
+  - --quiet
+  label: Application runs
+  requires:
+  - $cargo
+  - $rustc
+solution:
+  src/lib.rs: |
+    pub fn remaining(used: u32) -> u32 { 10 - used }
+    pub fn can_add(used: i32) -> bool { used >= 0 && used < 10 }
+    pub fn add_title(titles: &[String], title: String) -> Vec<String> { let mut result = titles.to_vec(); result.push(title); result }
+    pub fn render_titles(titles: &[String]) -> String { titles.iter().map(|title| format!("[ ] {title}")).collect::<Vec<_>>().join("\n") }
+    #[derive(Debug, Clone, PartialEq, Eq)]
+    pub struct Task { pub id: u32, pub title: String, pub done: bool }
+    pub fn task_create(id: u32, title: String) -> Task { Task { id, title, done: false } }
+    pub struct Board { tasks: Vec<Task> }
+    impl Board {
+        pub fn new() -> Self { Self { tasks: Vec::new() } }
+        pub fn tasks(&self) -> &[Task] { &self.tasks }
+        pub fn add(&mut self, title: String) -> u32 {
+            let mut id = 1;
+            for task in &self.tasks { if task.id >= id { id = task.id + 1; } }
+            self.tasks.push(task_create(id, title));
+            id
+        }
+    }
+  src/main.rs: |
+    fn main() { println!("Task Trail ready"); }
+project: task-trail

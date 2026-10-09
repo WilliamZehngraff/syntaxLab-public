@@ -1,0 +1,107 @@
+id: python-inheritance
+language: python
+module: oop
+title: 03 · Shared behavior and overriding
+order: 250
+prerequisites:
+- python-dataclasses
+concepts:
+- inheritance
+- overriding
+- polymorphism
+difficulty: 4
+assignment: |
+  Define Greeter with name(self) raising NotImplementedError and greeting(self) returning `Hello, NAME` by calling self.name(). Define Person(Greeter), initialized with a name string, overriding name(). Include an import-safe demo. Reuse greeting instead of duplicating it.
+
+  ## Workflow
+  Create `main.py` yourself. No learner implementation is supplied.
+  Read `syntaxlab docs python oop` for syntax and independent examples.
+
+  ```sh
+  python3 main.py
+  python3 -m unittest discover -s tests -v
+  syntaxlab check
+  ```
+docs: python/docs/oop.md
+hints:
+- A call to self.name uses the subclass's implementation.
+- A leading underscore signals an internal attribute by convention, not access enforcement.
+files:
+  tests/test_exercise.py: |
+    import contextlib
+    import importlib
+    import io
+    import json
+    import subprocess
+    import sys
+    import tempfile
+    import unittest
+    from pathlib import Path
+    import main as learner
+
+    class ExerciseTests(unittest.TestCase):
+        def test_polymorphism(self):
+            person = learner.Person("Lin")
+            self.assertIsInstance(person, learner.Greeter)
+            self.assertEqual(person.name(), "Lin")
+            self.assertEqual(person.greeting(), "Hello, Lin")
+            with self.assertRaises(NotImplementedError):
+                learner.Greeter().name()
+  ASSIGNMENT.md: |
+    Define Greeter with name(self) raising NotImplementedError and greeting(self) returning `Hello, NAME` by calling self.name(). Define Person(Greeter), initialized with a name string, overriding name(). Include an import-safe demo. Reuse greeting instead of duplicating it.
+
+    ## Workflow
+    Create `main.py` yourself. No learner implementation is supplied.
+    Read `syntaxlab docs python oop` for syntax and independent examples.
+
+    ```sh
+    python3 main.py
+    python3 -m unittest discover -s tests -v
+    syntaxlab check
+    ```
+checks:
+- type: file
+  path: main.py
+  label: Learner main.py exists
+- type: command
+  args:
+  - $python
+  - -c
+  - import main
+  label: Import has no I/O side effects
+  stdout: ''
+- type: command
+  args:
+  - $python
+  - -m
+  - unittest
+  - discover
+  - -s
+  - tests
+  - -v
+  label: Python behavior tests (unittest)
+- type: command
+  args:
+  - $python
+  - main.py
+  label: Application runs
+  stdin: ''
+solution:
+  main.py: |
+    class Greeter:
+        def name(self) -> str:
+            raise NotImplementedError
+
+        def greeting(self) -> str:
+            return f"Hello, {self.name()}"
+
+    class Person(Greeter):
+        def __init__(self, name: str):
+            self._name = name
+
+        def name(self) -> str:
+            return self._name
+
+    if __name__ == "__main__":
+        print(Person("Ada").greeting())
+project: ''

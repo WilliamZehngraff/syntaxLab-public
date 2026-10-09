@@ -1,0 +1,87 @@
+id: scala-task-desk-06
+language: scala
+module: projects
+title: 06 · Command vocabulary
+order: 241
+prerequisites:
+- scala-match-basic
+- scala-task-desk-05
+concepts:
+- match
+- parsing
+assignment: |
+  Add `def commandKind(word: String): String` matching add/list/done/quit to themselves and anything else to `unknown`. This parser is case-sensitive. Keep it pure and separate from reading input.
+
+  ## Workflow
+  Create `Main.scala` yourself. Keep all previously implemented behavior.
+
+  ```sh
+  scala-cli run .
+  scala-cli test .
+  syntaxlab check
+  ```
+docs: scala/docs/projects.md
+hints:
+- Keep earlier tests green while introducing the new behavior.
+- Review the pattern-matching reference, then separate calculation from input/output.
+files:
+  project.scala: |
+    //> using scala "3.3.7"
+    //> using test.dep "org.scalameta::munit:1.0.4"
+  Stage06.test.scala: |
+    class Stage06Tests extends munit.FunSuite:
+      test("stage 06 contract") { assertEquals(commandKind("add"), "add"); assertEquals(commandKind("done"), "done"); assertEquals(commandKind("?"), "unknown") }
+  STAGE-06.md: |
+    Add `def commandKind(word: String): String` matching add/list/done/quit to themselves and anything else to `unknown`. This parser is case-sensitive. Keep it pure and separate from reading input.
+
+    ## Workflow
+    Create `Main.scala` yourself. Keep all previously implemented behavior.
+
+    ```sh
+    scala-cli run .
+    scala-cli test .
+    syntaxlab check
+    ```
+checks:
+- type: file
+  path: Main.scala
+  label: Main.scala exists
+- type: command
+  args:
+  - $scala
+  - test
+  - .
+  - --server=false
+  timeout: 240
+  label: Scala compilation and MUnit behavior tests
+- type: command
+  args:
+  - $scala
+  - run
+  - .
+  - --server=false
+  timeout: 240
+  label: Application entry point runs
+solution:
+  Main.scala: |
+    def banner: String = "Task Desk ready"
+    val owner: String = "Learner"
+    val capacity: Int = 10
+    def welcome: String = s"$owner has room for $capacity tasks"
+    def taskLabel(title: String, done: Boolean = false): String =
+      val mark = if done then "x" else " "
+      s"[$mark] $title"
+    def titleFrom(args: Array[String]): String = if args.isEmpty then "Untitled" else args.mkString(" ")
+    def addTitle(titles: Vector[String], title: String): Vector[String] = titles :+ title
+    def listTitles(titles: Vector[String]): String = titles.map(t => taskLabel(t)).mkString("\n")
+    def commandKind(word: String): String = word match
+      case "add" => "add"
+      case "list" => "list"
+      case "done" => "done"
+      case "quit" => "quit"
+      case _ => "unknown"
+    object Main:
+      def main(args: Array[String]): Unit =
+        if args.isEmpty then println(banner) else println(taskLabel(titleFrom(args)))
+project: task-desk
+difficulty: 3

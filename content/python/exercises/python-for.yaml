@@ -1,0 +1,100 @@
+id: python-for
+language: python
+module: control-flow
+title: 02 · For and range
+order: 120
+prerequisites:
+- python-if
+concepts:
+- for
+- range
+- accumulation
+difficulty: 2
+assignment: |
+  Write sum_to(n: int) -> int using for/range, summing 1 through n. Inputs are 0..1000 and sum_to(0) is 0. Do not use sum. Keep the total local and add an import-safe demo.
+
+  ## Workflow
+  Create `main.py` yourself. No learner implementation is supplied.
+  Read `syntaxlab docs python control-flow` for syntax and independent examples.
+
+  ```sh
+  python3 main.py
+  python3 -m unittest discover -s tests -v
+  syntaxlab check
+  ```
+docs: python/docs/control-flow.md
+hints:
+- range excludes its stop value.
+- Initialize a total before the loop and return after the loop.
+files:
+  tests/test_exercise.py: |
+    import contextlib
+    import importlib
+    import io
+    import json
+    import subprocess
+    import sys
+    import tempfile
+    import unittest
+    from pathlib import Path
+    import main as learner
+
+    class ExerciseTests(unittest.TestCase):
+        def test_sum(self):
+            self.assertEqual(learner.sum_to(0), 0)
+            self.assertEqual(learner.sum_to(5), 15)
+            self.assertEqual(learner.sum_to(100), 5050)
+  ASSIGNMENT.md: |
+    Write sum_to(n: int) -> int using for/range, summing 1 through n. Inputs are 0..1000 and sum_to(0) is 0. Do not use sum. Keep the total local and add an import-safe demo.
+
+    ## Workflow
+    Create `main.py` yourself. No learner implementation is supplied.
+    Read `syntaxlab docs python control-flow` for syntax and independent examples.
+
+    ```sh
+    python3 main.py
+    python3 -m unittest discover -s tests -v
+    syntaxlab check
+    ```
+checks:
+- type: file
+  path: main.py
+  label: Learner main.py exists
+- type: command
+  args:
+  - $python
+  - -c
+  - import main
+  label: Import has no I/O side effects
+  stdout: ''
+- type: command
+  args:
+  - $python
+  - -m
+  - unittest
+  - discover
+  - -s
+  - tests
+  - -v
+  label: Python behavior tests (unittest)
+- type: command
+  args:
+  - $python
+  - main.py
+  label: Application runs
+  stdin: ''
+- type: construct
+  path: main.py
+  pattern: \bfor\s+\w+\s+in\s+range\(
+  label: Required lesson construct (heuristic; behavior tested separately)
+solution:
+  main.py: |
+    def sum_to(n: int) -> int:
+        total = 0
+        for value in range(1, n + 1):
+            total += value
+        return total
+
+    if __name__ == "__main__":
+        print(sum_to(5))
+project: ''

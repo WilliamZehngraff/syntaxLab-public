@@ -1,0 +1,78 @@
+id: scala-values
+language: scala
+module: foundations
+title: 03 · Values and expressions
+order: 30
+prerequisites:
+- scala-main-method
+concepts:
+- val
+- expressions
+- Int
+- operators
+assignment: |
+  Create a top-level `val minutesPerHour: Int` equal to 60 and `val minutesPerDay: Int` computed from it.
+  Add `@main def showDay(): Unit` which prints minutesPerDay. Prefer a calculation to a duplicated literal.
+
+  ## Workflow
+  Create `Main.scala` yourself. No learner source is supplied.
+
+  ```sh
+  scala-cli run .
+  scala-cli test .
+  syntaxlab check
+  ```
+docs: scala/docs/foundations.md
+hints:
+- A val binds a name once.
+- Multiplication produces a value that can initialize another val.
+files:
+  project.scala: |
+    //> using scala "3.3.7"
+    //> using test.dep "org.scalameta::munit:1.0.4"
+  Exercise.test.scala: |
+    class ExerciseTests extends munit.FunSuite:
+      test("derived units") { assertEquals(minutesPerHour, 60); assertEquals(minutesPerDay, 1440) }
+  ASSIGNMENT.md: |
+    Create a top-level `val minutesPerHour: Int` equal to 60 and `val minutesPerDay: Int` computed from it.
+    Add `@main def showDay(): Unit` which prints minutesPerDay. Prefer a calculation to a duplicated literal.
+
+    ## Workflow
+    Create `Main.scala` yourself. No learner source is supplied.
+
+    ```sh
+    scala-cli run .
+    scala-cli test .
+    syntaxlab check
+    ```
+checks:
+- type: file
+  path: Main.scala
+  label: Main.scala exists
+- type: command
+  args:
+  - $scala
+  - test
+  - .
+  - --server=false
+  timeout: 240
+  label: Scala compilation and MUnit behavior tests
+- type: command
+  args:
+  - $scala
+  - run
+  - .
+  - --server=false
+  timeout: 240
+  label: Application entry point runs
+- type: construct
+  path: Main.scala
+  pattern: val\s+minutesPerDay
+  label: Required lesson construct (heuristic; behavior checked above)
+solution:
+  Main.scala: |
+    val minutesPerHour: Int = 60
+    val minutesPerDay: Int = minutesPerHour * 24
+    @main def showDay(): Unit = println(minutesPerDay)
+project: ''
+difficulty: 1

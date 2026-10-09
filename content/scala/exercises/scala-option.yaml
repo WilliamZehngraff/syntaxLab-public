@@ -1,0 +1,80 @@
+id: scala-option
+language: scala
+module: data-modeling
+title: 02 · Absence as a value
+order: 360
+prerequisites:
+- scala-case-classes
+concepts:
+- Option
+- Some
+- None
+- pattern-matching
+- error-handling
+assignment: |
+  Write `def findBook(books: List[Book], title: String): Option[Book]`, returning the first match or None.
+  Define case class Book(title: String, pages: Int) again in this workspace. No null or unsafe get.
+  Add a main that matches Some/None to display the result.
+
+  ## Workflow
+  Create `Main.scala` yourself. No learner source is supplied.
+
+  ```sh
+  scala-cli run .
+  scala-cli test .
+  syntaxlab check
+  ```
+docs: scala/docs/data-modeling.md
+hints:
+- List.find already returns an Option.
+- Some carries a value; None is absence, not an exceptional failure.
+files:
+  project.scala: |
+    //> using scala "3.3.7"
+    //> using test.dep "org.scalameta::munit:1.0.4"
+  Exercise.test.scala: |
+    class ExerciseTests extends munit.FunSuite:
+      test("optional search") { val b = Book("A", 10); assertEquals(findBook(List(b, Book("A", 20)), "A"), Some(b)); assertEquals(findBook(Nil, "A"), None); assertEquals(findBook(List(b), "B"), None) }
+  ASSIGNMENT.md: |
+    Write `def findBook(books: List[Book], title: String): Option[Book]`, returning the first match or None.
+    Define case class Book(title: String, pages: Int) again in this workspace. No null or unsafe get.
+    Add a main that matches Some/None to display the result.
+
+    ## Workflow
+    Create `Main.scala` yourself. No learner source is supplied.
+
+    ```sh
+    scala-cli run .
+    scala-cli test .
+    syntaxlab check
+    ```
+checks:
+- type: file
+  path: Main.scala
+  label: Main.scala exists
+- type: command
+  args:
+  - $scala
+  - test
+  - .
+  - --server=false
+  timeout: 240
+  label: Scala compilation and MUnit behavior tests
+- type: command
+  args:
+  - $scala
+  - run
+  - .
+  - --server=false
+  timeout: 240
+  label: Application entry point runs
+solution:
+  Main.scala: |
+    case class Book(title: String, pages: Int)
+    def findBook(books: List[Book], title: String): Option[Book] = books.find(_.title == title)
+    @main def demo(): Unit =
+      findBook(Nil, "X") match
+        case Some(book) => println(book.title)
+        case None => println("Missing")
+project: ''
+difficulty: 4

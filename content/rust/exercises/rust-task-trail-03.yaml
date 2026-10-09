@@ -1,0 +1,88 @@
+id: rust-task-trail-03
+language: rust
+module: projects
+title: 03 · A bounded decision
+order: 91
+prerequisites:
+- rust-if
+- rust-task-trail-02
+concepts:
+- bool
+- conditions
+- domain-rules
+difficulty: 2
+assignment: |
+  Add `pub fn can_add(used: i32) -> bool`, true exactly when 0 <= used < 10. Reject negative and full-capacity values. Keep remaining and the banner; this helper expresses a fixed-capacity rule even when the later project grows a separate dynamic collection.
+
+  ## Workflow
+  Create `src/lib.rs` with the public API and `src/main.rs` with a runnable demo yourself. Extend the same project; preserve earlier APIs and stage tests.
+  Read `syntaxlab docs rust projects` for syntax and independent examples.
+
+  ```sh
+  cargo run
+  cargo test
+  syntaxlab check
+  ```
+docs: rust/docs/projects.md
+hints:
+- Preserve earlier APIs; let the accumulated tests protect them during each extension.
+- Decide which values are owned, borrowed or fallible before choosing the function signatures.
+files:
+  Cargo.toml: |
+    [package]
+    name = "task_trail"
+    version = "0.1.0"
+    edition = "2021"
+    rust-version = "1.70"
+  tests/stage_03.rs: |
+    use task_trail::*;
+
+    #[test]
+    fn stage_contract() {
+    assert!(can_add(0)); assert!(can_add(9)); assert!(!can_add(-1)); assert!(!can_add(10));
+    }
+  STAGE-03.md: |
+    Add `pub fn can_add(used: i32) -> bool`, true exactly when 0 <= used < 10. Reject negative and full-capacity values. Keep remaining and the banner; this helper expresses a fixed-capacity rule even when the later project grows a separate dynamic collection.
+
+    ## Workflow
+    Create `src/lib.rs` with the public API and `src/main.rs` with a runnable demo yourself. Extend the same project; preserve earlier APIs and stage tests.
+    Read `syntaxlab docs rust projects` for syntax and independent examples.
+
+    ```sh
+    cargo run
+    cargo test
+    syntaxlab check
+    ```
+checks:
+- type: file
+  path: src/main.rs
+  label: Learner src/main.rs exists
+- type: file
+  path: src/lib.rs
+  label: Learner library exists
+- type: command
+  args:
+  - $cargo
+  - test
+  - --offline
+  label: Cargo compilation and behavior tests
+  requires:
+  - $cargo
+  - $rustc
+- type: command
+  args:
+  - $cargo
+  - run
+  - --offline
+  - --quiet
+  label: Application runs
+  requires:
+  - $cargo
+  - $rustc
+solution:
+  src/lib.rs: |
+    pub fn remaining(used: u32) -> u32 { 10 - used }
+    pub fn can_add(used: i32) -> bool { used >= 0 && used < 10 }
+  src/main.rs: |
+    fn main() { println!("Task Trail ready"); }
+project: task-trail

@@ -1,0 +1,119 @@
+id: c-memory-malloc
+language: c
+module: memory
+title: 01 · Owned heap allocation
+order: 300
+prerequisites:
+- c-recursion-arrays
+concepts:
+- malloc
+- heap
+- stack
+- ownership
+- free
+assignment: |
+  Write `int *make_range(int length)` for length 0..1000. Return NULL for zero. Otherwise allocate space
+  for length ints, fill with 0..length-1, and return the pointer; return NULL on allocation failure.
+  The caller owns and frees the result. Include a main. Never return an address of a local array.
+
+  ## Workflow
+  Create `main.c` yourself. No learner source is supplied.
+
+  ```sh
+  python3 test_exercise.py
+  syntaxlab check
+  ```
+docs: c/docs/memory.md
+hints:
+- Use sizeof *pointer to allocate for the pointed-to type.
+- Check allocation success before writing any element.
+files:
+  test_exercise.c: |
+    #include <assert.h>
+    #include <stddef.h>
+    #include <stdlib.h>
+    #include <string.h>
+    #include <stdio.h>
+    int *make_range(int);
+    int main(void) {
+    assert(make_range(0) == NULL); int *p = make_range(20); assert(p != NULL); for (int i = 0; i < 20; ++i) assert(p[i] == i); free(p);
+    return 0;
+    }
+  test_exercise.py: |
+    """Run with python3 test_exercise.py. GCC diagnostics are printed unchanged."""
+    from pathlib import Path
+    import os
+    import subprocess
+    import sys
+
+    root = Path(__file__).resolve().parent
+    build = root / ".syntaxlab-build" / "test_exercise"
+    build.mkdir(parents=True, exist_ok=True)
+    cc = os.environ.get("CC", "gcc")
+    flags = ["-std=c17", "-Wall", "-Wextra", "-Wpedantic", "-Werror", "-g"]
+    expected = None
+
+    def execute(args, capture=False):
+        print("+ " + " ".join(str(a) for a in args), flush=True)
+        return subprocess.run(args, cwd=root, check=True, timeout=10,
+                              text=True, capture_output=capture)
+
+    try:
+        sources = sorted(p for p in root.glob("*.c") if not p.name.startswith("test_"))
+        if not sources:
+            raise RuntimeError("Create main.c first")
+        executable = build / "program"
+        execute([cc, *flags, *map(str, sources), "-o", str(executable)])
+        result = execute([str(executable)], capture=True)
+        if expected is not None:
+            assert result.stdout.strip() == expected.strip(), (
+                f"Expected {expected!r}, got {result.stdout!r}")
+        else:
+            objects = []
+            for source in sources:
+                obj = build / (source.stem + ".o")
+                execute([cc, *flags, "-Dmain=learner_main", "-c", str(source), "-o", str(obj)])
+                objects.append(str(obj))
+            harness = build / "tests"
+            execute([cc, *flags, "test_exercise.c", *objects, "-o", str(harness)])
+            execute([str(harness)])
+        print("All behavior checks passed.")
+    except (OSError, subprocess.SubprocessError, AssertionError, RuntimeError) as error:
+        print(error, file=sys.stderr)
+        if isinstance(error, subprocess.CalledProcessError):
+            print(error.stdout or "", error.stderr or "", file=sys.stderr)
+        sys.exit(1)
+  ASSIGNMENT.md: |
+    Write `int *make_range(int length)` for length 0..1000. Return NULL for zero. Otherwise allocate space
+    for length ints, fill with 0..length-1, and return the pointer; return NULL on allocation failure.
+    The caller owns and frees the result. Include a main. Never return an address of a local array.
+
+    ## Workflow
+    Create `main.c` yourself. No learner source is supplied.
+
+    ```sh
+    python3 test_exercise.py
+    syntaxlab check
+    ```
+checks:
+- type: file
+  path: main.c
+  label: main.c exists
+- type: command
+  args:
+  - python3
+  - test_exercise.py
+  requires:
+  - $cc
+  label: GCC warnings, linking and behavior tests
+- type: construct
+  path: main.c
+  pattern: \bmalloc\(
+  label: Required lesson construct (heuristic; behavior checked above)
+solution:
+  main.c: |
+    #include <stdlib.h>
+    int *make_range(int length) { if (length <= 0) return NULL; int *p = malloc((size_t)length * sizeof *p); if (p == NULL) return NULL; for (int i = 0; i < length; ++i) p[i] = i; return p; }
+    int main(void) { return 0; }
+project: ''
+difficulty: 4

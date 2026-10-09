@@ -1,0 +1,90 @@
+id: rust-files
+language: rust
+module: file-io
+title: 01 · UTF-8 files and propagated I/O errors
+order: 290
+prerequisites:
+- rust-modules
+concepts:
+- std-fs
+- Path
+- io-Result
+- UTF-8
+- question-mark
+difficulty: 5
+assignment: |
+  Implement `pub fn save_lines(path: &std::path::Path, lines: &[String]) -> std::io::Result<()>` writing one newline per input string in UTF-8, and `pub fn load_lines(path: &std::path::Path) -> std::io::Result<Vec<String>>` reading with str::lines. Inputs contain no newlines. Empty input writes an empty file. Propagate failures and add a non-writing demo.
+
+  ## Workflow
+  Create `src/lib.rs` with the public API and `src/main.rs` with a runnable demo yourself. No learner implementation is supplied.
+  Read `syntaxlab docs rust file-io` for syntax and independent examples.
+
+  ```sh
+  cargo run
+  cargo test
+  syntaxlab check
+  ```
+docs: rust/docs/file-io.md
+hints:
+- std::fs helpers own and close their file handles.
+- Use ? inside a function that returns a compatible Result.
+files:
+  Cargo.toml: |
+    [package]
+    name = "syntaxlab_exercise"
+    version = "0.1.0"
+    edition = "2021"
+    rust-version = "1.70"
+  tests/exercise.rs: |
+    use syntaxlab_exercise::*;
+
+    #[test]
+    fn contract() {
+    let path = std::env::temp_dir().join(format!("syntaxlab-lines-{}.txt", std::process::id())); let lines = vec!["café".to_owned(), "".to_owned(), "notes".to_owned()]; save_lines(&path, &lines).unwrap(); assert_eq!(load_lines(&path).unwrap(), lines); save_lines(&path, &[]).unwrap(); assert!(load_lines(&path).unwrap().is_empty()); std::fs::remove_file(&path).unwrap(); assert!(load_lines(&path).is_err());
+    }
+  ASSIGNMENT.md: |
+    Implement `pub fn save_lines(path: &std::path::Path, lines: &[String]) -> std::io::Result<()>` writing one newline per input string in UTF-8, and `pub fn load_lines(path: &std::path::Path) -> std::io::Result<Vec<String>>` reading with str::lines. Inputs contain no newlines. Empty input writes an empty file. Propagate failures and add a non-writing demo.
+
+    ## Workflow
+    Create `src/lib.rs` with the public API and `src/main.rs` with a runnable demo yourself. No learner implementation is supplied.
+    Read `syntaxlab docs rust file-io` for syntax and independent examples.
+
+    ```sh
+    cargo run
+    cargo test
+    syntaxlab check
+    ```
+checks:
+- type: file
+  path: src/main.rs
+  label: Learner src/main.rs exists
+- type: file
+  path: src/lib.rs
+  label: Learner library exists
+- type: command
+  args:
+  - $cargo
+  - test
+  - --offline
+  label: Cargo compilation and behavior tests
+  requires:
+  - $cargo
+  - $rustc
+- type: command
+  args:
+  - $cargo
+  - run
+  - --offline
+  - --quiet
+  label: Application runs
+  requires:
+  - $cargo
+  - $rustc
+solution:
+  src/lib.rs: |
+    use std::{fs, io, path::Path};
+    pub fn save_lines(path: &Path, lines: &[String]) -> io::Result<()> { let text: String = lines.iter().map(|line| format!("{line}\n")).collect(); fs::write(path, text) }
+    pub fn load_lines(path: &Path) -> io::Result<Vec<String>> { Ok(fs::read_to_string(path)?.lines().map(str::to_owned).collect()) }
+  src/main.rs: |
+    fn main() { println!("Run cargo test to check the library contract."); }
+project: ''

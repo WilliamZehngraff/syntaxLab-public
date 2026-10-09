@@ -1,0 +1,89 @@
+id: rust-sets
+language: rust
+module: collections
+title: 03 · Unique values in a stable order
+order: 180
+prerequisites:
+- rust-maps
+concepts:
+- HashSet
+- sort
+- ownership
+- into_iter
+difficulty: 3
+assignment: |
+  Write `pub fn unique_sorted(values: &[i32]) -> Vec<i32>`. Collect distinct values using HashSet, then return them in ascending order. Do not expose the set's arbitrary iteration order. Preserve the input and add a demo.
+
+  ## Workflow
+  Create `src/lib.rs` with the public API and `src/main.rs` with a runnable demo yourself. No learner implementation is supplied.
+  Read `syntaxlab docs rust collections` for syntax and independent examples.
+
+  ```sh
+  cargo run
+  cargo test
+  syntaxlab check
+  ```
+docs: rust/docs/collections.md
+hints:
+- into_iter consumes a collection; iter borrows it.
+- Sort the collected Vec to make the result deterministic.
+files:
+  Cargo.toml: |
+    [package]
+    name = "syntaxlab_exercise"
+    version = "0.1.0"
+    edition = "2021"
+    rust-version = "1.70"
+  tests/exercise.rs: |
+    use syntaxlab_exercise::*;
+
+    #[test]
+    fn contract() {
+    assert_eq!(unique_sorted(&[4, -1, 4, 2, -1]), vec![-1, 2, 4]); assert_eq!(unique_sorted(&[]), Vec::<i32>::new());
+    }
+  ASSIGNMENT.md: |
+    Write `pub fn unique_sorted(values: &[i32]) -> Vec<i32>`. Collect distinct values using HashSet, then return them in ascending order. Do not expose the set's arbitrary iteration order. Preserve the input and add a demo.
+
+    ## Workflow
+    Create `src/lib.rs` with the public API and `src/main.rs` with a runnable demo yourself. No learner implementation is supplied.
+    Read `syntaxlab docs rust collections` for syntax and independent examples.
+
+    ```sh
+    cargo run
+    cargo test
+    syntaxlab check
+    ```
+checks:
+- type: file
+  path: src/main.rs
+  label: Learner src/main.rs exists
+- type: file
+  path: src/lib.rs
+  label: Learner library exists
+- type: command
+  args:
+  - $cargo
+  - test
+  - --offline
+  label: Cargo compilation and behavior tests
+  requires:
+  - $cargo
+  - $rustc
+- type: command
+  args:
+  - $cargo
+  - run
+  - --offline
+  - --quiet
+  label: Application runs
+  requires:
+  - $cargo
+  - $rustc
+solution:
+  src/lib.rs: |
+    use std::collections::HashSet;
+    pub fn unique_sorted(values: &[i32]) -> Vec<i32> { let set: HashSet<i32> = values.iter().copied().collect(); let mut result: Vec<i32> = set.into_iter().collect(); result.sort(); result }
+  src/main.rs: |
+    use syntaxlab_exercise::*;
+    fn main() { println!("{:?}", unique_sorted(&[4, 1, 4])); }
+project: ''

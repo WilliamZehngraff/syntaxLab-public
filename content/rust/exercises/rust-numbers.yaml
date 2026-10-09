@@ -1,0 +1,83 @@
+id: rust-numbers
+language: rust
+module: foundations
+title: 03 · Numeric types and conversion
+order: 30
+prerequisites:
+- rust-bindings
+concepts:
+- i64
+- f64
+- usize
+- numeric-types
+- casts
+difficulty: 1
+assignment: |
+  Declare population: i64 = 8000000000 and compute average: f64 from integer 7 divided by integer 2, casting before division. Print `8000000000 3.5`. Compare i32, u32, usize and f64 in the reference, and explain why integer division followed by a cast is different.
+
+  ## Workflow
+  Create `src/main.rs` yourself. No learner implementation is supplied.
+  Read `syntaxlab docs rust foundations` for syntax and independent examples.
+
+  ```sh
+  cargo run
+  cargo test
+  syntaxlab check
+  ```
+docs: rust/docs/foundations.md
+hints:
+- Use as to explicitly convert a numeric value.
+- The operand types decide what kind of division occurs.
+files:
+  Cargo.toml: |
+    [package]
+    name = "syntaxlab_exercise"
+    version = "0.1.0"
+    edition = "2021"
+    rust-version = "1.70"
+  tests/exercise.rs: |
+    #[test]
+    fn application_output() {
+        let output = std::process::Command::new(env!("CARGO_BIN_EXE_syntaxlab_exercise")).output().unwrap();
+        assert!(output.status.success(), "{}", String::from_utf8_lossy(&output.stderr));
+        assert_eq!(String::from_utf8(output.stdout).unwrap(), "8000000000 3.5\n");
+    }
+  ASSIGNMENT.md: |
+    Declare population: i64 = 8000000000 and compute average: f64 from integer 7 divided by integer 2, casting before division. Print `8000000000 3.5`. Compare i32, u32, usize and f64 in the reference, and explain why integer division followed by a cast is different.
+
+    ## Workflow
+    Create `src/main.rs` yourself. No learner implementation is supplied.
+    Read `syntaxlab docs rust foundations` for syntax and independent examples.
+
+    ```sh
+    cargo run
+    cargo test
+    syntaxlab check
+    ```
+checks:
+- type: file
+  path: src/main.rs
+  label: Learner src/main.rs exists
+- type: command
+  args:
+  - $cargo
+  - test
+  - --offline
+  label: Cargo compilation and behavior tests
+  requires:
+  - $cargo
+  - $rustc
+- type: command
+  args:
+  - $cargo
+  - run
+  - --offline
+  - --quiet
+  label: Application runs
+  requires:
+  - $cargo
+  - $rustc
+solution:
+  src/main.rs: |
+    fn main() { let population: i64 = 8_000_000_000; let average: f64 = 7 as f64 / 2 as f64; println!("{population} {average}"); }
+project: ''

@@ -1,0 +1,110 @@
+id: c-pointers-double
+language: c
+module: pointers
+title: 05 · Change a caller's pointer
+order: 250
+prerequisites:
+- c-pointers-null
+concepts:
+- double-pointers
+- pointer-assignment
+- ownership
+assignment: |
+  Write `void redirect(int **slot, int *destination)` assigning destination to the caller's pointer.
+  slot is non-null; destination may be NULL. Include a main with two ints and a pointer you redirect.
+
+  ## Workflow
+  Create `main.c` yourself. No learner source is supplied.
+
+  ```sh
+  python3 test_exercise.py
+  syntaxlab check
+  ```
+docs: c/docs/pointers.md
+hints:
+- The caller passes the address of its pointer.
+- One dereference reaches the pointer variable; two would reach an int.
+files:
+  test_exercise.c: |
+    #include <assert.h>
+    #include <stddef.h>
+    #include <stdlib.h>
+    #include <string.h>
+    #include <stdio.h>
+    void redirect(int**, int*);
+    int main(void) {
+    int a = 1; int b = 2; int *p = &a; redirect(&p, &b); assert(p == &b && *p == 2); redirect(&p, NULL); assert(p == NULL);
+    return 0;
+    }
+  test_exercise.py: |
+    """Run with python3 test_exercise.py. GCC diagnostics are printed unchanged."""
+    from pathlib import Path
+    import os
+    import subprocess
+    import sys
+
+    root = Path(__file__).resolve().parent
+    build = root / ".syntaxlab-build" / "test_exercise"
+    build.mkdir(parents=True, exist_ok=True)
+    cc = os.environ.get("CC", "gcc")
+    flags = ["-std=c17", "-Wall", "-Wextra", "-Wpedantic", "-Werror", "-g"]
+    expected = None
+
+    def execute(args, capture=False):
+        print("+ " + " ".join(str(a) for a in args), flush=True)
+        return subprocess.run(args, cwd=root, check=True, timeout=10,
+                              text=True, capture_output=capture)
+
+    try:
+        sources = sorted(p for p in root.glob("*.c") if not p.name.startswith("test_"))
+        if not sources:
+            raise RuntimeError("Create main.c first")
+        executable = build / "program"
+        execute([cc, *flags, *map(str, sources), "-o", str(executable)])
+        result = execute([str(executable)], capture=True)
+        if expected is not None:
+            assert result.stdout.strip() == expected.strip(), (
+                f"Expected {expected!r}, got {result.stdout!r}")
+        else:
+            objects = []
+            for source in sources:
+                obj = build / (source.stem + ".o")
+                execute([cc, *flags, "-Dmain=learner_main", "-c", str(source), "-o", str(obj)])
+                objects.append(str(obj))
+            harness = build / "tests"
+            execute([cc, *flags, "test_exercise.c", *objects, "-o", str(harness)])
+            execute([str(harness)])
+        print("All behavior checks passed.")
+    except (OSError, subprocess.SubprocessError, AssertionError, RuntimeError) as error:
+        print(error, file=sys.stderr)
+        if isinstance(error, subprocess.CalledProcessError):
+            print(error.stdout or "", error.stderr or "", file=sys.stderr)
+        sys.exit(1)
+  ASSIGNMENT.md: |
+    Write `void redirect(int **slot, int *destination)` assigning destination to the caller's pointer.
+    slot is non-null; destination may be NULL. Include a main with two ints and a pointer you redirect.
+
+    ## Workflow
+    Create `main.c` yourself. No learner source is supplied.
+
+    ```sh
+    python3 test_exercise.py
+    syntaxlab check
+    ```
+checks:
+- type: file
+  path: main.c
+  label: main.c exists
+- type: command
+  args:
+  - python3
+  - test_exercise.py
+  requires:
+  - $cc
+  label: GCC warnings, linking and behavior tests
+solution:
+  main.c: |
+    void redirect(int **slot, int *destination) { *slot = destination; }
+    int main(void) { return 0; }
+project: ''
+difficulty: 3

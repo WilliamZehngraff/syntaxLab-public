@@ -1,0 +1,99 @@
+id: python-functions-local
+language: python
+module: functions
+title: 04 · Local helpers and scope
+order: 100
+prerequisites:
+- python-functions-defaults
+concepts:
+- local-functions
+- scope
+- functions
+difficulty: 2
+assignment: |
+  Define square_sum(a: int, b: int) -> int returning a² + b². Define and use a helper square inside square_sum, not at module scope. Add an import-safe demo. Locals from one call must not leak into another call.
+
+  ## Workflow
+  Create `main.py` yourself. No learner implementation is supplied.
+  Read `syntaxlab docs python functions` for syntax and independent examples.
+
+  ```sh
+  python3 main.py
+  python3 -m unittest discover -s tests -v
+  syntaxlab check
+  ```
+docs: python/docs/functions.md
+hints:
+- A nested def belongs to its containing function's indented body.
+- The helper only needs one parameter; call it separately for a and b.
+files:
+  tests/test_exercise.py: |
+    import contextlib
+    import importlib
+    import io
+    import json
+    import subprocess
+    import sys
+    import tempfile
+    import unittest
+    from pathlib import Path
+    import main as learner
+
+    class ExerciseTests(unittest.TestCase):
+        def test_local_helper(self):
+            self.assertEqual(learner.square_sum(3, 4), 25)
+            self.assertEqual(learner.square_sum(-2, 0), 4)
+            self.assertFalse(hasattr(learner, "square"))
+  ASSIGNMENT.md: |
+    Define square_sum(a: int, b: int) -> int returning a² + b². Define and use a helper square inside square_sum, not at module scope. Add an import-safe demo. Locals from one call must not leak into another call.
+
+    ## Workflow
+    Create `main.py` yourself. No learner implementation is supplied.
+    Read `syntaxlab docs python functions` for syntax and independent examples.
+
+    ```sh
+    python3 main.py
+    python3 -m unittest discover -s tests -v
+    syntaxlab check
+    ```
+checks:
+- type: file
+  path: main.py
+  label: Learner main.py exists
+- type: command
+  args:
+  - $python
+  - -c
+  - import main
+  label: Import has no I/O side effects
+  stdout: ''
+- type: command
+  args:
+  - $python
+  - -m
+  - unittest
+  - discover
+  - -s
+  - tests
+  - -v
+  label: Python behavior tests (unittest)
+- type: command
+  args:
+  - $python
+  - main.py
+  label: Application runs
+  stdin: ''
+- type: construct
+  path: main.py
+  pattern: (?s)def square_sum.*\n\s+def square
+  label: Required lesson construct (heuristic; behavior tested separately)
+solution:
+  main.py: |
+    def square_sum(a: int, b: int) -> int:
+        def square(n: int) -> int:
+            return n * n
+        return square(a) + square(b)
+
+    if __name__ == "__main__":
+        print(square_sum(3, 4))
+project: ''

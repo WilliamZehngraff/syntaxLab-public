@@ -1,0 +1,94 @@
+id: python-sets
+language: python
+module: collections
+title: 03 · Distinct values and deterministic ordering
+order: 170
+prerequisites:
+- python-dicts
+concepts:
+- set
+- sorted
+- determinism
+difficulty: 3
+assignment: |
+  Write unique_sorted(values: list[int]) -> list[int] returning each value once in ascending order. Use a set for uniqueness, but do not depend on its iteration order. Preserve the input and add a demo.
+
+  ## Workflow
+  Create `main.py` yourself. No learner implementation is supplied.
+  Read `syntaxlab docs python collections` for syntax and independent examples.
+
+  ```sh
+  python3 main.py
+  python3 -m unittest discover -s tests -v
+  syntaxlab check
+  ```
+docs: python/docs/collections.md
+hints:
+- A set answers membership questions and removes duplicates.
+- Sort after deduplicating to make output predictable.
+files:
+  tests/test_exercise.py: |
+    import contextlib
+    import importlib
+    import io
+    import json
+    import subprocess
+    import sys
+    import tempfile
+    import unittest
+    from pathlib import Path
+    import main as learner
+
+    class ExerciseTests(unittest.TestCase):
+        def test_unique_sorted(self):
+            values = [4, -1, 4, 2, -1]
+            self.assertEqual(learner.unique_sorted(values), [-1, 2, 4])
+            self.assertEqual(values, [4, -1, 4, 2, -1])
+            self.assertEqual(learner.unique_sorted([]), [])
+  ASSIGNMENT.md: |
+    Write unique_sorted(values: list[int]) -> list[int] returning each value once in ascending order. Use a set for uniqueness, but do not depend on its iteration order. Preserve the input and add a demo.
+
+    ## Workflow
+    Create `main.py` yourself. No learner implementation is supplied.
+    Read `syntaxlab docs python collections` for syntax and independent examples.
+
+    ```sh
+    python3 main.py
+    python3 -m unittest discover -s tests -v
+    syntaxlab check
+    ```
+checks:
+- type: file
+  path: main.py
+  label: Learner main.py exists
+- type: command
+  args:
+  - $python
+  - -c
+  - import main
+  label: Import has no I/O side effects
+  stdout: ''
+- type: command
+  args:
+  - $python
+  - -m
+  - unittest
+  - discover
+  - -s
+  - tests
+  - -v
+  label: Python behavior tests (unittest)
+- type: command
+  args:
+  - $python
+  - main.py
+  label: Application runs
+  stdin: ''
+solution:
+  main.py: |
+    def unique_sorted(values: list[int]) -> list[int]:
+        return sorted(set(values))
+
+    if __name__ == "__main__":
+        print(unique_sorted([4, 1, 4, 2]))
+project: ''

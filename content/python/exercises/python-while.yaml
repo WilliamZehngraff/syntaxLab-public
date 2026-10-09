@@ -1,0 +1,101 @@
+id: python-while
+language: python
+module: control-flow
+title: 03 · While and termination
+order: 130
+prerequisites:
+- python-for
+concepts:
+- while
+- floor-division
+- termination
+difficulty: 2
+assignment: |
+  Write digit_count(n: int) -> int using a while loop for nonnegative integers. Zero has one digit. Repeatedly remove a decimal digit without converting n to a string. Include a main-guarded demo and explain why the loop terminates in a comment.
+
+  ## Workflow
+  Create `main.py` yourself. No learner implementation is supplied.
+  Read `syntaxlab docs python control-flow` for syntax and independent examples.
+
+  ```sh
+  python3 main.py
+  python3 -m unittest discover -s tests -v
+  syntaxlab check
+  ```
+docs: python/docs/control-flow.md
+hints:
+- Handle the zero case deliberately.
+- Each division by ten removes one trailing decimal digit.
+files:
+  tests/test_exercise.py: |
+    import contextlib
+    import importlib
+    import io
+    import json
+    import subprocess
+    import sys
+    import tempfile
+    import unittest
+    from pathlib import Path
+    import main as learner
+
+    class ExerciseTests(unittest.TestCase):
+        def test_digits(self):
+            for n, expected in [(0, 1), (9, 1), (10, 2), (1200, 4)]:
+                self.assertEqual(learner.digit_count(n), expected)
+  ASSIGNMENT.md: |
+    Write digit_count(n: int) -> int using a while loop for nonnegative integers. Zero has one digit. Repeatedly remove a decimal digit without converting n to a string. Include a main-guarded demo and explain why the loop terminates in a comment.
+
+    ## Workflow
+    Create `main.py` yourself. No learner implementation is supplied.
+    Read `syntaxlab docs python control-flow` for syntax and independent examples.
+
+    ```sh
+    python3 main.py
+    python3 -m unittest discover -s tests -v
+    syntaxlab check
+    ```
+checks:
+- type: file
+  path: main.py
+  label: Learner main.py exists
+- type: command
+  args:
+  - $python
+  - -c
+  - import main
+  label: Import has no I/O side effects
+  stdout: ''
+- type: command
+  args:
+  - $python
+  - -m
+  - unittest
+  - discover
+  - -s
+  - tests
+  - -v
+  label: Python behavior tests (unittest)
+- type: command
+  args:
+  - $python
+  - main.py
+  label: Application runs
+  stdin: ''
+- type: construct
+  path: main.py
+  pattern: \bwhile\b
+  label: Required lesson construct (heuristic; behavior tested separately)
+solution:
+  main.py: |
+    def digit_count(n: int) -> int:
+        count = 1
+        # Dividing by ten moves toward a one-digit value.
+        while n >= 10:
+            n //= 10
+            count += 1
+        return count
+
+    if __name__ == "__main__":
+        print(digit_count(1200))
+project: ''

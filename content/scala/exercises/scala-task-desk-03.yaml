@@ -1,0 +1,79 @@
+id: scala-task-desk-03
+language: scala
+module: projects
+title: 03 · A reusable task label
+order: 141
+prerequisites:
+- scala-functions-defaults
+- scala-task-desk-02
+- scala-if-expression
+concepts:
+- functions
+- default-arguments
+- if
+assignment: |
+  Add `def taskLabel(title: String, done: Boolean = false): String` yielding `[ ] title` or `[x] title`. Use an if expression (review control flow if needed). Do not change title whitespace.
+
+  ## Workflow
+  Create `Main.scala` yourself. Keep all previously implemented behavior.
+
+  ```sh
+  scala-cli run .
+  scala-cli test .
+  syntaxlab check
+  ```
+docs: scala/docs/projects.md
+hints:
+- Keep earlier tests green while introducing the new behavior.
+- Review the functions reference, then separate calculation from input/output.
+files:
+  project.scala: |
+    //> using scala "3.3.7"
+    //> using test.dep "org.scalameta::munit:1.0.4"
+  Stage03.test.scala: |
+    class Stage03Tests extends munit.FunSuite:
+      test("stage 03 contract") { assertEquals(taskLabel("Read"), "[ ] Read"); assertEquals(taskLabel(done = true, title = "Write"), "[x] Write") }
+  STAGE-03.md: |
+    Add `def taskLabel(title: String, done: Boolean = false): String` yielding `[ ] title` or `[x] title`. Use an if expression (review control flow if needed). Do not change title whitespace.
+
+    ## Workflow
+    Create `Main.scala` yourself. Keep all previously implemented behavior.
+
+    ```sh
+    scala-cli run .
+    scala-cli test .
+    syntaxlab check
+    ```
+checks:
+- type: file
+  path: Main.scala
+  label: Main.scala exists
+- type: command
+  args:
+  - $scala
+  - test
+  - .
+  - --server=false
+  timeout: 240
+  label: Scala compilation and MUnit behavior tests
+- type: command
+  args:
+  - $scala
+  - run
+  - .
+  - --server=false
+  timeout: 240
+  label: Application entry point runs
+solution:
+  Main.scala: |
+    def banner: String = "Task Desk ready"
+    val owner: String = "Learner"
+    val capacity: Int = 10
+    def welcome: String = s"$owner has room for $capacity tasks"
+    def taskLabel(title: String, done: Boolean = false): String =
+      val mark = if done then "x" else " "
+      s"[$mark] $title"
+    object Main:
+      def main(args: Array[String]): Unit = println(banner)
+project: task-desk
+difficulty: 2

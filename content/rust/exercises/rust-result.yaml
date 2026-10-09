@@ -1,0 +1,89 @@
+id: rust-result
+language: rust
+module: errors
+title: 01 · Parsing with Result
+order: 240
+prerequisites:
+- rust-option
+concepts:
+- Result
+- Ok
+- Err
+- parsing
+- error-handling
+difficulty: 4
+assignment: |
+  Write `pub fn parse_positive(text: &str) -> Result<u32, String>`. Trim whitespace and parse u32. Invalid or negative text gives Err("invalid number"); zero gives Err("must be positive"); positive values give Ok(value). Handle failure without panic and add a demo.
+
+  ## Workflow
+  Create `src/lib.rs` with the public API and `src/main.rs` with a runnable demo yourself. No learner implementation is supplied.
+  Read `syntaxlab docs rust errors` for syntax and independent examples.
+
+  ```sh
+  cargo run
+  cargo test
+  syntaxlab check
+  ```
+docs: rust/docs/errors.md
+hints:
+- Use parse::<u32>() to state the desired numeric type.
+- A successful parse still needs the domain check that rejects zero.
+files:
+  Cargo.toml: |
+    [package]
+    name = "syntaxlab_exercise"
+    version = "0.1.0"
+    edition = "2021"
+    rust-version = "1.70"
+  tests/exercise.rs: |
+    use syntaxlab_exercise::*;
+
+    #[test]
+    fn contract() {
+    assert_eq!(parse_positive(" 42 "), Ok(42)); assert_eq!(parse_positive("0"), Err("must be positive".to_owned())); for text in ["", "abc", "-1", "2.5"] { assert_eq!(parse_positive(text), Err("invalid number".to_owned())); }
+    }
+  ASSIGNMENT.md: |
+    Write `pub fn parse_positive(text: &str) -> Result<u32, String>`. Trim whitespace and parse u32. Invalid or negative text gives Err("invalid number"); zero gives Err("must be positive"); positive values give Ok(value). Handle failure without panic and add a demo.
+
+    ## Workflow
+    Create `src/lib.rs` with the public API and `src/main.rs` with a runnable demo yourself. No learner implementation is supplied.
+    Read `syntaxlab docs rust errors` for syntax and independent examples.
+
+    ```sh
+    cargo run
+    cargo test
+    syntaxlab check
+    ```
+checks:
+- type: file
+  path: src/main.rs
+  label: Learner src/main.rs exists
+- type: file
+  path: src/lib.rs
+  label: Learner library exists
+- type: command
+  args:
+  - $cargo
+  - test
+  - --offline
+  label: Cargo compilation and behavior tests
+  requires:
+  - $cargo
+  - $rustc
+- type: command
+  args:
+  - $cargo
+  - run
+  - --offline
+  - --quiet
+  label: Application runs
+  requires:
+  - $cargo
+  - $rustc
+solution:
+  src/lib.rs: |
+    pub fn parse_positive(text: &str) -> Result<u32, String> { match text.trim().parse::<u32>() { Ok(0) => Err("must be positive".to_owned()), Ok(n) => Ok(n), Err(_) => Err("invalid number".to_owned()) } }
+  src/main.rs: |
+    use syntaxlab_exercise::*;
+    fn main() { println!("{:?}", parse_positive("42")); }
+project: ''

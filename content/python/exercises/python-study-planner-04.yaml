@@ -1,0 +1,108 @@
+id: python-study-planner-04
+language: python
+module: projects
+title: 04 · Independent task lists
+order: 151
+prerequisites:
+- python-lists
+- python-study-planner-03
+concepts:
+- list
+- aliasing
+- immutability
+difficulty: 2
+assignment: |
+  Add add_title(titles: list[str], title: str) -> list[str], returning a new list with title appended. Preserve the caller's list and ordering, including repeated titles. Use this to practice independent state before adding classes.
+
+  ## Workflow
+  Create `main.py` yourself. Extend the same project; preserve earlier APIs and stage tests.
+  Read `syntaxlab docs python projects` for syntax and independent examples.
+
+  ```sh
+  python3 main.py
+  python3 -m unittest discover -s tests -v
+  syntaxlab check
+  ```
+docs: python/docs/projects.md
+hints:
+- Keep earlier stage tests green while adding the new behavior.
+- Separate the data calculation from file and terminal I/O; test failure paths deliberately.
+files:
+  tests/test_04.py: |
+    import contextlib
+    import importlib
+    import io
+    import json
+    import subprocess
+    import sys
+    import tempfile
+    import unittest
+    from pathlib import Path
+    import main as learner
+
+    class ExerciseTests(unittest.TestCase):
+        def test_stage_contract(self):
+            before = ["A"]
+            result = learner.add_title(before, "B")
+            self.assertEqual(result, ["A", "B"])
+            self.assertEqual(before, ["A"])
+            result.append("C")
+            self.assertEqual(before, ["A"])
+  STAGE-04.md: |
+    Add add_title(titles: list[str], title: str) -> list[str], returning a new list with title appended. Preserve the caller's list and ordering, including repeated titles. Use this to practice independent state before adding classes.
+
+    ## Workflow
+    Create `main.py` yourself. Extend the same project; preserve earlier APIs and stage tests.
+    Read `syntaxlab docs python projects` for syntax and independent examples.
+
+    ```sh
+    python3 main.py
+    python3 -m unittest discover -s tests -v
+    syntaxlab check
+    ```
+checks:
+- type: file
+  path: main.py
+  label: Learner main.py exists
+- type: command
+  args:
+  - $python
+  - -c
+  - import main
+  label: Import has no I/O side effects
+  stdout: ''
+- type: command
+  args:
+  - $python
+  - -m
+  - unittest
+  - discover
+  - -s
+  - tests
+  - -v
+  label: Python behavior tests (unittest)
+- type: command
+  args:
+  - $python
+  - main.py
+  label: Application runs
+  stdin: ''
+solution:
+  main.py: |
+    def banner() -> str:
+        return "Study Planner ready"
+
+
+    def remaining(used: int) -> int:
+        return 10 - used
+
+    def task_label(title: str, done: bool = False) -> str:
+        mark = "x" if done else " "
+        return f"[{mark}] {title}"
+
+    def add_title(titles: list[str], title: str) -> list[str]:
+        return titles + [title]
+
+    if __name__ == "__main__":
+        print(banner())
+project: study-planner

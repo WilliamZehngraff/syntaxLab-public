@@ -1,0 +1,78 @@
+id: scala-companions
+language: scala
+module: oop
+title: 03 · Companion objects and factories
+order: 330
+prerequisites:
+- scala-constructors
+concepts:
+- companion-objects
+- visibility
+- factories
+assignment: |
+  Define `class Ticket private (val name: String)` with companion `object Ticket` exposing
+  `def create(raw: String): Ticket`. Trim whitespace when constructing. Add a main using the factory.
+
+  ## Workflow
+  Create `Main.scala` yourself. No learner source is supplied.
+
+  ```sh
+  scala-cli run .
+  scala-cli test .
+  syntaxlab check
+  ```
+docs: scala/docs/oop.md
+hints:
+- The companion object has the same name as the class.
+- A companion may access its class's private constructor.
+files:
+  project.scala: |
+    //> using scala "3.3.7"
+    //> using test.dep "org.scalameta::munit:1.0.4"
+  Exercise.test.scala: |
+    class ExerciseTests extends munit.FunSuite:
+      test("factory normalization") { assertEquals(Ticket.create(" Ada ").name, "Ada"); assertEquals(Ticket.create("  ").name, "") }
+  ASSIGNMENT.md: |
+    Define `class Ticket private (val name: String)` with companion `object Ticket` exposing
+    `def create(raw: String): Ticket`. Trim whitespace when constructing. Add a main using the factory.
+
+    ## Workflow
+    Create `Main.scala` yourself. No learner source is supplied.
+
+    ```sh
+    scala-cli run .
+    scala-cli test .
+    syntaxlab check
+    ```
+checks:
+- type: file
+  path: Main.scala
+  label: Main.scala exists
+- type: command
+  args:
+  - $scala
+  - test
+  - .
+  - --server=false
+  timeout: 240
+  label: Scala compilation and MUnit behavior tests
+- type: command
+  args:
+  - $scala
+  - run
+  - .
+  - --server=false
+  timeout: 240
+  label: Application entry point runs
+- type: construct
+  path: Main.scala
+  pattern: class Ticket private
+  label: Required lesson construct (heuristic; behavior checked above)
+solution:
+  Main.scala: |
+    class Ticket private (val name: String)
+    object Ticket:
+      def create(raw: String): Ticket = new Ticket(raw.trim)
+    @main def demo(): Unit = println(Ticket.create(" Ada " ).name)
+project: ''
+difficulty: 4

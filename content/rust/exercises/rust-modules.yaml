@@ -1,0 +1,92 @@
+id: rust-modules
+language: rust
+module: organization
+title: 01 · Modules and public re-exports
+order: 280
+prerequisites:
+- rust-recursion-slices
+concepts:
+- mod
+- pub
+- use
+- crate
+- modules
+- Cargo
+difficulty: 4
+assignment: |
+  Create src/text.rs with `pub fn heading(text: &str) -> String` returning trimmed uppercase text. Declare the text module in src/lib.rs and publicly re-export heading so tests can call syntaxlab_exercise::heading. Keep src/main.rs as a small executable demo.
+
+  ## Workflow
+  Create `src/lib.rs` with the public API and `src/main.rs` with a runnable demo yourself. No learner implementation is supplied.
+  Read `syntaxlab docs rust organization` for syntax and independent examples.
+
+  ```sh
+  cargo run
+  cargo test
+  syntaxlab check
+  ```
+docs: rust/docs/organization.md
+hints:
+- mod text tells Rust to compile text.rs as a module; it is not a textual include.
+- pub use exposes a stable public name without moving the implementation.
+files:
+  Cargo.toml: |
+    [package]
+    name = "syntaxlab_exercise"
+    version = "0.1.0"
+    edition = "2021"
+    rust-version = "1.70"
+  tests/exercise.rs: |
+    use syntaxlab_exercise::*;
+
+    #[test]
+    fn contract() {
+    assert_eq!(heading(" report "), "REPORT"); assert_eq!(heading(""), "");
+    }
+  ASSIGNMENT.md: |
+    Create src/text.rs with `pub fn heading(text: &str) -> String` returning trimmed uppercase text. Declare the text module in src/lib.rs and publicly re-export heading so tests can call syntaxlab_exercise::heading. Keep src/main.rs as a small executable demo.
+
+    ## Workflow
+    Create `src/lib.rs` with the public API and `src/main.rs` with a runnable demo yourself. No learner implementation is supplied.
+    Read `syntaxlab docs rust organization` for syntax and independent examples.
+
+    ```sh
+    cargo run
+    cargo test
+    syntaxlab check
+    ```
+checks:
+- type: file
+  path: src/main.rs
+  label: Learner src/main.rs exists
+- type: file
+  path: src/lib.rs
+  label: Learner library exists
+- type: command
+  args:
+  - $cargo
+  - test
+  - --offline
+  label: Cargo compilation and behavior tests
+  requires:
+  - $cargo
+  - $rustc
+- type: command
+  args:
+  - $cargo
+  - run
+  - --offline
+  - --quiet
+  label: Application runs
+  requires:
+  - $cargo
+  - $rustc
+solution:
+  src/lib.rs: |
+    mod text;
+    pub use text::heading;
+  src/main.rs: |
+    fn main() { println!("{}", syntaxlab_exercise::heading(" report ")); }
+  src/text.rs: |
+    pub fn heading(text: &str) -> String { text.trim().to_uppercase() }
+project: ''

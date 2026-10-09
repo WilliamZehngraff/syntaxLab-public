@@ -1,0 +1,101 @@
+id: python-parsing
+language: python
+module: errors
+title: 02 · Handle invalid text narrowly
+order: 200
+prerequisites:
+- python-exceptions
+concepts:
+- try
+- except
+- None
+- union-types
+- parsing
+difficulty: 3
+assignment: |
+  Write parse_age(text: str) -> int | None. Strip whitespace and parse a base-10 int; return it only when 0 <= age <= 130. Invalid text or an out-of-range value returns None. Catch ValueError rather than every exception. Include an import-safe demo.
+
+  ## Workflow
+  Create `main.py` yourself. No learner implementation is supplied.
+  Read `syntaxlab docs python errors` for syntax and independent examples.
+
+  ```sh
+  python3 main.py
+  python3 -m unittest discover -s tests -v
+  syntaxlab check
+  ```
+docs: python/docs/errors.md
+hints:
+- Parsing and validating the range are separate steps.
+- None represents absence; do not confuse it with a valid zero.
+files:
+  tests/test_exercise.py: |
+    import contextlib
+    import importlib
+    import io
+    import json
+    import subprocess
+    import sys
+    import tempfile
+    import unittest
+    from pathlib import Path
+    import main as learner
+
+    class ExerciseTests(unittest.TestCase):
+        def test_parse_boundaries(self):
+            self.assertEqual(learner.parse_age(" 42 "), 42)
+            self.assertEqual(learner.parse_age("0"), 0)
+            self.assertEqual(learner.parse_age("130"), 130)
+            for text in ["", "abc", "2.5", "-1", "131"]:
+                self.assertIsNone(learner.parse_age(text))
+  ASSIGNMENT.md: |
+    Write parse_age(text: str) -> int | None. Strip whitespace and parse a base-10 int; return it only when 0 <= age <= 130. Invalid text or an out-of-range value returns None. Catch ValueError rather than every exception. Include an import-safe demo.
+
+    ## Workflow
+    Create `main.py` yourself. No learner implementation is supplied.
+    Read `syntaxlab docs python errors` for syntax and independent examples.
+
+    ```sh
+    python3 main.py
+    python3 -m unittest discover -s tests -v
+    syntaxlab check
+    ```
+checks:
+- type: file
+  path: main.py
+  label: Learner main.py exists
+- type: command
+  args:
+  - $python
+  - -c
+  - import main
+  label: Import has no I/O side effects
+  stdout: ''
+- type: command
+  args:
+  - $python
+  - -m
+  - unittest
+  - discover
+  - -s
+  - tests
+  - -v
+  label: Python behavior tests (unittest)
+- type: command
+  args:
+  - $python
+  - main.py
+  label: Application runs
+  stdin: ''
+solution:
+  main.py: |
+    def parse_age(text: str) -> int | None:
+        try:
+            age = int(text.strip())
+        except ValueError:
+            return None
+        return age if 0 <= age <= 130 else None
+
+    if __name__ == "__main__":
+        print(parse_age(" 42 "))
+project: ''

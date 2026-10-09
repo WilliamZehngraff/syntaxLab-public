@@ -1,0 +1,95 @@
+id: rust-testing
+language: rust
+module: testing
+title: 01 · Deterministic properties and your tests
+order: 300
+prerequisites:
+- rust-files
+concepts:
+- test
+- assert_eq
+- properties
+- deterministic-tests
+difficulty: 5
+assignment: |
+  Implement `pub fn absolute(n: i32) -> i32` for -1000000..1000000. Write tests/learner.rs with at least three assertions, including zero and a negative input. Test nonnegativity and symmetry with deterministic examples. The minimum i32 is deliberately outside this contract. Add a demo.
+
+  ## Workflow
+  Create `src/lib.rs` with the public API and `src/main.rs` with a runnable demo yourself. No learner implementation is supplied.
+  Read `syntaxlab docs rust testing` for syntax and independent examples.
+
+  ```sh
+  cargo run
+  cargo test
+  syntaxlab check
+  ```
+docs: rust/docs/testing.md
+hints:
+- Integration tests live under tests/ and import the public crate API.
+- '#[test] marks a test function; assert_eq! gives useful expected/actual diagnostics.'
+files:
+  Cargo.toml: |
+    [package]
+    name = "syntaxlab_exercise"
+    version = "0.1.0"
+    edition = "2021"
+    rust-version = "1.70"
+  tests/exercise.rs: |
+    use syntaxlab_exercise::*;
+
+    #[test]
+    fn contract() {
+    for n in -100..=100 { assert!(absolute(n) >= 0); assert_eq!(absolute(n), absolute(-n)); assert_eq!(absolute(n), n.abs()); }
+    }
+  ASSIGNMENT.md: |
+    Implement `pub fn absolute(n: i32) -> i32` for -1000000..1000000. Write tests/learner.rs with at least three assertions, including zero and a negative input. Test nonnegativity and symmetry with deterministic examples. The minimum i32 is deliberately outside this contract. Add a demo.
+
+    ## Workflow
+    Create `src/lib.rs` with the public API and `src/main.rs` with a runnable demo yourself. No learner implementation is supplied.
+    Read `syntaxlab docs rust testing` for syntax and independent examples.
+
+    ```sh
+    cargo run
+    cargo test
+    syntaxlab check
+    ```
+checks:
+- type: file
+  path: tests/learner.rs
+  label: Learner-written test suite exists
+- type: file
+  path: src/main.rs
+  label: Learner src/main.rs exists
+- type: file
+  path: src/lib.rs
+  label: Learner library exists
+- type: command
+  args:
+  - $cargo
+  - test
+  - --offline
+  label: Cargo compilation and behavior tests
+  requires:
+  - $cargo
+  - $rustc
+- type: command
+  args:
+  - $cargo
+  - run
+  - --offline
+  - --quiet
+  label: Application runs
+  requires:
+  - $cargo
+  - $rustc
+solution:
+  src/lib.rs: |
+    pub fn absolute(n: i32) -> i32 { if n < 0 { -n } else { n } }
+  src/main.rs: |
+    use syntaxlab_exercise::*;
+    fn main() { println!("{:?}", absolute(-9)); }
+  tests/learner.rs: |
+    use syntaxlab_exercise::absolute;
+    #[test]
+    fn examples() { assert_eq!(absolute(0), 0); assert_eq!(absolute(-3), 3); assert_eq!(absolute(5), 5); }
+project: ''

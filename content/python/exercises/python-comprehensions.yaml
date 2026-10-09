@@ -1,0 +1,98 @@
+id: python-comprehensions
+language: python
+module: control-flow
+title: 04 · Build a list with a comprehension
+order: 140
+prerequisites:
+- python-while
+concepts:
+- list-comprehensions
+- filter
+- transformation
+difficulty: 2
+assignment: |
+  Write positive_squares(values: list[int]) -> list[int]. Keep strictly positive inputs and square them in their original order, preserving duplicates. Use a list comprehension, preserve the input, and add an import-safe demo.
+
+  ## Workflow
+  Create `main.py` yourself. No learner implementation is supplied.
+  Read `syntaxlab docs python control-flow` for syntax and independent examples.
+
+  ```sh
+  python3 main.py
+  python3 -m unittest discover -s tests -v
+  syntaxlab check
+  ```
+docs: python/docs/control-flow.md
+hints:
+- Filter before squaring or you lose the sign information.
+- A comprehension puts the output expression before for.
+files:
+  tests/test_exercise.py: |
+    import contextlib
+    import importlib
+    import io
+    import json
+    import subprocess
+    import sys
+    import tempfile
+    import unittest
+    from pathlib import Path
+    import main as learner
+
+    class ExerciseTests(unittest.TestCase):
+        def test_select_then_transform(self):
+            values = [-2, 3, 0, 2, 3]
+            self.assertEqual(learner.positive_squares(values), [9, 4, 9])
+            self.assertEqual(values, [-2, 3, 0, 2, 3])
+            self.assertEqual(learner.positive_squares([]), [])
+  ASSIGNMENT.md: |
+    Write positive_squares(values: list[int]) -> list[int]. Keep strictly positive inputs and square them in their original order, preserving duplicates. Use a list comprehension, preserve the input, and add an import-safe demo.
+
+    ## Workflow
+    Create `main.py` yourself. No learner implementation is supplied.
+    Read `syntaxlab docs python control-flow` for syntax and independent examples.
+
+    ```sh
+    python3 main.py
+    python3 -m unittest discover -s tests -v
+    syntaxlab check
+    ```
+checks:
+- type: file
+  path: main.py
+  label: Learner main.py exists
+- type: command
+  args:
+  - $python
+  - -c
+  - import main
+  label: Import has no I/O side effects
+  stdout: ''
+- type: command
+  args:
+  - $python
+  - -m
+  - unittest
+  - discover
+  - -s
+  - tests
+  - -v
+  label: Python behavior tests (unittest)
+- type: command
+  args:
+  - $python
+  - main.py
+  label: Application runs
+  stdin: ''
+- type: construct
+  path: main.py
+  pattern: \[[^\n]+\bfor\b[^\n]+\bif\b
+  label: Required lesson construct (heuristic; behavior tested separately)
+solution:
+  main.py: |
+    def positive_squares(values: list[int]) -> list[int]:
+        return [n * n for n in values if n > 0]
+
+    if __name__ == "__main__":
+        print(positive_squares([-2, 3, 0, 2]))
+project: ''

@@ -1,0 +1,101 @@
+id: python-recursion-numbers
+language: python
+module: recursion
+title: 01 · Base case and recursive step
+order: 210
+prerequisites:
+- python-parsing
+concepts:
+- recursion
+- base-cases
+- integers
+difficulty: 3
+assignment: |
+  Write recursive factorial(n: int) -> int for 0..100. Return 1 for zero and recurse on a smaller number. Do not use math.factorial or loops. Add a main-guarded demo and a comment explaining why the recursion reaches its base case.
+
+  ## Workflow
+  Create `main.py` yourself. No learner implementation is supplied.
+  Read `syntaxlab docs python recursion` for syntax and independent examples.
+
+  ```sh
+  python3 main.py
+  python3 -m unittest discover -s tests -v
+  syntaxlab check
+  ```
+docs: python/docs/recursion.md
+hints:
+- Which input requires no smaller problem?
+- Python does not eliminate tail calls; these exercises deliberately bound the input.
+files:
+  tests/test_exercise.py: |
+    import contextlib
+    import importlib
+    import io
+    import json
+    import subprocess
+    import sys
+    import tempfile
+    import unittest
+    from pathlib import Path
+    import main as learner
+
+    class ExerciseTests(unittest.TestCase):
+        def test_factorials(self):
+            self.assertEqual(learner.factorial(0), 1)
+            self.assertEqual(learner.factorial(1), 1)
+            self.assertEqual(learner.factorial(6), 720)
+            self.assertEqual(learner.factorial(13), 6227020800)
+  ASSIGNMENT.md: |
+    Write recursive factorial(n: int) -> int for 0..100. Return 1 for zero and recurse on a smaller number. Do not use math.factorial or loops. Add a main-guarded demo and a comment explaining why the recursion reaches its base case.
+
+    ## Workflow
+    Create `main.py` yourself. No learner implementation is supplied.
+    Read `syntaxlab docs python recursion` for syntax and independent examples.
+
+    ```sh
+    python3 main.py
+    python3 -m unittest discover -s tests -v
+    syntaxlab check
+    ```
+checks:
+- type: file
+  path: main.py
+  label: Learner main.py exists
+- type: command
+  args:
+  - $python
+  - -c
+  - import main
+  label: Import has no I/O side effects
+  stdout: ''
+- type: command
+  args:
+  - $python
+  - -m
+  - unittest
+  - discover
+  - -s
+  - tests
+  - -v
+  label: Python behavior tests (unittest)
+- type: command
+  args:
+  - $python
+  - main.py
+  label: Application runs
+  stdin: ''
+- type: construct
+  path: main.py
+  pattern: (?s)def factorial.*factorial\(n\s*-\s*1\)
+  label: Required lesson construct (heuristic; behavior tested separately)
+solution:
+  main.py: |
+    def factorial(n: int) -> int:
+        # Each call reduces n toward zero.
+        if n == 0:
+            return 1
+        return n * factorial(n - 1)
+
+    if __name__ == "__main__":
+        print(factorial(5))
+project: ''

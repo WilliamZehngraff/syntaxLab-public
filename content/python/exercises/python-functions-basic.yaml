@@ -1,0 +1,94 @@
+id: python-functions-basic
+language: python
+module: functions
+title: 01 · Functions and import-safe programs
+order: 70
+prerequisites:
+- python-input
+concepts:
+- def
+- parameters
+- return
+- type-hints
+- main-guard
+difficulty: 1
+assignment: |
+  Define triple(n: int) -> int returning three times n. Support negative values and zero. Add a runnable demonstration under `if __name__ == "__main__":`. Importing main must not print or read input: tests import your function, while direct execution runs your demonstration.
+
+  ## Workflow
+  Create `main.py` yourself. No learner implementation is supplied.
+  Read `syntaxlab docs python functions` for syntax and independent examples.
+
+  ```sh
+  python3 main.py
+  python3 -m unittest discover -s tests -v
+  syntaxlab check
+  ```
+docs: python/docs/functions.md
+hints:
+- Indent the function body; return gives a value to its caller.
+- A type hint describes intent; Python does not enforce it automatically at runtime.
+files:
+  tests/test_exercise.py: |
+    import contextlib
+    import importlib
+    import io
+    import json
+    import subprocess
+    import sys
+    import tempfile
+    import unittest
+    from pathlib import Path
+    import main as learner
+
+    class ExerciseTests(unittest.TestCase):
+        def test_triple(self):
+            for n, expected in [(-4, -12), (0, 0), (7, 21)]:
+                self.assertEqual(learner.triple(n), expected)
+  ASSIGNMENT.md: |
+    Define triple(n: int) -> int returning three times n. Support negative values and zero. Add a runnable demonstration under `if __name__ == "__main__":`. Importing main must not print or read input: tests import your function, while direct execution runs your demonstration.
+
+    ## Workflow
+    Create `main.py` yourself. No learner implementation is supplied.
+    Read `syntaxlab docs python functions` for syntax and independent examples.
+
+    ```sh
+    python3 main.py
+    python3 -m unittest discover -s tests -v
+    syntaxlab check
+    ```
+checks:
+- type: file
+  path: main.py
+  label: Learner main.py exists
+- type: command
+  args:
+  - $python
+  - -c
+  - import main
+  label: Import has no I/O side effects
+  stdout: ''
+- type: command
+  args:
+  - $python
+  - -m
+  - unittest
+  - discover
+  - -s
+  - tests
+  - -v
+  label: Python behavior tests (unittest)
+- type: command
+  args:
+  - $python
+  - main.py
+  label: Application runs
+  stdin: ''
+solution:
+  main.py: |
+    def triple(n: int) -> int:
+        return n * 3
+
+    if __name__ == "__main__":
+        print(triple(4))
+project: ''

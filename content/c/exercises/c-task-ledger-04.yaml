@@ -1,0 +1,134 @@
+id: c-task-ledger-04
+language: c
+module: projects
+title: 04 · Counting IDs
+order: 101
+prerequisites:
+- c-for
+- c-task-ledger-03
+concepts:
+- for
+- loops
+assignment: |
+  Add `int id_total(int count)` returning the sum of task IDs 1 through count with a for loop. count is 0..1000. This is a temporary reporting helper you will retain.
+
+  ## Workflow
+  Create `main.c` yourself. Keep all previously implemented behavior.
+
+  ```sh
+  python3 test_04.py
+  syntaxlab check
+  ```
+docs: c/docs/projects.md
+hints:
+- Add the new operation without breaking the older stage tests.
+- Decide who owns each value, and check boundary/failure cases before the happy path.
+files:
+  test_04.c: |
+    #include <assert.h>
+    #include <stdlib.h>
+    #include <string.h>
+    #include <stdio.h>
+    int id_total(int);
+    int main(void) {
+    assert(id_total(0) == 0); assert(id_total(4) == 10);
+    return 0;
+    }
+  test_04.py: |
+    """Run with python3 test_04.py. GCC diagnostics are printed unchanged."""
+    from pathlib import Path
+    import os
+    import subprocess
+    import sys
+
+    root = Path(__file__).resolve().parent
+    build = root / ".syntaxlab-build" / "test_04"
+    build.mkdir(parents=True, exist_ok=True)
+    cc = os.environ.get("CC", "gcc")
+    flags = ["-std=c17", "-Wall", "-Wextra", "-Wpedantic", "-Werror", "-g"]
+    expected = None
+
+    def execute(args, capture=False):
+        print("+ " + " ".join(str(a) for a in args), flush=True)
+        return subprocess.run(args, cwd=root, check=True, timeout=10,
+                              text=True, capture_output=capture)
+
+    try:
+        sources = sorted(p for p in root.glob("*.c") if not p.name.startswith("test_"))
+        if not sources:
+            raise RuntimeError("Create main.c first")
+        executable = build / "program"
+        execute([cc, *flags, *map(str, sources), "-o", str(executable)])
+        result = execute([str(executable)], capture=True)
+        if expected is not None:
+            assert result.stdout.strip() == expected.strip(), (
+                f"Expected {expected!r}, got {result.stdout!r}")
+        else:
+            objects = []
+            for source in sources:
+                obj = build / (source.stem + ".o")
+                execute([cc, *flags, "-Dmain=learner_main", "-c", str(source), "-o", str(obj)])
+                objects.append(str(obj))
+            harness = build / "tests"
+            execute([cc, *flags, "test_04.c", *objects, "-o", str(harness)])
+            execute([str(harness)])
+        print("All behavior checks passed.")
+    except (OSError, subprocess.SubprocessError, AssertionError, RuntimeError) as error:
+        print(error, file=sys.stderr)
+        if isinstance(error, subprocess.CalledProcessError):
+            print(error.stdout or "", error.stderr or "", file=sys.stderr)
+        sys.exit(1)
+  STAGE-04.md: |
+    Add `int id_total(int count)` returning the sum of task IDs 1 through count with a for loop. count is 0..1000. This is a temporary reporting helper you will retain.
+
+    ## Workflow
+    Create `main.c` yourself. Keep all previously implemented behavior.
+
+    ```sh
+    python3 test_04.py
+    syntaxlab check
+    ```
+checks:
+- type: file
+  path: main.c
+  label: main.c exists
+- type: command
+  args:
+  - python3
+  - test_01.py
+  requires:
+  - $cc
+  label: GCC warnings, linking and behavior tests
+- type: command
+  args:
+  - python3
+  - test_02.py
+  requires:
+  - $cc
+  label: GCC warnings, linking and behavior tests
+- type: command
+  args:
+  - python3
+  - test_03.py
+  requires:
+  - $cc
+  label: GCC warnings, linking and behavior tests
+- type: command
+  args:
+  - python3
+  - test_04.py
+  requires:
+  - $cc
+  label: GCC warnings, linking and behavior tests
+solution:
+  main.c: |
+    #include <stdio.h>
+    #include <stddef.h>
+    #include <stdlib.h>
+    #include <string.h>
+    int free_slots(int used) { const int capacity = 10; return capacity - used; }
+    int can_add(int used) { if (used >= 0 && used < 10) return 1; return 0; }
+    int id_total(int count) { int total = 0; for (int i = 1; i <= count; ++i) total += i; return total; }
+    int main(void) { int used = 0; if (free_slots(used) != 10) return 1; puts("Task Ledger ready"); return 0; }
+project: task-ledger
+difficulty: 2

@@ -1,0 +1,81 @@
+id: rust-task-trail-01
+language: rust
+module: projects
+title: 01 · A compiled identity
+order: 11
+prerequisites:
+- rust-hello
+concepts:
+- main
+- Cargo
+- println
+difficulty: 1
+assignment: |
+  Create Task Trail's first binary. With no arguments it prints `Task Trail ready` and a newline. Keep this no-argument behavior through all stages. Later library code will live in this same project; the crate name in Cargo.toml is task_trail.
+
+  ## Workflow
+  Create `src/main.rs` yourself. Extend the same project; preserve earlier APIs and stage tests.
+  Read `syntaxlab docs rust projects` for syntax and independent examples.
+
+  ```sh
+  cargo run
+  cargo test
+  syntaxlab check
+  ```
+docs: rust/docs/projects.md
+hints:
+- Preserve earlier APIs; let the accumulated tests protect them during each extension.
+- Decide which values are owned, borrowed or fallible before choosing the function signatures.
+files:
+  Cargo.toml: |
+    [package]
+    name = "task_trail"
+    version = "0.1.0"
+    edition = "2021"
+    rust-version = "1.70"
+  tests/stage_01.rs: |
+    #[test]
+    fn application_output() {
+        let output = std::process::Command::new(env!("CARGO_BIN_EXE_task_trail")).output().unwrap();
+        assert!(output.status.success(), "{}", String::from_utf8_lossy(&output.stderr));
+        assert_eq!(String::from_utf8(output.stdout).unwrap(), "Task Trail ready\n");
+    }
+  STAGE-01.md: |
+    Create Task Trail's first binary. With no arguments it prints `Task Trail ready` and a newline. Keep this no-argument behavior through all stages. Later library code will live in this same project; the crate name in Cargo.toml is task_trail.
+
+    ## Workflow
+    Create `src/main.rs` yourself. Extend the same project; preserve earlier APIs and stage tests.
+    Read `syntaxlab docs rust projects` for syntax and independent examples.
+
+    ```sh
+    cargo run
+    cargo test
+    syntaxlab check
+    ```
+checks:
+- type: file
+  path: src/main.rs
+  label: Learner src/main.rs exists
+- type: command
+  args:
+  - $cargo
+  - test
+  - --offline
+  label: Cargo compilation and behavior tests
+  requires:
+  - $cargo
+  - $rustc
+- type: command
+  args:
+  - $cargo
+  - run
+  - --offline
+  - --quiet
+  label: Application runs
+  requires:
+  - $cargo
+  - $rustc
+solution:
+  src/main.rs: |
+    fn main() { println!("Task Trail ready"); }
+project: task-trail

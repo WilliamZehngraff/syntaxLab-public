@@ -1,0 +1,78 @@
+id: scala-recursion-list
+language: scala
+module: recursion
+title: 02 · Structural recursion over Lists
+order: 280
+prerequisites:
+- scala-recursion-numbers
+concepts:
+- structural-recursion
+- List-patterns
+- base-cases
+assignment: |
+  Write recursive `def total(xs: List[Int]): Int` using pattern matching. Empty Lists total 0.
+  Do not call sum or fold and do not use a loop. Add a main.
+
+  ## Workflow
+  Create `Main.scala` yourself. No learner source is supplied.
+
+  ```sh
+  scala-cli run .
+  scala-cli test .
+  syntaxlab check
+  ```
+docs: scala/docs/recursion.md
+hints:
+- A List is either empty or one element followed by a smaller List.
+- Return head plus the recursive result for tail.
+files:
+  project.scala: |
+    //> using scala "3.3.7"
+    //> using test.dep "org.scalameta::munit:1.0.4"
+  Exercise.test.scala: |
+    class ExerciseTests extends munit.FunSuite:
+      test("recursive totals") { assertEquals(total(Nil), 0); assertEquals(total(List(1, -4, 8)), 5); assertEquals(total(List(9)), 9) }
+  ASSIGNMENT.md: |
+    Write recursive `def total(xs: List[Int]): Int` using pattern matching. Empty Lists total 0.
+    Do not call sum or fold and do not use a loop. Add a main.
+
+    ## Workflow
+    Create `Main.scala` yourself. No learner source is supplied.
+
+    ```sh
+    scala-cli run .
+    scala-cli test .
+    syntaxlab check
+    ```
+checks:
+- type: file
+  path: Main.scala
+  label: Main.scala exists
+- type: command
+  args:
+  - $scala
+  - test
+  - .
+  - --server=false
+  timeout: 240
+  label: Scala compilation and MUnit behavior tests
+- type: command
+  args:
+  - $scala
+  - run
+  - .
+  - --server=false
+  timeout: 240
+  label: Application entry point runs
+- type: construct
+  path: Main.scala
+  pattern: (?s)def total.*total\(\w+\)
+  label: Required lesson construct (heuristic; behavior checked above)
+solution:
+  Main.scala: |
+    def total(xs: List[Int]): Int = xs match
+      case Nil => 0
+      case head :: tail => head + total(tail)
+    @main def demo(): Unit = println(total(List(2, 3)))
+project: ''
+difficulty: 4

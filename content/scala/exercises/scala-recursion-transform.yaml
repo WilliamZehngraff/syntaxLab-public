@@ -1,0 +1,78 @@
+id: scala-recursion-transform
+language: scala
+module: recursion
+title: 03 · Rebuild a recursive structure
+order: 290
+prerequisites:
+- scala-recursion-list
+concepts:
+- structural-recursion
+- cons
+- immutability
+assignment: |
+  Write recursive `def incrementAll(xs: List[Int]): List[Int]`, returning every element plus one in the
+  same order. No map or loops. Add a main. This time the recursive result is a List, not a number.
+
+  ## Workflow
+  Create `Main.scala` yourself. No learner source is supplied.
+
+  ```sh
+  scala-cli run .
+  scala-cli test .
+  syntaxlab check
+  ```
+docs: scala/docs/recursion.md
+hints:
+- The empty output List is the base case.
+- Construct one new head, then attach the transformed tail.
+files:
+  project.scala: |
+    //> using scala "3.3.7"
+    //> using test.dep "org.scalameta::munit:1.0.4"
+  Exercise.test.scala: |
+    class ExerciseTests extends munit.FunSuite:
+      test("rebuild in order") { assertEquals(incrementAll(Nil), Nil); assertEquals(incrementAll(List(2, -1, 2)), List(3, 0, 3)) }
+  ASSIGNMENT.md: |
+    Write recursive `def incrementAll(xs: List[Int]): List[Int]`, returning every element plus one in the
+    same order. No map or loops. Add a main. This time the recursive result is a List, not a number.
+
+    ## Workflow
+    Create `Main.scala` yourself. No learner source is supplied.
+
+    ```sh
+    scala-cli run .
+    scala-cli test .
+    syntaxlab check
+    ```
+checks:
+- type: file
+  path: Main.scala
+  label: Main.scala exists
+- type: command
+  args:
+  - $scala
+  - test
+  - .
+  - --server=false
+  timeout: 240
+  label: Scala compilation and MUnit behavior tests
+- type: command
+  args:
+  - $scala
+  - run
+  - .
+  - --server=false
+  timeout: 240
+  label: Application entry point runs
+- type: construct
+  path: Main.scala
+  pattern: (?s)def incrementAll.*incrementAll\(\w+\)
+  label: Required lesson construct (heuristic; behavior checked above)
+solution:
+  Main.scala: |
+    def incrementAll(xs: List[Int]): List[Int] = xs match
+      case Nil => Nil
+      case h :: t => (h + 1) :: incrementAll(t)
+    @main def demo(): Unit = println(incrementAll(List(1, 4)))
+project: ''
+difficulty: 4

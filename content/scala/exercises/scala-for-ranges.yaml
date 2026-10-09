@@ -1,0 +1,80 @@
+id: scala-for-ranges
+language: scala
+module: control-flow
+title: 04 · Ranges and for loops
+order: 170
+prerequisites:
+- scala-while
+concepts:
+- for
+- ranges
+- if
+assignment: |
+  Write `def evenTotal(n: Int): Int` using a for loop over a range. Sum all even numbers from 0 through n,
+  where n is nonnegative and at most 1000. Include n if even. Add a main.
+
+  ## Workflow
+  Create `Main.scala` yourself. No learner source is supplied.
+
+  ```sh
+  scala-cli run .
+  scala-cli test .
+  syntaxlab check
+  ```
+docs: scala/docs/control-flow.md
+hints:
+- to includes its endpoint; until excludes it.
+- Reuse isEven's idea inside the loop.
+files:
+  project.scala: |
+    //> using scala "3.3.7"
+    //> using test.dep "org.scalameta::munit:1.0.4"
+  Exercise.test.scala: |
+    class ExerciseTests extends munit.FunSuite:
+      test("inclusive even sum") { assertEquals(evenTotal(0), 0); assertEquals(evenTotal(5), 6); assertEquals(evenTotal(6), 12) }
+  ASSIGNMENT.md: |
+    Write `def evenTotal(n: Int): Int` using a for loop over a range. Sum all even numbers from 0 through n,
+    where n is nonnegative and at most 1000. Include n if even. Add a main.
+
+    ## Workflow
+    Create `Main.scala` yourself. No learner source is supplied.
+
+    ```sh
+    scala-cli run .
+    scala-cli test .
+    syntaxlab check
+    ```
+checks:
+- type: file
+  path: Main.scala
+  label: Main.scala exists
+- type: command
+  args:
+  - $scala
+  - test
+  - .
+  - --server=false
+  timeout: 240
+  label: Scala compilation and MUnit behavior tests
+- type: command
+  args:
+  - $scala
+  - run
+  - .
+  - --server=false
+  timeout: 240
+  label: Application entry point runs
+- type: construct
+  path: Main.scala
+  pattern: \bfor\b
+  label: Required lesson construct (heuristic; behavior checked above)
+solution:
+  Main.scala: |
+    def evenTotal(n: Int): Int =
+      var total = 0
+      for i <- 0 to n do
+        if i % 2 == 0 then total += i
+      total
+    @main def demo(): Unit = println(evenTotal(8))
+project: ''
+difficulty: 2

@@ -1,0 +1,89 @@
+id: rust-maps
+language: rust
+module: collections
+title: 02 · Count words with HashMap
+order: 170
+prerequisites:
+- rust-vectors
+concepts:
+- HashMap
+- entry
+- owned-keys
+- counting
+difficulty: 3
+assignment: |
+  Write `pub fn frequencies(words: &[&str]) -> std::collections::HashMap<String, usize>`. Count exact, case-sensitive strings. Use owned String keys so the result is independent of the input text's lifetime. Empty input gives an empty map. Add a demo; map iteration order is not a contract.
+
+  ## Workflow
+  Create `src/lib.rs` with the public API and `src/main.rs` with a runnable demo yourself. No learner implementation is supplied.
+  Read `syntaxlab docs rust collections` for syntax and independent examples.
+
+  ```sh
+  cargo run
+  cargo test
+  syntaxlab check
+  ```
+docs: rust/docs/collections.md
+hints:
+- entry(key).or_insert(0) returns a mutable reference to that key's count.
+- Dereference that reference before incrementing its value.
+files:
+  Cargo.toml: |
+    [package]
+    name = "syntaxlab_exercise"
+    version = "0.1.0"
+    edition = "2021"
+    rust-version = "1.70"
+  tests/exercise.rs: |
+    use syntaxlab_exercise::*;
+
+    #[test]
+    fn contract() {
+    let counts = frequencies(&["a", "a", "A", "b"]); assert_eq!(counts.get("a"), Some(&2)); assert_eq!(counts.get("A"), Some(&1)); assert_eq!(counts.len(), 3); assert!(frequencies(&[]).is_empty());
+    }
+  ASSIGNMENT.md: |
+    Write `pub fn frequencies(words: &[&str]) -> std::collections::HashMap<String, usize>`. Count exact, case-sensitive strings. Use owned String keys so the result is independent of the input text's lifetime. Empty input gives an empty map. Add a demo; map iteration order is not a contract.
+
+    ## Workflow
+    Create `src/lib.rs` with the public API and `src/main.rs` with a runnable demo yourself. No learner implementation is supplied.
+    Read `syntaxlab docs rust collections` for syntax and independent examples.
+
+    ```sh
+    cargo run
+    cargo test
+    syntaxlab check
+    ```
+checks:
+- type: file
+  path: src/main.rs
+  label: Learner src/main.rs exists
+- type: file
+  path: src/lib.rs
+  label: Learner library exists
+- type: command
+  args:
+  - $cargo
+  - test
+  - --offline
+  label: Cargo compilation and behavior tests
+  requires:
+  - $cargo
+  - $rustc
+- type: command
+  args:
+  - $cargo
+  - run
+  - --offline
+  - --quiet
+  label: Application runs
+  requires:
+  - $cargo
+  - $rustc
+solution:
+  src/lib.rs: |
+    use std::collections::HashMap;
+    pub fn frequencies(words: &[&str]) -> HashMap<String, usize> { let mut counts = HashMap::new(); for word in words { *counts.entry((*word).to_owned()).or_insert(0) += 1; } counts }
+  src/main.rs: |
+    use syntaxlab_exercise::*;
+    fn main() { println!("{:?}", frequencies(&["a", "b", "a"])); }
+project: ''

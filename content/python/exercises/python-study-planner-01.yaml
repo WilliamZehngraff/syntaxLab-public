@@ -1,0 +1,80 @@
+id: python-study-planner-01
+language: python
+module: projects
+title: 01 · Start a useful program
+order: 11
+prerequisites:
+- python-hello
+concepts:
+- source-files
+- print
+difficulty: 1
+assignment: |
+  Create the first version of Study Planner: main.py prints `Study Planner ready` and exits successfully. This is your permanent project directory; future stages extend this file and keep its no-argument banner.
+
+  ## Workflow
+  Create `main.py` yourself. Extend the same project; preserve earlier APIs and stage tests.
+  Read `syntaxlab docs python projects` for syntax and independent examples.
+
+  ```sh
+  python3 main.py
+  python3 -m unittest discover -s tests -v
+  syntaxlab check
+  ```
+docs: python/docs/projects.md
+hints:
+- Keep earlier stage tests green while adding the new behavior.
+- Separate the data calculation from file and terminal I/O; test failure paths deliberately.
+files:
+  tests/test_01.py: |
+    import contextlib
+    import importlib
+    import io
+    import json
+    import subprocess
+    import sys
+    import tempfile
+    import unittest
+    from pathlib import Path
+
+    class ExerciseTests(unittest.TestCase):
+        def test_program_output(self):
+            result = subprocess.run([sys.executable, "main.py"], input='', capture_output=True, text=True, timeout=5)
+            self.assertEqual(result.returncode, 0, result.stderr)
+            self.assertEqual(result.stdout, 'Study Planner ready\n')
+  STAGE-01.md: |
+    Create the first version of Study Planner: main.py prints `Study Planner ready` and exits successfully. This is your permanent project directory; future stages extend this file and keep its no-argument banner.
+
+    ## Workflow
+    Create `main.py` yourself. Extend the same project; preserve earlier APIs and stage tests.
+    Read `syntaxlab docs python projects` for syntax and independent examples.
+
+    ```sh
+    python3 main.py
+    python3 -m unittest discover -s tests -v
+    syntaxlab check
+    ```
+checks:
+- type: file
+  path: main.py
+  label: Learner main.py exists
+- type: command
+  args:
+  - $python
+  - -m
+  - unittest
+  - discover
+  - -s
+  - tests
+  - -v
+  label: Python behavior tests (unittest)
+- type: command
+  args:
+  - $python
+  - main.py
+  label: Application runs
+  stdin: ''
+solution:
+  main.py: |
+    print("Study Planner ready")
+project: study-planner

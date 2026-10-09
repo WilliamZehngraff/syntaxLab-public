@@ -1,0 +1,72 @@
+id: scala-functions-multiple
+language: scala
+module: functions
+title: 02 · Multiple parameters
+order: 90
+prerequisites:
+- scala-functions-basic
+concepts:
+- multiple-parameters
+- return-types
+- functions
+assignment: |
+  Write `def rectangleArea(width: Int, height: Int): Int`. Inputs are nonnegative, up to 1000.
+  Return the area, with zero for a zero-width or zero-height rectangle. Add a small runnable demo.
+
+  ## Workflow
+  Create `Main.scala` yourself. No learner source is supplied.
+
+  ```sh
+  scala-cli run .
+  scala-cli test .
+  syntaxlab check
+  ```
+docs: scala/docs/functions.md
+hints:
+- Separate typed parameters with commas.
+- Both dimensions contribute to area; changing either should change the answer.
+files:
+  project.scala: |
+    //> using scala "3.3.7"
+    //> using test.dep "org.scalameta::munit:1.0.4"
+  Exercise.test.scala: |
+    class ExerciseTests extends munit.FunSuite:
+      test("areas") { assertEquals(rectangleArea(3, 8), 24); assertEquals(rectangleArea(0, 9), 0); assertEquals(rectangleArea(11, 2), 22) }
+  ASSIGNMENT.md: |
+    Write `def rectangleArea(width: Int, height: Int): Int`. Inputs are nonnegative, up to 1000.
+    Return the area, with zero for a zero-width or zero-height rectangle. Add a small runnable demo.
+
+    ## Workflow
+    Create `Main.scala` yourself. No learner source is supplied.
+
+    ```sh
+    scala-cli run .
+    scala-cli test .
+    syntaxlab check
+    ```
+checks:
+- type: file
+  path: Main.scala
+  label: Main.scala exists
+- type: command
+  args:
+  - $scala
+  - test
+  - .
+  - --server=false
+  timeout: 240
+  label: Scala compilation and MUnit behavior tests
+- type: command
+  args:
+  - $scala
+  - run
+  - .
+  - --server=false
+  timeout: 240
+  label: Application entry point runs
+solution:
+  Main.scala: |
+    def rectangleArea(width: Int, height: Int): Int = width * height
+    @main def demo(): Unit = println(rectangleArea(3, 8))
+project: ''
+difficulty: 1

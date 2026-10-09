@@ -1,0 +1,85 @@
+id: python-booleans
+language: python
+module: foundations
+title: 05 · Boolean expressions
+order: 50
+prerequisites:
+- python-text
+concepts:
+- bool
+- comparisons
+- and
+- truthiness
+difficulty: 1
+assignment: |
+  Set age to 20 and has_ticket to True. Compute whether the age is at least 18 and the ticket is present; print the result. Then print whether an empty string is truthy using bool. Expected lines are True and False. Use expressions rather than printing those constants.
+
+  ## Workflow
+  Create `main.py` yourself. No learner implementation is supplied.
+  Read `syntaxlab docs python foundations` for syntax and independent examples.
+
+  ```sh
+  python3 main.py
+  python3 -m unittest discover -s tests -v
+  syntaxlab check
+  ```
+docs: python/docs/foundations.md
+hints:
+- Python's boolean constants are capitalized.
+- Use and/or/not, rather than &&/||/!.
+files:
+  tests/test_exercise.py: |
+    import contextlib
+    import importlib
+    import io
+    import json
+    import subprocess
+    import sys
+    import tempfile
+    import unittest
+    from pathlib import Path
+
+    class ExerciseTests(unittest.TestCase):
+        def test_program_output(self):
+            result = subprocess.run([sys.executable, "main.py"], input='', capture_output=True, text=True, timeout=5)
+            self.assertEqual(result.returncode, 0, result.stderr)
+            self.assertEqual(result.stdout, 'True\nFalse\n')
+  ASSIGNMENT.md: |
+    Set age to 20 and has_ticket to True. Compute whether the age is at least 18 and the ticket is present; print the result. Then print whether an empty string is truthy using bool. Expected lines are True and False. Use expressions rather than printing those constants.
+
+    ## Workflow
+    Create `main.py` yourself. No learner implementation is supplied.
+    Read `syntaxlab docs python foundations` for syntax and independent examples.
+
+    ```sh
+    python3 main.py
+    python3 -m unittest discover -s tests -v
+    syntaxlab check
+    ```
+checks:
+- type: file
+  path: main.py
+  label: Learner main.py exists
+- type: command
+  args:
+  - $python
+  - -m
+  - unittest
+  - discover
+  - -s
+  - tests
+  - -v
+  label: Python behavior tests (unittest)
+- type: command
+  args:
+  - $python
+  - main.py
+  label: Application runs
+  stdin: ''
+solution:
+  main.py: |
+    age = 20
+    has_ticket = True
+    print(age >= 18 and has_ticket)
+    print(bool(""))
+project: ''

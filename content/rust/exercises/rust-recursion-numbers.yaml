@@ -1,0 +1,92 @@
+id: rust-recursion-numbers
+language: rust
+module: recursion
+title: 01 · Recursive numeric problems
+order: 260
+prerequisites:
+- rust-propagation
+concepts:
+- recursion
+- base-cases
+- u64
+- conversion
+difficulty: 4
+assignment: |
+  Implement recursive `pub fn factorial(n: u32) -> u64` for 0..20. The base case returns 1. Recurse on n - 1 without loops or product helpers; convert to u64 before multiplication. Add a demo and explain the decreasing input in a comment.
+
+  ## Workflow
+  Create `src/lib.rs` with the public API and `src/main.rs` with a runnable demo yourself. No learner implementation is supplied.
+  Read `syntaxlab docs rust recursion` for syntax and independent examples.
+
+  ```sh
+  cargo run
+  cargo test
+  syntaxlab check
+  ```
+docs: rust/docs/recursion.md
+hints:
+- Choose the result type to fit factorial(20).
+- Rust does not guarantee tail-call elimination; this exercise bounds depth.
+files:
+  Cargo.toml: |
+    [package]
+    name = "syntaxlab_exercise"
+    version = "0.1.0"
+    edition = "2021"
+    rust-version = "1.70"
+  tests/exercise.rs: |
+    use syntaxlab_exercise::*;
+
+    #[test]
+    fn contract() {
+    assert_eq!(factorial(0), 1); assert_eq!(factorial(1), 1); assert_eq!(factorial(6), 720); assert_eq!(factorial(13), 6227020800);
+    }
+  ASSIGNMENT.md: |
+    Implement recursive `pub fn factorial(n: u32) -> u64` for 0..20. The base case returns 1. Recurse on n - 1 without loops or product helpers; convert to u64 before multiplication. Add a demo and explain the decreasing input in a comment.
+
+    ## Workflow
+    Create `src/lib.rs` with the public API and `src/main.rs` with a runnable demo yourself. No learner implementation is supplied.
+    Read `syntaxlab docs rust recursion` for syntax and independent examples.
+
+    ```sh
+    cargo run
+    cargo test
+    syntaxlab check
+    ```
+checks:
+- type: file
+  path: src/main.rs
+  label: Learner src/main.rs exists
+- type: file
+  path: src/lib.rs
+  label: Learner library exists
+- type: command
+  args:
+  - $cargo
+  - test
+  - --offline
+  label: Cargo compilation and behavior tests
+  requires:
+  - $cargo
+  - $rustc
+- type: command
+  args:
+  - $cargo
+  - run
+  - --offline
+  - --quiet
+  label: Application runs
+  requires:
+  - $cargo
+  - $rustc
+- type: construct
+  path: src/lib.rs
+  pattern: (?s)fn factorial.*factorial\(n\s*-\s*1\)
+  label: Required lesson construct (heuristic; behavior tested separately)
+solution:
+  src/lib.rs: |
+    pub fn factorial(n: u32) -> u64 { if n == 0 { 1 } else { u64::from(n) * factorial(n - 1) } }
+  src/main.rs: |
+    use syntaxlab_exercise::*;
+    fn main() { println!("{:?}", factorial(5)); }
+project: ''

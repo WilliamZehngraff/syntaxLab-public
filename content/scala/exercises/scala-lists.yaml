@@ -1,0 +1,72 @@
+id: scala-lists
+language: scala
+module: collections
+title: 02 · Immutable Lists
+order: 200
+prerequisites:
+- scala-tuples
+concepts:
+- List
+- immutability
+- cons
+assignment: |
+  Write `def prependTwice(value: Int, xs: List[Int]): List[Int]` returning two new copies of value before xs.
+  Preserve xs, its order, and duplicates. Add a main. Use :: instead of mutation.
+
+  ## Workflow
+  Create `Main.scala` yourself. No learner source is supplied.
+
+  ```sh
+  scala-cli run .
+  scala-cli test .
+  syntaxlab check
+  ```
+docs: scala/docs/collections.md
+hints:
+- ':: puts one element at the front of a List.'
+- An empty List is Nil; it needs no special case when prepending.
+files:
+  project.scala: |
+    //> using scala "3.3.7"
+    //> using test.dep "org.scalameta::munit:1.0.4"
+  Exercise.test.scala: |
+    class ExerciseTests extends munit.FunSuite:
+      test("persistent lists") { val original = List(2, 3); assertEquals(prependTwice(1, original), List(1, 1, 2, 3)); assertEquals(original, List(2, 3)); assertEquals(prependTwice(0, Nil), List(0, 0)) }
+  ASSIGNMENT.md: |
+    Write `def prependTwice(value: Int, xs: List[Int]): List[Int]` returning two new copies of value before xs.
+    Preserve xs, its order, and duplicates. Add a main. Use :: instead of mutation.
+
+    ## Workflow
+    Create `Main.scala` yourself. No learner source is supplied.
+
+    ```sh
+    scala-cli run .
+    scala-cli test .
+    syntaxlab check
+    ```
+checks:
+- type: file
+  path: Main.scala
+  label: Main.scala exists
+- type: command
+  args:
+  - $scala
+  - test
+  - .
+  - --server=false
+  timeout: 240
+  label: Scala compilation and MUnit behavior tests
+- type: command
+  args:
+  - $scala
+  - run
+  - .
+  - --server=false
+  timeout: 240
+  label: Application entry point runs
+solution:
+  Main.scala: |
+    def prependTwice(value: Int, xs: List[Int]): List[Int] = value :: value :: xs
+    @main def demo(): Unit = println(prependTwice(1, List(2, 3)))
+project: ''
+difficulty: 3

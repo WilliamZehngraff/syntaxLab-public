@@ -1,0 +1,314 @@
+version: 1
+modules:
+- language: scala
+  id: foundations
+  title: Scala foundations
+  docs: scala/docs/foundations.md
+  roadmap: false
+- language: scala
+  id: functions
+  title: Functions
+  docs: scala/docs/functions.md
+  roadmap: false
+- language: scala
+  id: control-flow
+  title: Control flow
+  docs: scala/docs/control-flow.md
+  roadmap: false
+- language: scala
+  id: collections
+  title: Collections and transformations
+  docs: scala/docs/collections.md
+  roadmap: false
+- language: scala
+  id: pattern-matching
+  title: Pattern matching
+  docs: scala/docs/pattern-matching.md
+  roadmap: false
+- language: scala
+  id: recursion
+  title: 'Recursion: from numbers to structure'
+  docs: scala/docs/recursion.md
+  roadmap: false
+- language: scala
+  id: oop
+  title: Classes, constructors and interfaces
+  docs: scala/docs/oop.md
+  roadmap: false
+- language: scala
+  id: data-modeling
+  title: Case classes, enums and optional values
+  docs: scala/docs/data-modeling.md
+  roadmap: false
+- language: scala
+  id: organization
+  title: Project organization
+  docs: scala/docs/organization.md
+  roadmap: false
+- language: scala
+  id: testing
+  title: Testing and properties
+  docs: scala/docs/testing.md
+  roadmap: false
+- language: scala
+  id: functional-programming
+  title: Functional programming
+  docs: scala/docs/functional-programming.md
+  roadmap: true
+- language: scala
+  id: advanced-oop
+  title: Advanced OOP
+  docs: scala/docs/advanced-oop.md
+  roadmap: true
+- language: scala
+  id: recursive-data
+  title: Recursive data and ADTs
+  docs: scala/docs/recursive-data.md
+  roadmap: true
+- language: scala
+  id: generics
+  title: Generics
+  docs: scala/docs/generics.md
+  roadmap: true
+- language: scala
+  id: laziness
+  title: Laziness
+  docs: scala/docs/laziness.md
+  roadmap: true
+- language: scala
+  id: functional-state
+  title: Functional state
+  docs: scala/docs/functional-state.md
+  roadmap: true
+- language: scala
+  id: error-handling
+  title: Error handling
+  docs: scala/docs/error-handling.md
+  roadmap: true
+- language: c
+  id: foundations
+  title: C foundations
+  docs: c/docs/foundations.md
+  roadmap: false
+- language: c
+  id: control-flow
+  title: C control flow
+  docs: c/docs/control-flow.md
+  roadmap: false
+- language: c
+  id: functions
+  title: C functions and scope
+  docs: c/docs/functions.md
+  roadmap: false
+- language: c
+  id: arrays
+  title: Arrays and dimensions
+  docs: c/docs/arrays.md
+  roadmap: false
+- language: c
+  id: strings
+  title: Strings and capacity
+  docs: c/docs/strings.md
+  roadmap: false
+- language: c
+  id: pointers
+  title: 'Pointers: addresses, indirection and ownership'
+  docs: c/docs/pointers.md
+  roadmap: false
+- language: c
+  id: structs
+  title: Structs and shared types
+  docs: c/docs/structs.md
+  roadmap: false
+- language: c
+  id: recursion
+  title: Recursion in C
+  docs: c/docs/recursion.md
+  roadmap: false
+- language: c
+  id: memory
+  title: Heap storage and ownership
+  docs: c/docs/memory.md
+  roadmap: false
+- language: c
+  id: organization
+  title: Headers and compilation units
+  docs: c/docs/organization.md
+  roadmap: false
+- language: c
+  id: building
+  title: GCC and Make
+  docs: c/docs/building.md
+  roadmap: false
+- language: c
+  id: file-io
+  title: File I/O and error paths
+  docs: c/docs/file-io.md
+  roadmap: false
+- language: c
+  id: advanced-fundamentals
+  title: Advanced fundamentals
+  docs: c/docs/advanced-fundamentals.md
+  roadmap: true
+- language: c
+  id: debugging
+  title: Debugging deeper
+  docs: c/docs/debugging.md
+  roadmap: true
+- language: scala
+  id: projects
+  title: Growing project · Task Desk
+  docs: scala/docs/projects.md
+  roadmap: false
+- language: c
+  id: projects
+  title: Growing project · Task Ledger
+  docs: c/docs/projects.md
+  roadmap: false
+
+# Rust and Python courses
+- language: python
+  id: foundations
+  title: Python foundations
+  docs: python/docs/foundations.md
+  roadmap: false
+- language: python
+  id: functions
+  title: Python functions and scope
+  docs: python/docs/functions.md
+  roadmap: false
+- language: python
+  id: control-flow
+  title: Python decisions and iteration
+  docs: python/docs/control-flow.md
+  roadmap: false
+- language: python
+  id: collections
+  title: Lists, dictionaries, sets and tuples
+  docs: python/docs/collections.md
+  roadmap: false
+- language: python
+  id: errors
+  title: Exceptions, parsing and absent values
+  docs: python/docs/errors.md
+  roadmap: false
+- language: python
+  id: recursion
+  title: Python recursion
+  docs: python/docs/recursion.md
+  roadmap: false
+- language: python
+  id: oop
+  title: Classes, dataclasses and inheritance
+  docs: python/docs/oop.md
+  roadmap: false
+- language: python
+  id: organization
+  title: Modules, imports and lazy iteration
+  docs: python/docs/organization.md
+  roadmap: false
+- language: python
+  id: file-io
+  title: Paths, UTF-8 and JSON
+  docs: python/docs/file-io.md
+  roadmap: false
+- language: python
+  id: testing
+  title: Python tests and deterministic contracts
+  docs: python/docs/testing.md
+  roadmap: false
+- language: python
+  id: projects
+  title: Growing project · Study Planner
+  docs: python/docs/projects.md
+  roadmap: false
+- language: python
+  id: advanced
+  title: Advanced Python roadmap
+  docs: python/docs/advanced.md
+  roadmap: true
+- language: python
+  id: async
+  title: Concurrency and async roadmap
+  docs: python/docs/async.md
+  roadmap: true
+- language: rust
+  id: foundations
+  title: Rust foundations and Cargo
+  docs: rust/docs/foundations.md
+  roadmap: false
+- language: rust
+  id: functions
+  title: Rust functions and library interfaces
+  docs: rust/docs/functions.md
+  roadmap: false
+- language: rust
+  id: control-flow
+  title: Rust decisions, loops and ranges
+  docs: rust/docs/control-flow.md
+  roadmap: false
+- language: rust
+  id: ownership
+  title: Ownership, moves, borrowing and slices
+  docs: rust/docs/ownership.md
+  roadmap: false
+- language: rust
+  id: collections
+  title: Vec, maps, sets and iterator transformations
+  docs: rust/docs/collections.md
+  roadmap: false
+- language: rust
+  id: structs
+  title: Structs, impl blocks and traits
+  docs: rust/docs/structs.md
+  roadmap: false
+- language: rust
+  id: enums
+  title: Enums, match and Option
+  docs: rust/docs/enums.md
+  roadmap: false
+- language: rust
+  id: errors
+  title: Result and recoverable errors
+  docs: rust/docs/errors.md
+  roadmap: false
+- language: rust
+  id: recursion
+  title: Recursive numbers and borrowed structures
+  docs: rust/docs/recursion.md
+  roadmap: false
+- language: rust
+  id: organization
+  title: Cargo layout, modules and re-exports
+  docs: rust/docs/organization.md
+  roadmap: false
+- language: rust
+  id: file-io
+  title: Paths, UTF-8 and file failures
+  docs: rust/docs/file-io.md
+  roadmap: false
+- language: rust
+  id: testing
+  title: Cargo tests and deterministic properties
+  docs: rust/docs/testing.md
+  roadmap: false
+- language: rust
+  id: projects
+  title: Growing project · Task Trail
+  docs: rust/docs/projects.md
+  roadmap: false
+- language: rust
+  id: advanced
+  title: Generics and advanced ownership roadmap
+  docs: rust/docs/advanced.md
+  roadmap: true
+- language: rust
+  id: concurrency
+  title: Concurrency roadmap
+  docs: rust/docs/concurrency.md
+  roadmap: true
+- language: rust
+  id: async
+  title: Async Rust roadmap
+  docs: rust/docs/async.md
+  roadmap: true

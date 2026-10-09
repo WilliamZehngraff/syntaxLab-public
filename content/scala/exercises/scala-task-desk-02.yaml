@@ -1,0 +1,74 @@
+id: scala-task-desk-02
+language: scala
+module: projects
+title: 02 · Owner and capacity
+order: 61
+prerequisites:
+- scala-text-types
+- scala-task-desk-01
+concepts:
+- val
+- interpolation
+assignment: |
+  Add top-level `val owner: String = "Learner"`, `val capacity: Int = 10`, and `def welcome: String` returning `Learner has room for 10 tasks` using interpolation. Keep the startup banner.
+
+  ## Workflow
+  Create `Main.scala` yourself. Keep all previously implemented behavior.
+
+  ```sh
+  scala-cli run .
+  scala-cli test .
+  syntaxlab check
+  ```
+docs: scala/docs/projects.md
+hints:
+- Keep earlier tests green while introducing the new behavior.
+- Review the foundations reference, then separate calculation from input/output.
+files:
+  project.scala: |
+    //> using scala "3.3.7"
+    //> using test.dep "org.scalameta::munit:1.0.4"
+  Stage02.test.scala: |
+    class Stage02Tests extends munit.FunSuite:
+      test("stage 02 contract") { assertEquals(owner, "Learner"); assertEquals(capacity, 10); assertEquals(welcome, "Learner has room for 10 tasks") }
+  STAGE-02.md: |
+    Add top-level `val owner: String = "Learner"`, `val capacity: Int = 10`, and `def welcome: String` returning `Learner has room for 10 tasks` using interpolation. Keep the startup banner.
+
+    ## Workflow
+    Create `Main.scala` yourself. Keep all previously implemented behavior.
+
+    ```sh
+    scala-cli run .
+    scala-cli test .
+    syntaxlab check
+    ```
+checks:
+- type: file
+  path: Main.scala
+  label: Main.scala exists
+- type: command
+  args:
+  - $scala
+  - test
+  - .
+  - --server=false
+  timeout: 240
+  label: Scala compilation and MUnit behavior tests
+- type: command
+  args:
+  - $scala
+  - run
+  - .
+  - --server=false
+  timeout: 240
+  label: Application entry point runs
+solution:
+  Main.scala: |
+    def banner: String = "Task Desk ready"
+    val owner: String = "Learner"
+    val capacity: Int = 10
+    def welcome: String = s"$owner has room for $capacity tasks"
+    object Main:
+      def main(args: Array[String]): Unit = println(banner)
+project: task-desk
+difficulty: 1

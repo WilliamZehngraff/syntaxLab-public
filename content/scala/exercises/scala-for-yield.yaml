@@ -1,0 +1,76 @@
+id: scala-for-yield
+language: scala
+module: control-flow
+title: 05 · For expressions
+order: 180
+prerequisites:
+- scala-for-ranges
+concepts:
+- for-expressions
+- yield
+- Seq
+assignment: |
+  Write `def squares(n: Int): Seq[Int]` using for/yield to produce 1² through n². For n = 0, return an empty
+  sequence. Inputs are 0..100. Add a main. This introduces a collection; do not print from inside the loop.
+
+  ## Workflow
+  Create `Main.scala` yourself. No learner source is supplied.
+
+  ```sh
+  scala-cli run .
+  scala-cli test .
+  syntaxlab check
+  ```
+docs: scala/docs/control-flow.md
+hints:
+- do performs effects; yield collects values.
+- The yielded expression runs once for each range element.
+files:
+  project.scala: |
+    //> using scala "3.3.7"
+    //> using test.dep "org.scalameta::munit:1.0.4"
+  Exercise.test.scala: |
+    class ExerciseTests extends munit.FunSuite:
+      test("producing values") { assertEquals(squares(0).toList, Nil); assertEquals(squares(4).toList, List(1, 4, 9, 16)) }
+  ASSIGNMENT.md: |
+    Write `def squares(n: Int): Seq[Int]` using for/yield to produce 1² through n². For n = 0, return an empty
+    sequence. Inputs are 0..100. Add a main. This introduces a collection; do not print from inside the loop.
+
+    ## Workflow
+    Create `Main.scala` yourself. No learner source is supplied.
+
+    ```sh
+    scala-cli run .
+    scala-cli test .
+    syntaxlab check
+    ```
+checks:
+- type: file
+  path: Main.scala
+  label: Main.scala exists
+- type: command
+  args:
+  - $scala
+  - test
+  - .
+  - --server=false
+  timeout: 240
+  label: Scala compilation and MUnit behavior tests
+- type: command
+  args:
+  - $scala
+  - run
+  - .
+  - --server=false
+  timeout: 240
+  label: Application entry point runs
+- type: construct
+  path: Main.scala
+  pattern: \byield\b
+  label: Required lesson construct (heuristic; behavior checked above)
+solution:
+  Main.scala: |
+    def squares(n: Int): Seq[Int] = for i <- 1 to n yield i * i
+    @main def demo(): Unit = println(squares(4))
+project: ''
+difficulty: 2

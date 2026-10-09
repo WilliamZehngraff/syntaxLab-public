@@ -1,0 +1,107 @@
+id: python-testing
+language: python
+module: testing
+title: 01 · Deterministic properties and your own suite
+order: 300
+prerequisites:
+- python-json
+concepts:
+- unittest
+- assertions
+- properties
+- deterministic-tests
+difficulty: 5
+assignment: |
+  Write absolute(n: int) -> int and add tests/test_learner.py containing your own unittest.TestCase with at least three assertions, including zero and a negative input. Think about nonnegativity and symmetry. Keep main.py import-safe and runnable; do not modify the supplied behavioral tests.
+
+  ## Workflow
+  Create `main.py` yourself. No learner implementation is supplied.
+  Read `syntaxlab docs python testing` for syntax and independent examples.
+
+  ```sh
+  python3 main.py
+  python3 -m unittest discover -s tests -v
+  syntaxlab check
+  ```
+docs: python/docs/testing.md
+hints:
+- Test methods start with test_ and belong to unittest.TestCase.
+- Use an assertion rather than a print to signal a failure.
+files:
+  tests/test_exercise.py: |
+    import contextlib
+    import importlib
+    import io
+    import json
+    import subprocess
+    import sys
+    import tempfile
+    import unittest
+    from pathlib import Path
+    import main as learner
+
+    class ExerciseTests(unittest.TestCase):
+        def test_properties(self):
+            for n in range(-100, 101):
+                self.assertGreaterEqual(learner.absolute(n), 0)
+                self.assertEqual(learner.absolute(n), learner.absolute(-n))
+                self.assertEqual(learner.absolute(n), abs(n))
+  ASSIGNMENT.md: |
+    Write absolute(n: int) -> int and add tests/test_learner.py containing your own unittest.TestCase with at least three assertions, including zero and a negative input. Think about nonnegativity and symmetry. Keep main.py import-safe and runnable; do not modify the supplied behavioral tests.
+
+    ## Workflow
+    Create `main.py` yourself. No learner implementation is supplied.
+    Read `syntaxlab docs python testing` for syntax and independent examples.
+
+    ```sh
+    python3 main.py
+    python3 -m unittest discover -s tests -v
+    syntaxlab check
+    ```
+checks:
+- type: file
+  path: tests/test_learner.py
+  label: Learner-written test suite exists
+- type: file
+  path: main.py
+  label: Learner main.py exists
+- type: command
+  args:
+  - $python
+  - -c
+  - import main
+  label: Import has no I/O side effects
+  stdout: ''
+- type: command
+  args:
+  - $python
+  - -m
+  - unittest
+  - discover
+  - -s
+  - tests
+  - -v
+  label: Python behavior tests (unittest)
+- type: command
+  args:
+  - $python
+  - main.py
+  label: Application runs
+  stdin: ''
+solution:
+  main.py: |
+    def absolute(n: int) -> int:
+        return -n if n < 0 else n
+
+    if __name__ == "__main__":
+        print(absolute(-9))
+  tests/test_learner.py: |
+    import unittest
+    from main import absolute
+
+    class LearnerTests(unittest.TestCase):
+        def test_examples(self):
+            self.assertEqual(absolute(0), 0)
+            self.assertEqual(absolute(-3), 3)
+            self.assertEqual(absolute(5), 5)
+project: ''

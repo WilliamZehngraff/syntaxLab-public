@@ -1,0 +1,89 @@
+id: rust-structs
+language: rust
+module: structs
+title: 01 · Public records
+order: 190
+prerequisites:
+- rust-sets
+concepts:
+- struct
+- fields
+- visibility
+- borrowing
+difficulty: 3
+assignment: |
+  Define `pub struct Point` with public x: i32 and y: i32 fields. Implement `pub fn distance(point: &Point) -> i32`, returning |x| + |y| (Manhattan distance). Coordinates are within -1000..1000. Borrow the record instead of consuming it; add a demo.
+
+  ## Workflow
+  Create `src/lib.rs` with the public API and `src/main.rs` with a runnable demo yourself. No learner implementation is supplied.
+  Read `syntaxlab docs rust structs` for syntax and independent examples.
+
+  ```sh
+  cargo run
+  cargo test
+  syntaxlab check
+  ```
+docs: rust/docs/structs.md
+hints:
+- Making a struct public does not automatically make its fields public.
+- Use dot notation to read a field through a shared reference.
+files:
+  Cargo.toml: |
+    [package]
+    name = "syntaxlab_exercise"
+    version = "0.1.0"
+    edition = "2021"
+    rust-version = "1.70"
+  tests/exercise.rs: |
+    use syntaxlab_exercise::*;
+
+    #[test]
+    fn contract() {
+    let p = Point { x: -3, y: 4 }; assert_eq!(distance(&p), 7); assert_eq!(p.x, -3); assert_eq!(distance(&Point { x: 0, y: 0 }), 0);
+    }
+  ASSIGNMENT.md: |
+    Define `pub struct Point` with public x: i32 and y: i32 fields. Implement `pub fn distance(point: &Point) -> i32`, returning |x| + |y| (Manhattan distance). Coordinates are within -1000..1000. Borrow the record instead of consuming it; add a demo.
+
+    ## Workflow
+    Create `src/lib.rs` with the public API and `src/main.rs` with a runnable demo yourself. No learner implementation is supplied.
+    Read `syntaxlab docs rust structs` for syntax and independent examples.
+
+    ```sh
+    cargo run
+    cargo test
+    syntaxlab check
+    ```
+checks:
+- type: file
+  path: src/main.rs
+  label: Learner src/main.rs exists
+- type: file
+  path: src/lib.rs
+  label: Learner library exists
+- type: command
+  args:
+  - $cargo
+  - test
+  - --offline
+  label: Cargo compilation and behavior tests
+  requires:
+  - $cargo
+  - $rustc
+- type: command
+  args:
+  - $cargo
+  - run
+  - --offline
+  - --quiet
+  label: Application runs
+  requires:
+  - $cargo
+  - $rustc
+solution:
+  src/lib.rs: |
+    pub struct Point { pub x: i32, pub y: i32 }
+    pub fn distance(point: &Point) -> i32 { point.x.abs() + point.y.abs() }
+  src/main.rs: |
+    use syntaxlab_exercise::*;
+    fn main() { println!("{:?}", distance(&Point { x: -3, y: 4 })); }
+project: ''

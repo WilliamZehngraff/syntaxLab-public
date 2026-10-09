@@ -1,0 +1,105 @@
+id: python-file-text
+language: python
+module: file-io
+title: 01 · UTF-8 files and context management
+order: 280
+prerequisites:
+- python-iterators
+concepts:
+- pathlib
+- UTF-8
+- file-io
+- context-managers
+difficulty: 4
+assignment: |
+  Define write_lines(path, lines: list[str]) -> None and read_lines(path) -> list[str]. Write UTF-8 with one newline per input string, and read with splitlines. Input strings contain no newlines. Empty input writes an empty file. Accept pathlib.Path or string paths, propagate I/O failures, and add a harmless demo that does not write files automatically.
+
+  ## Workflow
+  Create `main.py` yourself. No learner implementation is supplied.
+  Read `syntaxlab docs python file-io` for syntax and independent examples.
+
+  ```sh
+  python3 main.py
+  python3 -m unittest discover -s tests -v
+  syntaxlab check
+  ```
+docs: python/docs/file-io.md
+hints:
+- Path.read_text/write_text manage opening and closing for you.
+- Use temporary directories in tests so you never depend on personal files.
+files:
+  tests/test_exercise.py: |
+    import contextlib
+    import importlib
+    import io
+    import json
+    import subprocess
+    import sys
+    import tempfile
+    import unittest
+    from pathlib import Path
+    import main as learner
+
+    class ExerciseTests(unittest.TestCase):
+        def test_roundtrip_and_missing_file(self):
+            with tempfile.TemporaryDirectory() as folder:
+                path = Path(folder) / "notes.txt"
+                learner.write_lines(path, ["café", "", "notes"])
+                self.assertEqual(learner.read_lines(path), ["café", "", "notes"])
+                self.assertEqual(path.read_text(encoding="utf-8"), "café\n\nnotes\n")
+                learner.write_lines(path, [])
+                self.assertEqual(learner.read_lines(path), [])
+                with self.assertRaises(FileNotFoundError):
+                    learner.read_lines(Path(folder) / "missing")
+  ASSIGNMENT.md: |
+    Define write_lines(path, lines: list[str]) -> None and read_lines(path) -> list[str]. Write UTF-8 with one newline per input string, and read with splitlines. Input strings contain no newlines. Empty input writes an empty file. Accept pathlib.Path or string paths, propagate I/O failures, and add a harmless demo that does not write files automatically.
+
+    ## Workflow
+    Create `main.py` yourself. No learner implementation is supplied.
+    Read `syntaxlab docs python file-io` for syntax and independent examples.
+
+    ```sh
+    python3 main.py
+    python3 -m unittest discover -s tests -v
+    syntaxlab check
+    ```
+checks:
+- type: file
+  path: main.py
+  label: Learner main.py exists
+- type: command
+  args:
+  - $python
+  - -c
+  - import main
+  label: Import has no I/O side effects
+  stdout: ''
+- type: command
+  args:
+  - $python
+  - -m
+  - unittest
+  - discover
+  - -s
+  - tests
+  - -v
+  label: Python behavior tests (unittest)
+- type: command
+  args:
+  - $python
+  - main.py
+  label: Application runs
+  stdin: ''
+solution:
+  main.py: |
+    from pathlib import Path
+
+    def write_lines(path, lines: list[str]) -> None:
+        Path(path).write_text("".join(line + "\n" for line in lines), encoding="utf-8")
+
+    def read_lines(path) -> list[str]:
+        return Path(path).read_text(encoding="utf-8").splitlines()
+
+    if __name__ == "__main__":
+        print("Use write_lines and read_lines with your own path")
+project: ''

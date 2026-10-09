@@ -1,0 +1,93 @@
+id: python-functions-multiple
+language: python
+module: functions
+title: 02 · Multiple parameters
+order: 80
+prerequisites:
+- python-functions-basic
+concepts:
+- multiple-parameters
+- return
+- functions
+difficulty: 2
+assignment: |
+  Define rectangle_area(width: int, height: int) -> int for nonnegative dimensions. Zero in either dimension means zero area. Keep calculation separate from printing and add an import-safe demo. Use both parameters; test a nonsquare rectangle yourself.
+
+  ## Workflow
+  Create `main.py` yourself. No learner implementation is supplied.
+  Read `syntaxlab docs python functions` for syntax and independent examples.
+
+  ```sh
+  python3 main.py
+  python3 -m unittest discover -s tests -v
+  syntaxlab check
+  ```
+docs: python/docs/functions.md
+hints:
+- Separate parameters with commas.
+- Returning and printing are different operations.
+files:
+  tests/test_exercise.py: |
+    import contextlib
+    import importlib
+    import io
+    import json
+    import subprocess
+    import sys
+    import tempfile
+    import unittest
+    from pathlib import Path
+    import main as learner
+
+    class ExerciseTests(unittest.TestCase):
+        def test_area(self):
+            self.assertEqual(learner.rectangle_area(3, 8), 24)
+            self.assertEqual(learner.rectangle_area(0, 8), 0)
+            self.assertEqual(learner.rectangle_area(9, 2), 18)
+  ASSIGNMENT.md: |
+    Define rectangle_area(width: int, height: int) -> int for nonnegative dimensions. Zero in either dimension means zero area. Keep calculation separate from printing and add an import-safe demo. Use both parameters; test a nonsquare rectangle yourself.
+
+    ## Workflow
+    Create `main.py` yourself. No learner implementation is supplied.
+    Read `syntaxlab docs python functions` for syntax and independent examples.
+
+    ```sh
+    python3 main.py
+    python3 -m unittest discover -s tests -v
+    syntaxlab check
+    ```
+checks:
+- type: file
+  path: main.py
+  label: Learner main.py exists
+- type: command
+  args:
+  - $python
+  - -c
+  - import main
+  label: Import has no I/O side effects
+  stdout: ''
+- type: command
+  args:
+  - $python
+  - -m
+  - unittest
+  - discover
+  - -s
+  - tests
+  - -v
+  label: Python behavior tests (unittest)
+- type: command
+  args:
+  - $python
+  - main.py
+  label: Application runs
+  stdin: ''
+solution:
+  main.py: |
+    def rectangle_area(width: int, height: int) -> int:
+        return width * height
+
+    if __name__ == "__main__":
+        print(rectangle_area(3, 8))
+project: ''

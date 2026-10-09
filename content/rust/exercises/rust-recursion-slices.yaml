@@ -1,0 +1,91 @@
+id: rust-recursion-slices
+language: rust
+module: recursion
+title: 02 · Recurse over borrowed structure
+order: 270
+prerequisites:
+- rust-recursion-numbers
+concepts:
+- structural-recursion
+- borrowing
+- slices
+difficulty: 4
+assignment: |
+  Write recursive `pub fn total(values: &[i32]) -> i32` for at most 100 bounded integers whose sum fits i32. Empty input gives zero. Recurse on a shorter slice without allocating a Vec, and do not use sum or loops. Add a demo.
+
+  ## Workflow
+  Create `src/lib.rs` with the public API and `src/main.rs` with a runnable demo yourself. No learner implementation is supplied.
+  Read `syntaxlab docs rust recursion` for syntax and independent examples.
+
+  ```sh
+  cargo run
+  cargo test
+  syntaxlab check
+  ```
+docs: rust/docs/recursion.md
+hints:
+- A subslice borrows the same storage rather than copying it.
+- Check the base case before accessing the first element.
+files:
+  Cargo.toml: |
+    [package]
+    name = "syntaxlab_exercise"
+    version = "0.1.0"
+    edition = "2021"
+    rust-version = "1.70"
+  tests/exercise.rs: |
+    use syntaxlab_exercise::*;
+
+    #[test]
+    fn contract() {
+    assert_eq!(total(&[]), 0); assert_eq!(total(&[2, -3, 8]), 7); assert_eq!(total(&[9]), 9);
+    }
+  ASSIGNMENT.md: |
+    Write recursive `pub fn total(values: &[i32]) -> i32` for at most 100 bounded integers whose sum fits i32. Empty input gives zero. Recurse on a shorter slice without allocating a Vec, and do not use sum or loops. Add a demo.
+
+    ## Workflow
+    Create `src/lib.rs` with the public API and `src/main.rs` with a runnable demo yourself. No learner implementation is supplied.
+    Read `syntaxlab docs rust recursion` for syntax and independent examples.
+
+    ```sh
+    cargo run
+    cargo test
+    syntaxlab check
+    ```
+checks:
+- type: file
+  path: src/main.rs
+  label: Learner src/main.rs exists
+- type: file
+  path: src/lib.rs
+  label: Learner library exists
+- type: command
+  args:
+  - $cargo
+  - test
+  - --offline
+  label: Cargo compilation and behavior tests
+  requires:
+  - $cargo
+  - $rustc
+- type: command
+  args:
+  - $cargo
+  - run
+  - --offline
+  - --quiet
+  label: Application runs
+  requires:
+  - $cargo
+  - $rustc
+- type: construct
+  path: src/lib.rs
+  pattern: (?s)fn total.*total\(&values\[1\.\.\]\)
+  label: Required lesson construct (heuristic; behavior tested separately)
+solution:
+  src/lib.rs: |
+    pub fn total(values: &[i32]) -> i32 { if values.is_empty() { 0 } else { values[0] + total(&values[1..]) } }
+  src/main.rs: |
+    use syntaxlab_exercise::*;
+    fn main() { println!("{:?}", total(&[2, -3, 8])); }
+project: ''

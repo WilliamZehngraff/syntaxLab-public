@@ -1,0 +1,81 @@
+id: scala-main-method
+language: scala
+module: foundations
+title: 02 · An explicit main method
+order: 20
+prerequisites:
+- scala-hello
+concepts:
+- main-method
+- objects
+- source-files
+assignment: |
+  Create `object Main` containing `def main(args: Array[String]): Unit`. Print `Ready to learn`.
+  Use this entry style instead of @main. Compare the two styles in the reference.
+
+  ## Workflow
+  Create `Main.scala` yourself. No learner source is supplied.
+
+  ```sh
+  scala-cli run .
+  scala-cli test .
+  syntaxlab check
+  ```
+docs: scala/docs/foundations.md
+hints:
+- An object is a named singleton container.
+- The main method receives command-line strings; they may be unused.
+files:
+  project.scala: |
+    //> using scala "3.3.7"
+    //> using test.dep "org.scalameta::munit:1.0.4"
+  Exercise.test.scala: |
+    class ExerciseTests extends munit.FunSuite:
+      test("object entry point") {
+               val out = new java.io.ByteArrayOutputStream()
+               Console.withOut(out) { Main.main(Array.empty[String]) }
+               assertEquals(out.toString.trim, "Ready to learn")
+             }
+  ASSIGNMENT.md: |
+    Create `object Main` containing `def main(args: Array[String]): Unit`. Print `Ready to learn`.
+    Use this entry style instead of @main. Compare the two styles in the reference.
+
+    ## Workflow
+    Create `Main.scala` yourself. No learner source is supplied.
+
+    ```sh
+    scala-cli run .
+    scala-cli test .
+    syntaxlab check
+    ```
+checks:
+- type: file
+  path: Main.scala
+  label: Main.scala exists
+- type: command
+  args:
+  - $scala
+  - test
+  - .
+  - --server=false
+  timeout: 240
+  label: Scala compilation and MUnit behavior tests
+- type: command
+  args:
+  - $scala
+  - run
+  - .
+  - --server=false
+  timeout: 240
+  label: Application entry point runs
+- type: construct
+  path: Main.scala
+  pattern: object\s+Main
+  label: Required lesson construct (heuristic; behavior checked above)
+solution:
+  Main.scala: |
+    object Main:
+      def main(args: Array[String]): Unit =
+        println("Ready to learn")
+project: ''
+difficulty: 1

@@ -1,0 +1,85 @@
+id: scala-numeric-types
+language: scala
+module: foundations
+title: 05 · Numeric types and conversion
+order: 50
+prerequisites:
+- scala-variables
+concepts:
+- Long
+- Float
+- Double
+- Int
+- inference
+- conversion
+assignment: |
+  Define top-level values `population: Long = 8000000000L`, `ratio: Float = 0.5f`,
+  and `average: Double` computed by dividing 7 by 2 as floating-point values.
+  Define `whole: Int` by converting average to Int. Add a main that prints average.
+  These annotations are deliberate: compare inference with explicit types.
+
+  ## Workflow
+  Create `Main.scala` yourself. No learner source is supplied.
+
+  ```sh
+  scala-cli run .
+  scala-cli test .
+  syntaxlab check
+  ```
+docs: scala/docs/foundations.md
+hints:
+- 7 / 2 uses integer division; choose a floating-point operand before dividing.
+- Long and Float literals use L and f suffixes; toInt truncates toward zero.
+files:
+  project.scala: |
+    //> using scala "3.3.7"
+    //> using test.dep "org.scalameta::munit:1.0.4"
+  Exercise.test.scala: |
+    class ExerciseTests extends munit.FunSuite:
+      test("width, precision and conversion") {
+               val p: Long = population; val r: Float = ratio; val a: Double = average; val w: Int = whole
+               assertEquals(p, 8000000000L); assertEquals(r, 0.5f); assertEquals(a, 3.5); assertEquals(w, 3)
+             }
+  ASSIGNMENT.md: |
+    Define top-level values `population: Long = 8000000000L`, `ratio: Float = 0.5f`,
+    and `average: Double` computed by dividing 7 by 2 as floating-point values.
+    Define `whole: Int` by converting average to Int. Add a main that prints average.
+    These annotations are deliberate: compare inference with explicit types.
+
+    ## Workflow
+    Create `Main.scala` yourself. No learner source is supplied.
+
+    ```sh
+    scala-cli run .
+    scala-cli test .
+    syntaxlab check
+    ```
+checks:
+- type: file
+  path: Main.scala
+  label: Main.scala exists
+- type: command
+  args:
+  - $scala
+  - test
+  - .
+  - --server=false
+  timeout: 240
+  label: Scala compilation and MUnit behavior tests
+- type: command
+  args:
+  - $scala
+  - run
+  - .
+  - --server=false
+  timeout: 240
+  label: Application entry point runs
+solution:
+  Main.scala: |
+    val population: Long = 8000000000L
+    val ratio: Float = 0.5f
+    val average: Double = 7.0 / 2
+    val whole: Int = average.toInt
+    @main def showNumbers(): Unit = println(average)
+project: ''
+difficulty: 1

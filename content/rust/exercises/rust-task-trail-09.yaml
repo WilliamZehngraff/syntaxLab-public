@@ -1,0 +1,128 @@
+id: rust-task-trail-09
+language: rust
+module: projects
+title: 09 · Fallible record parsing
+order: 251
+prerequisites:
+- rust-propagation
+- rust-task-trail-08
+concepts:
+- Result
+- parsing
+- validation
+- serialization
+difficulty: 4
+assignment: |
+  Add `pub fn render_task(task: &Task) -> String` formatting `ID<TAB>STATUS<TAB>TITLE` with STATUS 0/1 and no newline. Add `pub fn parse_task(line: &str) -> Result<Task, String>`. Require exactly three tab-separated fields, a positive u32 ID, status exactly 0 or 1, and a nonblank title without tabs/newlines/carriage returns. Preserve title text. Invalid input returns a nonempty error instead of panicking.
+
+  ## Workflow
+  Create `src/lib.rs` with the public API and `src/main.rs` with a runnable demo yourself. Extend the same project; preserve earlier APIs and stage tests.
+  Read `syntaxlab docs rust projects` for syntax and independent examples.
+
+  ```sh
+  cargo run
+  cargo test
+  syntaxlab check
+  ```
+docs: rust/docs/projects.md
+hints:
+- Preserve earlier APIs; let the accumulated tests protect them during each extension.
+- Decide which values are owned, borrowed or fallible before choosing the function signatures.
+files:
+  Cargo.toml: |
+    [package]
+    name = "task_trail"
+    version = "0.1.0"
+    edition = "2021"
+    rust-version = "1.70"
+  tests/stage_09.rs: |
+    use task_trail::*;
+
+    #[test]
+    fn stage_contract() {
+    let task = Task { id: 7, title: "Read café".to_owned(), done: true }; assert_eq!(render_task(&task), "7\t1\tRead café"); assert_eq!(parse_task(&render_task(&task)).unwrap(), task); for text in ["bad", "0\t0\tA", "1\t2\tA", "1\t0\t ", "1\t0\tA\tB", "-1\t0\tA", "1\t0\tA\nB"] { assert!(!parse_task(text).unwrap_err().is_empty()); }
+    }
+  STAGE-09.md: |
+    Add `pub fn render_task(task: &Task) -> String` formatting `ID<TAB>STATUS<TAB>TITLE` with STATUS 0/1 and no newline. Add `pub fn parse_task(line: &str) -> Result<Task, String>`. Require exactly three tab-separated fields, a positive u32 ID, status exactly 0 or 1, and a nonblank title without tabs/newlines/carriage returns. Preserve title text. Invalid input returns a nonempty error instead of panicking.
+
+    ## Workflow
+    Create `src/lib.rs` with the public API and `src/main.rs` with a runnable demo yourself. Extend the same project; preserve earlier APIs and stage tests.
+    Read `syntaxlab docs rust projects` for syntax and independent examples.
+
+    ```sh
+    cargo run
+    cargo test
+    syntaxlab check
+    ```
+checks:
+- type: file
+  path: src/main.rs
+  label: Learner src/main.rs exists
+- type: file
+  path: src/lib.rs
+  label: Learner library exists
+- type: command
+  args:
+  - $cargo
+  - test
+  - --offline
+  label: Cargo compilation and behavior tests
+  requires:
+  - $cargo
+  - $rustc
+- type: command
+  args:
+  - $cargo
+  - run
+  - --offline
+  - --quiet
+  label: Application runs
+  requires:
+  - $cargo
+  - $rustc
+solution:
+  src/lib.rs: |
+    pub fn remaining(used: u32) -> u32 { 10 - used }
+    pub fn can_add(used: i32) -> bool { used >= 0 && used < 10 }
+    pub fn add_title(titles: &[String], title: String) -> Vec<String> { let mut result = titles.to_vec(); result.push(title); result }
+    pub fn render_titles(titles: &[String]) -> String { titles.iter().map(|title| format!("[ ] {title}")).collect::<Vec<_>>().join("\n") }
+    #[derive(Debug, Clone, PartialEq, Eq)]
+    pub struct Task { pub id: u32, pub title: String, pub done: bool }
+    pub fn task_create(id: u32, title: String) -> Task { Task { id, title, done: false } }
+    pub fn render_task(task: &Task) -> String {
+        format!("{}\t{}\t{}", task.id, if task.done { 1 } else { 0 }, task.title)
+    }
+    pub fn parse_task(line: &str) -> Result<Task, String> {
+        let fields: Vec<&str> = line.split('\t').collect();
+        if fields.len() != 3 { return Err("expected three fields".to_owned()); }
+        let id = fields[0].parse::<u32>().map_err(|_| "invalid ID".to_owned())?;
+        if id == 0 { return Err("ID must be positive".to_owned()); }
+        let done = match fields[1] { "0" => false, "1" => true, _ => return Err("invalid status".to_owned()) };
+        let title = fields[2];
+        if title.trim().is_empty() || title.chars().any(|c| c == '\n' || c == '\r') {
+            return Err("invalid title".to_owned());
+        }
+        Ok(Task { id, title: title.to_owned(), done })
+    }
+    pub struct Board { tasks: Vec<Task> }
+    impl Board {
+        pub fn new() -> Self { Self { tasks: Vec::new() } }
+        pub fn tasks(&self) -> &[Task] { &self.tasks }
+        pub fn add(&mut self, title: String) -> u32 {
+            let mut id = 1;
+            for task in &self.tasks { if task.id >= id { id = task.id + 1; } }
+            self.tasks.push(task_create(id, title));
+            id
+        }
+
+        pub fn find(&self, id: u32) -> Option<&Task> { self.tasks.iter().find(|task| task.id == id) }
+        pub fn complete(&mut self, id: u32) -> bool {
+            for task in &mut self.tasks {
+                if task.id == id { task.done = true; return true; }
+            }
+            false
+        }
+    }
+  src/main.rs: |
+    fn main() { println!("Task Trail ready"); }
+project: task-trail

@@ -1,0 +1,93 @@
+id: python-tuples
+language: python
+module: collections
+title: 04 · Return and unpack a tuple
+order: 180
+prerequisites:
+- python-sets
+concepts:
+- tuple
+- unpacking
+- return-values
+difficulty: 3
+assignment: |
+  Write quotient_remainder(n: int, divisor: int) -> tuple[int, int], returning quotient and remainder for n >= 0 and divisor > 0. Add a main-guarded demo that unpacks the result into two names. A tuple groups values without introducing a new class.
+
+  ## Workflow
+  Create `main.py` yourself. No learner implementation is supplied.
+  Read `syntaxlab docs python collections` for syntax and independent examples.
+
+  ```sh
+  python3 main.py
+  python3 -m unittest discover -s tests -v
+  syntaxlab check
+  ```
+docs: python/docs/collections.md
+hints:
+- A comma creates a tuple; parentheses often make it clearer.
+- The caller can unpack the two components with two names on the left of =.
+files:
+  tests/test_exercise.py: |
+    import contextlib
+    import importlib
+    import io
+    import json
+    import subprocess
+    import sys
+    import tempfile
+    import unittest
+    from pathlib import Path
+    import main as learner
+
+    class ExerciseTests(unittest.TestCase):
+        def test_tuple_contract(self):
+            self.assertEqual(learner.quotient_remainder(17, 5), (3, 2))
+            self.assertEqual(learner.quotient_remainder(0, 2), (0, 0))
+  ASSIGNMENT.md: |
+    Write quotient_remainder(n: int, divisor: int) -> tuple[int, int], returning quotient and remainder for n >= 0 and divisor > 0. Add a main-guarded demo that unpacks the result into two names. A tuple groups values without introducing a new class.
+
+    ## Workflow
+    Create `main.py` yourself. No learner implementation is supplied.
+    Read `syntaxlab docs python collections` for syntax and independent examples.
+
+    ```sh
+    python3 main.py
+    python3 -m unittest discover -s tests -v
+    syntaxlab check
+    ```
+checks:
+- type: file
+  path: main.py
+  label: Learner main.py exists
+- type: command
+  args:
+  - $python
+  - -c
+  - import main
+  label: Import has no I/O side effects
+  stdout: ''
+- type: command
+  args:
+  - $python
+  - -m
+  - unittest
+  - discover
+  - -s
+  - tests
+  - -v
+  label: Python behavior tests (unittest)
+- type: command
+  args:
+  - $python
+  - main.py
+  label: Application runs
+  stdin: ''
+solution:
+  main.py: |
+    def quotient_remainder(n: int, divisor: int) -> tuple[int, int]:
+        return n // divisor, n % divisor
+
+    if __name__ == "__main__":
+        quotient, remainder = quotient_remainder(17, 5)
+        print(quotient, remainder)
+project: ''

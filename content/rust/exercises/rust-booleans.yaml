@@ -1,0 +1,81 @@
+id: rust-booleans
+language: rust
+module: foundations
+title: 05 · Conditions are bool values
+order: 50
+prerequisites:
+- rust-text
+concepts:
+- bool
+- comparisons
+- logical-operators
+difficulty: 1
+assignment: |
+  Set age to 20 and has_ticket to true. Use >= and && to compute eligibility and print true. Print false on the next line by negating eligibility with !. Rust does not treat arbitrary numbers as Boolean conditions.
+
+  ## Workflow
+  Create `src/main.rs` yourself. No learner implementation is supplied.
+  Read `syntaxlab docs rust foundations` for syntax and independent examples.
+
+  ```sh
+  cargo run
+  cargo test
+  syntaxlab check
+  ```
+docs: rust/docs/foundations.md
+hints:
+- Boolean literals are lowercase true and false.
+- '&& combines conditions; ! negates them.'
+files:
+  Cargo.toml: |
+    [package]
+    name = "syntaxlab_exercise"
+    version = "0.1.0"
+    edition = "2021"
+    rust-version = "1.70"
+  tests/exercise.rs: |
+    #[test]
+    fn application_output() {
+        let output = std::process::Command::new(env!("CARGO_BIN_EXE_syntaxlab_exercise")).output().unwrap();
+        assert!(output.status.success(), "{}", String::from_utf8_lossy(&output.stderr));
+        assert_eq!(String::from_utf8(output.stdout).unwrap(), "true\nfalse\n");
+    }
+  ASSIGNMENT.md: |
+    Set age to 20 and has_ticket to true. Use >= and && to compute eligibility and print true. Print false on the next line by negating eligibility with !. Rust does not treat arbitrary numbers as Boolean conditions.
+
+    ## Workflow
+    Create `src/main.rs` yourself. No learner implementation is supplied.
+    Read `syntaxlab docs rust foundations` for syntax and independent examples.
+
+    ```sh
+    cargo run
+    cargo test
+    syntaxlab check
+    ```
+checks:
+- type: file
+  path: src/main.rs
+  label: Learner src/main.rs exists
+- type: command
+  args:
+  - $cargo
+  - test
+  - --offline
+  label: Cargo compilation and behavior tests
+  requires:
+  - $cargo
+  - $rustc
+- type: command
+  args:
+  - $cargo
+  - run
+  - --offline
+  - --quiet
+  label: Application runs
+  requires:
+  - $cargo
+  - $rustc
+solution:
+  src/main.rs: |
+    fn main() { let age = 20; let has_ticket = true; let eligible = age >= 18 && has_ticket; println!("{eligible}"); println!("{}", !eligible); }
+project: ''

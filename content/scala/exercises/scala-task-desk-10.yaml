@@ -1,0 +1,113 @@
+id: scala-task-desk-10
+language: scala
+module: projects
+title: 10 · Split responsibilities
+order: 381
+prerequisites:
+- scala-multiple-files
+- scala-task-desk-09
+concepts:
+- multiple-files
+- separation-of-responsibilities
+assignment: |
+  Move Task and completeTask into Task.scala, and Board into Board.scala. Main.scala should retain entry point and presentation helpers. Keep top-level names unchanged so all prior tests still pass. Add a comment in each file explaining its responsibility.
+
+  ## Workflow
+  Create `Main.scala` yourself. Keep all previously implemented behavior.
+
+  ```sh
+  scala-cli run .
+  scala-cli test .
+  syntaxlab check
+  ```
+docs: scala/docs/projects.md
+hints:
+- Keep earlier tests green while introducing the new behavior.
+- Review the organization reference, then separate calculation from input/output.
+files:
+  project.scala: |
+    //> using scala "3.3.7"
+    //> using test.dep "org.scalameta::munit:1.0.4"
+  Stage10.test.scala: |
+    class Stage10Tests extends munit.FunSuite:
+      test("stage 10 contract") { val b = new Board("Split"); b.add("Keep tests green"); assertEquals(b.tasks.head.title, "Keep tests green") }
+  STAGE-10.md: |
+    Move Task and completeTask into Task.scala, and Board into Board.scala. Main.scala should retain entry point and presentation helpers. Keep top-level names unchanged so all prior tests still pass. Add a comment in each file explaining its responsibility.
+
+    ## Workflow
+    Create `Main.scala` yourself. Keep all previously implemented behavior.
+
+    ```sh
+    scala-cli run .
+    scala-cli test .
+    syntaxlab check
+    ```
+checks:
+- type: file
+  path: Board.scala
+  label: Board.scala exists
+- type: file
+  path: Task.scala
+  label: Task.scala exists
+- type: file
+  path: Main.scala
+  label: Main.scala exists
+- type: command
+  args:
+  - $scala
+  - test
+  - .
+  - --server=false
+  timeout: 240
+  label: Scala compilation and MUnit behavior tests
+- type: command
+  args:
+  - $scala
+  - run
+  - .
+  - --server=false
+  timeout: 240
+  label: Application entry point runs
+solution:
+  Main.scala: |
+    def banner: String = "Task Desk ready"
+    val owner: String = "Learner"
+    val capacity: Int = 10
+    def welcome: String = s"$owner has room for $capacity tasks"
+    def taskLabel(title: String, done: Boolean = false): String =
+      val mark = if done then "x" else " "
+      s"[$mark] $title"
+    def titleFrom(args: Array[String]): String = if args.isEmpty then "Untitled" else args.mkString(" ")
+    def addTitle(titles: Vector[String], title: String): Vector[String] = titles :+ title
+    def listTitles(titles: Vector[String]): String = titles.map(t => taskLabel(t)).mkString("\n")
+    def commandKind(word: String): String = word match
+      case "add" => "add"
+      case "list" => "list"
+      case "done" => "done"
+      case "quit" => "quit"
+      case _ => "unknown"
+    object Main:
+      def main(args: Array[String]): Unit =
+        if args.isEmpty then println(banner) else println(taskLabel(titleFrom(args)))
+  Task.scala: |
+    // Immutable task model.
+    case class Task(id: Int, title: String, done: Boolean = false)
+    def completeTask(task: Task): Task = task.copy(done = true)
+  Board.scala: |
+    // Owns one independent collection.
+    class Board(val name: String):
+      def this() = this("Inbox")
+      private var stored = Vector.empty[Task]
+      def tasks: Vector[Task] = stored
+      def add(title: String): Task =
+        val task = Task(stored.size + 1, title)
+        stored = stored :+ task
+        task
+      def find(id: Int): Option[Task] = stored.find(_.id == id)
+      def complete(id: Int): Boolean =
+        if find(id).isEmpty then false
+        else
+          stored = stored.map(t => if t.id == id then completeTask(t) else t)
+          true
+project: task-desk
+difficulty: 4

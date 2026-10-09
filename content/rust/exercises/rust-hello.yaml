@@ -1,0 +1,86 @@
+id: rust-hello
+language: rust
+module: foundations
+title: 01 · Cargo and a Rust entry point
+order: 10
+prerequisites: []
+concepts:
+- Cargo
+- source-files
+- main
+- println
+- macros
+- comments
+difficulty: 1
+assignment: |
+  Create src/main.rs with fn main() that prints exactly `Hello, Rust!` and a newline. Add a comment explaining println!. Cargo.toml already describes the package; it does not supply your code. Run cargo run, then cargo test. The tests execute your real compiled binary.
+
+  ## Workflow
+  Create `src/main.rs` yourself. No learner implementation is supplied.
+  Read `syntaxlab docs rust foundations` for syntax and independent examples.
+
+  ```sh
+  cargo run
+  cargo test
+  syntaxlab check
+  ```
+docs: rust/docs/foundations.md
+hints:
+- Create the src directory if it does not exist yet.
+- Rust uses braces for function bodies; println! is a macro, hence the exclamation mark.
+files:
+  Cargo.toml: |
+    [package]
+    name = "syntaxlab_exercise"
+    version = "0.1.0"
+    edition = "2021"
+    rust-version = "1.70"
+  tests/exercise.rs: |
+    #[test]
+    fn application_output() {
+        let output = std::process::Command::new(env!("CARGO_BIN_EXE_syntaxlab_exercise")).output().unwrap();
+        assert!(output.status.success(), "{}", String::from_utf8_lossy(&output.stderr));
+        assert_eq!(String::from_utf8(output.stdout).unwrap(), "Hello, Rust!\n");
+    }
+  ASSIGNMENT.md: |
+    Create src/main.rs with fn main() that prints exactly `Hello, Rust!` and a newline. Add a comment explaining println!. Cargo.toml already describes the package; it does not supply your code. Run cargo run, then cargo test. The tests execute your real compiled binary.
+
+    ## Workflow
+    Create `src/main.rs` yourself. No learner implementation is supplied.
+    Read `syntaxlab docs rust foundations` for syntax and independent examples.
+
+    ```sh
+    cargo run
+    cargo test
+    syntaxlab check
+    ```
+checks:
+- type: file
+  path: src/main.rs
+  label: Learner src/main.rs exists
+- type: command
+  args:
+  - $cargo
+  - test
+  - --offline
+  label: Cargo compilation and behavior tests
+  requires:
+  - $cargo
+  - $rustc
+- type: command
+  args:
+  - $cargo
+  - run
+  - --offline
+  - --quiet
+  label: Application runs
+  requires:
+  - $cargo
+  - $rustc
+solution:
+  src/main.rs: |
+    fn main() {
+        // Print one line.
+        println!("Hello, Rust!");
+    }
+project: ''

@@ -1,0 +1,99 @@
+id: python-lists
+language: python
+module: collections
+title: 01 · Slicing without changing the input
+order: 150
+prerequisites:
+- python-comprehensions
+concepts:
+- list
+- slicing
+- mutation
+- aliasing
+difficulty: 3
+assignment: |
+  Write reversed_copy(values: list[int]) -> list[int] returning a new list with reversed order. Preserve the original and return a distinct list even for an empty input. Practice slicing; do not call the in-place reverse method. Add an import-safe demo.
+
+  ## Workflow
+  Create `main.py` yourself. No learner implementation is supplied.
+  Read `syntaxlab docs python collections` for syntax and independent examples.
+
+  ```sh
+  python3 main.py
+  python3 -m unittest discover -s tests -v
+  syntaxlab check
+  ```
+docs: python/docs/collections.md
+hints:
+- A slice has start:stop:step syntax.
+- An assignment alone creates another reference to the same list, not a copy.
+files:
+  tests/test_exercise.py: |
+    import contextlib
+    import importlib
+    import io
+    import json
+    import subprocess
+    import sys
+    import tempfile
+    import unittest
+    from pathlib import Path
+    import main as learner
+
+    class ExerciseTests(unittest.TestCase):
+        def test_independent_copy(self):
+            original = [1, 2, 3]
+            result = learner.reversed_copy(original)
+            self.assertEqual(result, [3, 2, 1])
+            result.append(9)
+            self.assertEqual(original, [1, 2, 3])
+            empty = []
+            self.assertEqual(learner.reversed_copy(empty), [])
+            self.assertIsNot(learner.reversed_copy(empty), empty)
+  ASSIGNMENT.md: |
+    Write reversed_copy(values: list[int]) -> list[int] returning a new list with reversed order. Preserve the original and return a distinct list even for an empty input. Practice slicing; do not call the in-place reverse method. Add an import-safe demo.
+
+    ## Workflow
+    Create `main.py` yourself. No learner implementation is supplied.
+    Read `syntaxlab docs python collections` for syntax and independent examples.
+
+    ```sh
+    python3 main.py
+    python3 -m unittest discover -s tests -v
+    syntaxlab check
+    ```
+checks:
+- type: file
+  path: main.py
+  label: Learner main.py exists
+- type: command
+  args:
+  - $python
+  - -c
+  - import main
+  label: Import has no I/O side effects
+  stdout: ''
+- type: command
+  args:
+  - $python
+  - -m
+  - unittest
+  - discover
+  - -s
+  - tests
+  - -v
+  label: Python behavior tests (unittest)
+- type: command
+  args:
+  - $python
+  - main.py
+  label: Application runs
+  stdin: ''
+solution:
+  main.py: |
+    def reversed_copy(values: list[int]) -> list[int]:
+        return values[::-1]
+
+    if __name__ == "__main__":
+        print(reversed_copy([1, 2, 3]))
+project: ''

@@ -1,0 +1,84 @@
+id: scala-recursion-tail
+language: scala
+module: recursion
+title: 04 · Accumulators and @tailrec
+order: 300
+prerequisites:
+- scala-recursion-transform
+concepts:
+- tail-recursion
+- accumulator
+- tailrec
+assignment: |
+  Write `def countItems(xs: List[Int]): Int` with a local recursive helper annotated `@tailrec`.
+  Count without size, length or loops. It must handle 100000 items without stack overflow.
+  Add a main. Import scala.annotation.tailrec.
+
+  ## Workflow
+  Create `Main.scala` yourself. No learner source is supplied.
+
+  ```sh
+  scala-cli run .
+  scala-cli test .
+  syntaxlab check
+  ```
+docs: scala/docs/recursion.md
+hints:
+- Carry the answer-so-far as a helper parameter.
+- The recursive call must be the last operation; do not add after it returns.
+files:
+  project.scala: |
+    //> using scala "3.3.7"
+    //> using test.dep "org.scalameta::munit:1.0.4"
+  Exercise.test.scala: |
+    class ExerciseTests extends munit.FunSuite:
+      test("stack-safe counting") { assertEquals(countItems(Nil), 0); assertEquals(countItems(List.fill(100000)(7)), 100000) }
+  ASSIGNMENT.md: |
+    Write `def countItems(xs: List[Int]): Int` with a local recursive helper annotated `@tailrec`.
+    Count without size, length or loops. It must handle 100000 items without stack overflow.
+    Add a main. Import scala.annotation.tailrec.
+
+    ## Workflow
+    Create `Main.scala` yourself. No learner source is supplied.
+
+    ```sh
+    scala-cli run .
+    scala-cli test .
+    syntaxlab check
+    ```
+checks:
+- type: file
+  path: Main.scala
+  label: Main.scala exists
+- type: command
+  args:
+  - $scala
+  - test
+  - .
+  - --server=false
+  timeout: 240
+  label: Scala compilation and MUnit behavior tests
+- type: command
+  args:
+  - $scala
+  - run
+  - .
+  - --server=false
+  timeout: 240
+  label: Application entry point runs
+- type: construct
+  path: Main.scala
+  pattern: '@tailrec'
+  label: Required lesson construct (heuristic; behavior checked above)
+solution:
+  Main.scala: |
+    import scala.annotation.tailrec
+    def countItems(xs: List[Int]): Int =
+      @tailrec
+      def loop(rest: List[Int], acc: Int): Int = rest match
+        case Nil => acc
+        case _ :: tail => loop(tail, acc + 1)
+      loop(xs, 0)
+    @main def demo(): Unit = println(countItems(List(1, 2)))
+project: ''
+difficulty: 4

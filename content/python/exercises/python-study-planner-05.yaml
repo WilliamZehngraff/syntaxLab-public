@@ -1,0 +1,110 @@
+id: python-study-planner-05
+language: python
+module: projects
+title: 05 · Structured records
+order: 161
+prerequisites:
+- python-dicts
+- python-study-planner-04
+concepts:
+- dict
+- records
+- state
+difficulty: 2
+assignment: |
+  Add make_record(identifier: int, title: str) -> dict with exactly id, title, and done keys. Values are the given identifier/title and False for done. Each call returns a fresh dictionary. Keep earlier title helpers working as regression practice.
+
+  ## Workflow
+  Create `main.py` yourself. Extend the same project; preserve earlier APIs and stage tests.
+  Read `syntaxlab docs python projects` for syntax and independent examples.
+
+  ```sh
+  python3 main.py
+  python3 -m unittest discover -s tests -v
+  syntaxlab check
+  ```
+docs: python/docs/projects.md
+hints:
+- Keep earlier stage tests green while adding the new behavior.
+- Separate the data calculation from file and terminal I/O; test failure paths deliberately.
+files:
+  tests/test_05.py: |
+    import contextlib
+    import importlib
+    import io
+    import json
+    import subprocess
+    import sys
+    import tempfile
+    import unittest
+    from pathlib import Path
+    import main as learner
+
+    class ExerciseTests(unittest.TestCase):
+        def test_stage_contract(self):
+            self.assertEqual(learner.make_record(3, "Read"), {"id": 3, "title": "Read", "done": False})
+            a = learner.make_record(1, "A")
+            b = learner.make_record(1, "A")
+            a["done"] = True
+            self.assertFalse(b["done"])
+  STAGE-05.md: |
+    Add make_record(identifier: int, title: str) -> dict with exactly id, title, and done keys. Values are the given identifier/title and False for done. Each call returns a fresh dictionary. Keep earlier title helpers working as regression practice.
+
+    ## Workflow
+    Create `main.py` yourself. Extend the same project; preserve earlier APIs and stage tests.
+    Read `syntaxlab docs python projects` for syntax and independent examples.
+
+    ```sh
+    python3 main.py
+    python3 -m unittest discover -s tests -v
+    syntaxlab check
+    ```
+checks:
+- type: file
+  path: main.py
+  label: Learner main.py exists
+- type: command
+  args:
+  - $python
+  - -c
+  - import main
+  label: Import has no I/O side effects
+  stdout: ''
+- type: command
+  args:
+  - $python
+  - -m
+  - unittest
+  - discover
+  - -s
+  - tests
+  - -v
+  label: Python behavior tests (unittest)
+- type: command
+  args:
+  - $python
+  - main.py
+  label: Application runs
+  stdin: ''
+solution:
+  main.py: |
+    def banner() -> str:
+        return "Study Planner ready"
+
+
+    def remaining(used: int) -> int:
+        return 10 - used
+
+    def task_label(title: str, done: bool = False) -> str:
+        mark = "x" if done else " "
+        return f"[{mark}] {title}"
+
+    def add_title(titles: list[str], title: str) -> list[str]:
+        return titles + [title]
+
+    def make_record(identifier: int, title: str) -> dict:
+        return {"id": identifier, "title": title, "done": False}
+
+    if __name__ == "__main__":
+        print(banner())
+project: study-planner

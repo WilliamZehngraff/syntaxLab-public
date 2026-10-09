@@ -1,0 +1,88 @@
+id: rust-borrowing
+language: rust
+module: ownership
+title: 02 · Shared borrowing and Unicode
+order: 130
+prerequisites:
+- rust-ownership
+concepts:
+- shared-borrow
+- str
+- Unicode
+- usize
+difficulty: 2
+assignment: |
+  Implement `pub fn char_count(text: &str) -> usize`, counting Unicode scalar values using chars().count(), not bytes. It must accept both string literals and borrowed Strings without taking ownership. Add a demo that uses its String again after calling the function. This is not a grapheme-cluster counter.
+
+  ## Workflow
+  Create `src/lib.rs` with the public API and `src/main.rs` with a runnable demo yourself. No learner implementation is supplied.
+  Read `syntaxlab docs rust ownership` for syntax and independent examples.
+
+  ```sh
+  cargo run
+  cargo test
+  syntaxlab check
+  ```
+docs: rust/docs/ownership.md
+hints:
+- String.len counts bytes, which differs for non-ASCII text.
+- Borrow an owned String as &name when calling this interface.
+files:
+  Cargo.toml: |
+    [package]
+    name = "syntaxlab_exercise"
+    version = "0.1.0"
+    edition = "2021"
+    rust-version = "1.70"
+  tests/exercise.rs: |
+    use syntaxlab_exercise::*;
+
+    #[test]
+    fn contract() {
+    let name = String::from("café"); assert_eq!(char_count(&name), 4); assert_eq!(name, "café"); assert_eq!(char_count("🦀!"), 2); assert_eq!(char_count(""), 0);
+    }
+  ASSIGNMENT.md: |
+    Implement `pub fn char_count(text: &str) -> usize`, counting Unicode scalar values using chars().count(), not bytes. It must accept both string literals and borrowed Strings without taking ownership. Add a demo that uses its String again after calling the function. This is not a grapheme-cluster counter.
+
+    ## Workflow
+    Create `src/lib.rs` with the public API and `src/main.rs` with a runnable demo yourself. No learner implementation is supplied.
+    Read `syntaxlab docs rust ownership` for syntax and independent examples.
+
+    ```sh
+    cargo run
+    cargo test
+    syntaxlab check
+    ```
+checks:
+- type: file
+  path: src/main.rs
+  label: Learner src/main.rs exists
+- type: file
+  path: src/lib.rs
+  label: Learner library exists
+- type: command
+  args:
+  - $cargo
+  - test
+  - --offline
+  label: Cargo compilation and behavior tests
+  requires:
+  - $cargo
+  - $rustc
+- type: command
+  args:
+  - $cargo
+  - run
+  - --offline
+  - --quiet
+  label: Application runs
+  requires:
+  - $cargo
+  - $rustc
+solution:
+  src/lib.rs: |
+    pub fn char_count(text: &str) -> usize { text.chars().count() }
+  src/main.rs: |
+    use syntaxlab_exercise::*;
+    fn main() { println!("{:?}", char_count("café")); }
+project: ''

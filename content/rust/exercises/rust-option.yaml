@@ -1,0 +1,89 @@
+id: rust-option
+language: rust
+module: enums
+title: 02 · Missing values without null
+order: 230
+prerequisites:
+- rust-enums
+concepts:
+- Option
+- Some
+- None
+- iterator
+- search
+difficulty: 4
+assignment: |
+  Write `pub fn find_index(values: &[i32], target: i32) -> Option<usize>` returning the first matching index or None. Repeated elements must return their first position. Add a demo matching Some(index) and None; avoid unwrap in code that must handle missing results.
+
+  ## Workflow
+  Create `src/lib.rs` with the public API and `src/main.rs` with a runnable demo yourself. No learner implementation is supplied.
+  Read `syntaxlab docs rust enums` for syntax and independent examples.
+
+  ```sh
+  cargo run
+  cargo test
+  syntaxlab check
+  ```
+docs: rust/docs/enums.md
+hints:
+- Option represents a result that may be absent.
+- Iterator::position already returns the optional index of the first match.
+files:
+  Cargo.toml: |
+    [package]
+    name = "syntaxlab_exercise"
+    version = "0.1.0"
+    edition = "2021"
+    rust-version = "1.70"
+  tests/exercise.rs: |
+    use syntaxlab_exercise::*;
+
+    #[test]
+    fn contract() {
+    assert_eq!(find_index(&[4, 2, 4], 4), Some(0)); assert_eq!(find_index(&[4, 2, 4], 2), Some(1)); assert_eq!(find_index(&[], 9), None); assert_eq!(find_index(&[1], 9), None);
+    }
+  ASSIGNMENT.md: |
+    Write `pub fn find_index(values: &[i32], target: i32) -> Option<usize>` returning the first matching index or None. Repeated elements must return their first position. Add a demo matching Some(index) and None; avoid unwrap in code that must handle missing results.
+
+    ## Workflow
+    Create `src/lib.rs` with the public API and `src/main.rs` with a runnable demo yourself. No learner implementation is supplied.
+    Read `syntaxlab docs rust enums` for syntax and independent examples.
+
+    ```sh
+    cargo run
+    cargo test
+    syntaxlab check
+    ```
+checks:
+- type: file
+  path: src/main.rs
+  label: Learner src/main.rs exists
+- type: file
+  path: src/lib.rs
+  label: Learner library exists
+- type: command
+  args:
+  - $cargo
+  - test
+  - --offline
+  label: Cargo compilation and behavior tests
+  requires:
+  - $cargo
+  - $rustc
+- type: command
+  args:
+  - $cargo
+  - run
+  - --offline
+  - --quiet
+  label: Application runs
+  requires:
+  - $cargo
+  - $rustc
+solution:
+  src/lib.rs: |
+    pub fn find_index(values: &[i32], target: i32) -> Option<usize> { values.iter().position(|value| *value == target) }
+  src/main.rs: |
+    use syntaxlab_exercise::*;
+    fn main() { println!("{:?}", find_index(&[3, 9], 9)); }
+project: ''

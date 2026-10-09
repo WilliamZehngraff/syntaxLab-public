@@ -1,0 +1,183 @@
+id: c-task-ledger-08
+language: c
+module: projects
+title: 08 · Task records
+order: 261
+prerequisites:
+- c-structs-values
+- c-task-ledger-07
+concepts:
+- structs
+- typedef
+- strings
+assignment: |
+  Create tasks.h with guards and `typedef struct { int id; int done; char title[64]; } Task;`. Add `Task task_create(int id, const char *title)` setting id, done=0 and copying title. Inputs satisfy valid_title. Share the header between source and tests.
+
+  ## Workflow
+  Create `main.c` yourself. Keep all previously implemented behavior.
+
+  ```sh
+  python3 test_08.py
+  syntaxlab check
+  ```
+docs: c/docs/projects.md
+hints:
+- Add the new operation without breaking the older stage tests.
+- Decide who owns each value, and check boundary/failure cases before the happy path.
+files:
+  test_08.c: |
+    #include <assert.h>
+    #include <stdlib.h>
+    #include <string.h>
+    #include <stdio.h>
+    #include "tasks.h"
+    Task task_create(int, const char*);
+    int main(void) {
+    Task t = task_create(3, "Write tests"); assert(t.id == 3 && t.done == 0); assert(strcmp(t.title, "Write tests") == 0);
+    return 0;
+    }
+  test_08.py: |
+    """Run with python3 test_08.py. GCC diagnostics are printed unchanged."""
+    from pathlib import Path
+    import os
+    import subprocess
+    import sys
+
+    root = Path(__file__).resolve().parent
+    build = root / ".syntaxlab-build" / "test_08"
+    build.mkdir(parents=True, exist_ok=True)
+    cc = os.environ.get("CC", "gcc")
+    flags = ["-std=c17", "-Wall", "-Wextra", "-Wpedantic", "-Werror", "-g"]
+    expected = None
+
+    def execute(args, capture=False):
+        print("+ " + " ".join(str(a) for a in args), flush=True)
+        return subprocess.run(args, cwd=root, check=True, timeout=10,
+                              text=True, capture_output=capture)
+
+    try:
+        sources = sorted(p for p in root.glob("*.c") if not p.name.startswith("test_"))
+        if not sources:
+            raise RuntimeError("Create main.c first")
+        executable = build / "program"
+        execute([cc, *flags, *map(str, sources), "-o", str(executable)])
+        result = execute([str(executable)], capture=True)
+        if expected is not None:
+            assert result.stdout.strip() == expected.strip(), (
+                f"Expected {expected!r}, got {result.stdout!r}")
+        else:
+            objects = []
+            for source in sources:
+                obj = build / (source.stem + ".o")
+                execute([cc, *flags, "-Dmain=learner_main", "-c", str(source), "-o", str(obj)])
+                objects.append(str(obj))
+            harness = build / "tests"
+            execute([cc, *flags, "test_08.c", *objects, "-o", str(harness)])
+            execute([str(harness)])
+        print("All behavior checks passed.")
+    except (OSError, subprocess.SubprocessError, AssertionError, RuntimeError) as error:
+        print(error, file=sys.stderr)
+        if isinstance(error, subprocess.CalledProcessError):
+            print(error.stdout or "", error.stderr or "", file=sys.stderr)
+        sys.exit(1)
+  STAGE-08.md: |
+    Create tasks.h with guards and `typedef struct { int id; int done; char title[64]; } Task;`. Add `Task task_create(int id, const char *title)` setting id, done=0 and copying title. Inputs satisfy valid_title. Share the header between source and tests.
+
+    ## Workflow
+    Create `main.c` yourself. Keep all previously implemented behavior.
+
+    ```sh
+    python3 test_08.py
+    syntaxlab check
+    ```
+checks:
+- type: file
+  path: main.c
+  label: main.c exists
+- type: command
+  args:
+  - python3
+  - test_01.py
+  requires:
+  - $cc
+  label: GCC warnings, linking and behavior tests
+- type: command
+  args:
+  - python3
+  - test_02.py
+  requires:
+  - $cc
+  label: GCC warnings, linking and behavior tests
+- type: command
+  args:
+  - python3
+  - test_03.py
+  requires:
+  - $cc
+  label: GCC warnings, linking and behavior tests
+- type: command
+  args:
+  - python3
+  - test_04.py
+  requires:
+  - $cc
+  label: GCC warnings, linking and behavior tests
+- type: command
+  args:
+  - python3
+  - test_05.py
+  requires:
+  - $cc
+  label: GCC warnings, linking and behavior tests
+- type: command
+  args:
+  - python3
+  - test_06.py
+  requires:
+  - $cc
+  label: GCC warnings, linking and behavior tests
+- type: command
+  args:
+  - python3
+  - test_07.py
+  requires:
+  - $cc
+  label: GCC warnings, linking and behavior tests
+- type: command
+  args:
+  - python3
+  - test_08.py
+  requires:
+  - $cc
+  label: GCC warnings, linking and behavior tests
+solution:
+  main.c: |
+    #include <stdio.h>
+    #include <stddef.h>
+    #include <stdlib.h>
+    #include <string.h>
+    #include "tasks.h"
+    int free_slots(int used) { const int capacity = 10; return capacity - used; }
+    int can_add(int used) { if (used >= 0 && used < 10) return 1; return 0; }
+    int id_total(int count) { int total = 0; for (int i = 1; i <= count; ++i) total += i; return total; }
+    int normalized_done(int value) { return value != 0; }
+    int pending_count(const int done[], int count) { int pending = 0; for (int i = 0; i < count; ++i) if (!normalized_done(done[i])) ++pending; return pending; }
+    int valid_title(const char *title) { size_t n = strlen(title); return n > 0 && n < 64 && strpbrk(title, "\n\t\r") == NULL; }
+    Task task_create(int id, const char *title) { Task t = {0}; t.id = id; snprintf(t.title, sizeof t.title, "%s", title); return t; }
+    int main(void) { int used = 0; if (free_slots(used) != 10) return 1; puts("Task Ledger ready"); return 0; }
+  tasks.h: |
+    #ifndef TASKS_H
+    #define TASKS_H
+    typedef struct { int id; int done; char title[64]; } Task;
+
+    int free_slots(int);
+    int can_add(int);
+    int id_total(int);
+    int normalized_done(int);
+    int pending_count(const int[], int);
+    int valid_title(const char*);
+
+    Task task_create(int, const char*);
+    #endif
+project: task-ledger
+difficulty: 3

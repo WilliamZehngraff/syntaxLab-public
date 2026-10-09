@@ -1,0 +1,151 @@
+id: python-study-planner-07
+language: python
+module: projects
+title: 07 · Lookup and completion
+order: 242
+prerequisites:
+- python-dataclasses
+- python-study-planner-06
+concepts:
+- None
+- lookup
+- immutable-records
+- replacement
+difficulty: 3
+assignment: |
+  Extend Planner with find(identifier: int) -> Task | None and complete(identifier: int) -> bool. Complete an existing task by replacing its frozen record, preserving id/title; repeated completion still returns True. Missing IDs return None/False without changing state.
+
+  ## Workflow
+  Create `main.py` yourself. Extend the same project; preserve earlier APIs and stage tests.
+  Read `syntaxlab docs python projects` for syntax and independent examples.
+
+  ```sh
+  python3 main.py
+  python3 -m unittest discover -s tests -v
+  syntaxlab check
+  ```
+docs: python/docs/projects.md
+hints:
+- Keep earlier stage tests green while adding the new behavior.
+- Separate the data calculation from file and terminal I/O; test failure paths deliberately.
+files:
+  tests/test_07.py: |
+    import contextlib
+    import importlib
+    import io
+    import json
+    import subprocess
+    import sys
+    import tempfile
+    import unittest
+    from pathlib import Path
+    import main as learner
+
+    class ExerciseTests(unittest.TestCase):
+        def test_stage_contract(self):
+            planner = learner.Planner()
+            self.assertIsNone(planner.find(9))
+            self.assertFalse(planner.complete(9))
+            original = planner.add("A")
+            self.assertTrue(planner.complete(1))
+            self.assertTrue(planner.complete(1))
+            self.assertEqual(planner.find(1), learner.Task(1, "A", True))
+            self.assertFalse(original.done)
+  STAGE-07.md: |
+    Extend Planner with find(identifier: int) -> Task | None and complete(identifier: int) -> bool. Complete an existing task by replacing its frozen record, preserving id/title; repeated completion still returns True. Missing IDs return None/False without changing state.
+
+    ## Workflow
+    Create `main.py` yourself. Extend the same project; preserve earlier APIs and stage tests.
+    Read `syntaxlab docs python projects` for syntax and independent examples.
+
+    ```sh
+    python3 main.py
+    python3 -m unittest discover -s tests -v
+    syntaxlab check
+    ```
+checks:
+- type: file
+  path: main.py
+  label: Learner main.py exists
+- type: command
+  args:
+  - $python
+  - -c
+  - import main
+  label: Import has no I/O side effects
+  stdout: ''
+- type: command
+  args:
+  - $python
+  - -m
+  - unittest
+  - discover
+  - -s
+  - tests
+  - -v
+  label: Python behavior tests (unittest)
+- type: command
+  args:
+  - $python
+  - main.py
+  label: Application runs
+  stdin: ''
+solution:
+  main.py: |
+    def banner() -> str:
+        return "Study Planner ready"
+
+
+    def remaining(used: int) -> int:
+        return 10 - used
+
+    def task_label(title: str, done: bool = False) -> str:
+        mark = "x" if done else " "
+        return f"[{mark}] {title}"
+
+    def add_title(titles: list[str], title: str) -> list[str]:
+        return titles + [title]
+
+    def make_record(identifier: int, title: str) -> dict:
+        return {"id": identifier, "title": title, "done": False}
+
+    from dataclasses import dataclass, replace
+
+    @dataclass(frozen=True)
+    class Task:
+        id: int
+        title: str
+        done: bool = False
+
+    class Planner:
+        def __init__(self, name: str = "Inbox"):
+            self.name = name
+            self._tasks = []
+
+        def tasks(self) -> list[Task]:
+            return self._tasks.copy()
+
+        def add(self, title: str) -> Task:
+            next_id = 1
+            for task in self._tasks:
+                next_id = max(next_id, task.id + 1)
+            task = Task(next_id, title)
+            self._tasks.append(task)
+            return task
+
+        def find(self, identifier: int) -> Task | None:
+            for task in self._tasks:
+                if task.id == identifier:
+                    return task
+            return None
+
+        def complete(self, identifier: int) -> bool:
+            for index, task in enumerate(self._tasks):
+                if task.id == identifier:
+                    self._tasks[index] = replace(task, done=True)
+                    return True
+            return False
+
+    if __name__ == "__main__":
+        print(banner())
+project: study-planner

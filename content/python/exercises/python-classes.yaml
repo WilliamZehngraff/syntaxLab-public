@@ -1,0 +1,104 @@
+id: python-classes
+language: python
+module: oop
+title: 01 · Instance state and constructors
+order: 230
+prerequisites:
+- python-recursion-list
+concepts:
+- class
+- self
+- __init__
+- methods
+- instance-state
+difficulty: 4
+assignment: |
+  Define Counter with __init__(start: int = 0), a readable value attribute, and increment() returning None after adding one. Separate instances must be independent. Add a main-guarded demo that constructs and increments a counter. Store changing state on self, not the class.
+
+  ## Workflow
+  Create `main.py` yourself. No learner implementation is supplied.
+  Read `syntaxlab docs python oop` for syntax and independent examples.
+
+  ```sh
+  python3 main.py
+  python3 -m unittest discover -s tests -v
+  syntaxlab check
+  ```
+docs: python/docs/oop.md
+hints:
+- self names the particular instance receiving the method call.
+- A mutable class attribute would be shared by every instance.
+files:
+  tests/test_exercise.py: |
+    import contextlib
+    import importlib
+    import io
+    import json
+    import subprocess
+    import sys
+    import tempfile
+    import unittest
+    from pathlib import Path
+    import main as learner
+
+    class ExerciseTests(unittest.TestCase):
+        def test_independent_instances(self):
+            a = learner.Counter(3)
+            b = learner.Counter()
+            self.assertIsNone(a.increment())
+            a.increment()
+            self.assertEqual(a.value, 5)
+            self.assertEqual(b.value, 0)
+  ASSIGNMENT.md: |
+    Define Counter with __init__(start: int = 0), a readable value attribute, and increment() returning None after adding one. Separate instances must be independent. Add a main-guarded demo that constructs and increments a counter. Store changing state on self, not the class.
+
+    ## Workflow
+    Create `main.py` yourself. No learner implementation is supplied.
+    Read `syntaxlab docs python oop` for syntax and independent examples.
+
+    ```sh
+    python3 main.py
+    python3 -m unittest discover -s tests -v
+    syntaxlab check
+    ```
+checks:
+- type: file
+  path: main.py
+  label: Learner main.py exists
+- type: command
+  args:
+  - $python
+  - -c
+  - import main
+  label: Import has no I/O side effects
+  stdout: ''
+- type: command
+  args:
+  - $python
+  - -m
+  - unittest
+  - discover
+  - -s
+  - tests
+  - -v
+  label: Python behavior tests (unittest)
+- type: command
+  args:
+  - $python
+  - main.py
+  label: Application runs
+  stdin: ''
+solution:
+  main.py: |
+    class Counter:
+        def __init__(self, start: int = 0):
+            self.value = start
+
+        def increment(self) -> None:
+            self.value += 1
+
+    if __name__ == "__main__":
+        counter = Counter(3)
+        counter.increment()
+        print(counter.value)
+project: ''

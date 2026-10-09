@@ -1,0 +1,78 @@
+id: scala-operators
+language: scala
+module: foundations
+title: 07 · Operators and precedence
+order: 70
+prerequisites:
+- scala-text-types
+concepts:
+- operators
+- Boolean
+- comments
+- expressions
+assignment: |
+  Define vals `remainder: Int` (29 modulo 6), `eligible: Boolean` (age 20 is at least 18 AND has a ticket),
+  and `total: Int` ((4 + 3) times 2). Use operators rather than hardcoding results.
+  Print total from a main. Explain integer division versus remainder in a comment.
+
+  ## Workflow
+  Create `Main.scala` yourself. No learner source is supplied.
+
+  ```sh
+  scala-cli run .
+  scala-cli test .
+  syntaxlab check
+  ```
+docs: scala/docs/foundations.md
+hints:
+- Parentheses determine which arithmetic happens first.
+- '&& combines two conditions; % gives a remainder.'
+files:
+  project.scala: |
+    //> using scala "3.3.7"
+    //> using test.dep "org.scalameta::munit:1.0.4"
+  Exercise.test.scala: |
+    class ExerciseTests extends munit.FunSuite:
+      test("operator results") { assertEquals(remainder, 5); assert(eligible); assertEquals(total, 14) }
+  ASSIGNMENT.md: |
+    Define vals `remainder: Int` (29 modulo 6), `eligible: Boolean` (age 20 is at least 18 AND has a ticket),
+    and `total: Int` ((4 + 3) times 2). Use operators rather than hardcoding results.
+    Print total from a main. Explain integer division versus remainder in a comment.
+
+    ## Workflow
+    Create `Main.scala` yourself. No learner source is supplied.
+
+    ```sh
+    scala-cli run .
+    scala-cli test .
+    syntaxlab check
+    ```
+checks:
+- type: file
+  path: Main.scala
+  label: Main.scala exists
+- type: command
+  args:
+  - $scala
+  - test
+  - .
+  - --server=false
+  timeout: 240
+  label: Scala compilation and MUnit behavior tests
+- type: command
+  args:
+  - $scala
+  - run
+  - .
+  - --server=false
+  timeout: 240
+  label: Application entry point runs
+solution:
+  Main.scala: |
+    val remainder: Int = 29 % 6
+    val eligible: Boolean = 20 >= 18 && true
+    val total: Int = (4 + 3) * 2
+    // Division gives a quotient; % gives the remainder.
+    @main def showTotal(): Unit = println(total)
+project: ''
+difficulty: 1

@@ -1,0 +1,89 @@
+id: rust-functions-basic
+language: rust
+module: functions
+title: 01 · Public functions and expression results
+order: 70
+prerequisites:
+- rust-tuples-arrays
+concepts:
+- pub
+- fn
+- parameters
+- return-types
+- expressions
+- library
+difficulty: 1
+assignment: |
+  Write `pub fn triple(n: i32) -> i32` returning three times n. Inputs fit in -1000..1000. Put it in src/lib.rs and call it from a demo in src/main.rs with `syntaxlab_exercise::triple`. Integration tests import the public library; private functions are not visible there.
+
+  ## Workflow
+  Create `src/lib.rs` with the public API and `src/main.rs` with a runnable demo yourself. No learner implementation is supplied.
+  Read `syntaxlab docs rust functions` for syntax and independent examples.
+
+  ```sh
+  cargo run
+  cargo test
+  syntaxlab check
+  ```
+docs: rust/docs/functions.md
+hints:
+- The last expression without a semicolon is the result.
+- A trailing semicolon discards a value and gives unit ().
+files:
+  Cargo.toml: |
+    [package]
+    name = "syntaxlab_exercise"
+    version = "0.1.0"
+    edition = "2021"
+    rust-version = "1.70"
+  tests/exercise.rs: |
+    use syntaxlab_exercise::*;
+
+    #[test]
+    fn contract() {
+    assert_eq!(triple(-4), -12); assert_eq!(triple(0), 0); assert_eq!(triple(7), 21);
+    }
+  ASSIGNMENT.md: |
+    Write `pub fn triple(n: i32) -> i32` returning three times n. Inputs fit in -1000..1000. Put it in src/lib.rs and call it from a demo in src/main.rs with `syntaxlab_exercise::triple`. Integration tests import the public library; private functions are not visible there.
+
+    ## Workflow
+    Create `src/lib.rs` with the public API and `src/main.rs` with a runnable demo yourself. No learner implementation is supplied.
+    Read `syntaxlab docs rust functions` for syntax and independent examples.
+
+    ```sh
+    cargo run
+    cargo test
+    syntaxlab check
+    ```
+checks:
+- type: file
+  path: src/main.rs
+  label: Learner src/main.rs exists
+- type: file
+  path: src/lib.rs
+  label: Learner library exists
+- type: command
+  args:
+  - $cargo
+  - test
+  - --offline
+  label: Cargo compilation and behavior tests
+  requires:
+  - $cargo
+  - $rustc
+- type: command
+  args:
+  - $cargo
+  - run
+  - --offline
+  - --quiet
+  label: Application runs
+  requires:
+  - $cargo
+  - $rustc
+solution:
+  src/lib.rs: |
+    pub fn triple(n: i32) -> i32 { n * 3 }
+  src/main.rs: |
+    fn main() { println!("{}", syntaxlab_exercise::triple(4)); }
+project: ''

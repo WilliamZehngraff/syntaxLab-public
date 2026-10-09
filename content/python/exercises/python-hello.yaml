@@ -1,0 +1,82 @@
+id: python-hello
+language: python
+module: foundations
+title: 01 · Your first Python file
+order: 10
+prerequisites: []
+concepts:
+- source-files
+- print
+- comments
+- execution
+difficulty: 1
+assignment: |
+  Write a Python script that prints exactly `Hello, Python!` followed by a newline. Add a comment explaining what print does. Python executes a source file directly; there is no separate compiler command to memorize. Create the entire file, then run it in your real terminal.
+
+  ## Workflow
+  Create `main.py` yourself. No learner implementation is supplied.
+  Read `syntaxlab docs python foundations` for syntax and independent examples.
+
+  ```sh
+  python3 main.py
+  python3 -m unittest discover -s tests -v
+  syntaxlab check
+  ```
+docs: python/docs/foundations.md
+hints:
+- Create a text file named main.py, not main.py.txt.
+- A string uses matching quotes. print adds a newline.
+files:
+  tests/test_exercise.py: |
+    import contextlib
+    import importlib
+    import io
+    import json
+    import subprocess
+    import sys
+    import tempfile
+    import unittest
+    from pathlib import Path
+
+    class ExerciseTests(unittest.TestCase):
+        def test_program_output(self):
+            result = subprocess.run([sys.executable, "main.py"], input='', capture_output=True, text=True, timeout=5)
+            self.assertEqual(result.returncode, 0, result.stderr)
+            self.assertEqual(result.stdout, 'Hello, Python!\n')
+  ASSIGNMENT.md: |
+    Write a Python script that prints exactly `Hello, Python!` followed by a newline. Add a comment explaining what print does. Python executes a source file directly; there is no separate compiler command to memorize. Create the entire file, then run it in your real terminal.
+
+    ## Workflow
+    Create `main.py` yourself. No learner implementation is supplied.
+    Read `syntaxlab docs python foundations` for syntax and independent examples.
+
+    ```sh
+    python3 main.py
+    python3 -m unittest discover -s tests -v
+    syntaxlab check
+    ```
+checks:
+- type: file
+  path: main.py
+  label: Learner main.py exists
+- type: command
+  args:
+  - $python
+  - -m
+  - unittest
+  - discover
+  - -s
+  - tests
+  - -v
+  label: Python behavior tests (unittest)
+- type: command
+  args:
+  - $python
+  - main.py
+  label: Application runs
+  stdin: ''
+solution:
+  main.py: |
+    # Print a greeting and newline.
+    print("Hello, Python!")
+project: ''

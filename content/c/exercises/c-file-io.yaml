@@ -1,0 +1,119 @@
+id: c-file-io
+language: c
+module: file-io
+title: 01 · Persistence and failure paths
+order: 350
+prerequisites:
+- c-makefile
+concepts:
+- fopen
+- fclose
+- reading
+- writing
+- failure-handling
+assignment: |
+  Write `int save_number(const char *path, int value)` writing a decimal int and newline, returning 1
+  only if opening, writing and closing succeed. Write `int load_number(const char *path, int *out)`
+  returning 1 for a readable integer, otherwise 0 without changing *out. Always close opened files.
+  Include a main. Tests use files under .syntaxlab-build, not personal files.
+
+  ## Workflow
+  Create `main.c` yourself. No learner source is supplied.
+
+  ```sh
+  python3 test_exercise.py
+  syntaxlab check
+  ```
+docs: c/docs/file-io.md
+hints:
+- fopen returns NULL on failure.
+- Read into a temporary value so failed parsing does not corrupt the caller's output.
+files:
+  test_exercise.c: |
+    #include <assert.h>
+    #include <stddef.h>
+    #include <stdlib.h>
+    #include <string.h>
+    #include <stdio.h>
+    int save_number(const char*, int);
+    int load_number(const char*, int*);
+    int main(void) {
+    int n = 99; assert(load_number(".syntaxlab-build/missing/number.txt", &n) == 0 && n == 99); assert(save_number(".syntaxlab-build/number.txt", -42) == 1); assert(load_number(".syntaxlab-build/number.txt", &n) == 1 && n == -42); assert(save_number(".syntaxlab-build/missing/number.txt", 1) == 0); remove(".syntaxlab-build/number.txt");
+    return 0;
+    }
+  test_exercise.py: |
+    """Run with python3 test_exercise.py. GCC diagnostics are printed unchanged."""
+    from pathlib import Path
+    import os
+    import subprocess
+    import sys
+
+    root = Path(__file__).resolve().parent
+    build = root / ".syntaxlab-build" / "test_exercise"
+    build.mkdir(parents=True, exist_ok=True)
+    cc = os.environ.get("CC", "gcc")
+    flags = ["-std=c17", "-Wall", "-Wextra", "-Wpedantic", "-Werror", "-g"]
+    expected = None
+
+    def execute(args, capture=False):
+        print("+ " + " ".join(str(a) for a in args), flush=True)
+        return subprocess.run(args, cwd=root, check=True, timeout=10,
+                              text=True, capture_output=capture)
+
+    try:
+        sources = sorted(p for p in root.glob("*.c") if not p.name.startswith("test_"))
+        if not sources:
+            raise RuntimeError("Create main.c first")
+        executable = build / "program"
+        execute([cc, *flags, *map(str, sources), "-o", str(executable)])
+        result = execute([str(executable)], capture=True)
+        if expected is not None:
+            assert result.stdout.strip() == expected.strip(), (
+                f"Expected {expected!r}, got {result.stdout!r}")
+        else:
+            objects = []
+            for source in sources:
+                obj = build / (source.stem + ".o")
+                execute([cc, *flags, "-Dmain=learner_main", "-c", str(source), "-o", str(obj)])
+                objects.append(str(obj))
+            harness = build / "tests"
+            execute([cc, *flags, "test_exercise.c", *objects, "-o", str(harness)])
+            execute([str(harness)])
+        print("All behavior checks passed.")
+    except (OSError, subprocess.SubprocessError, AssertionError, RuntimeError) as error:
+        print(error, file=sys.stderr)
+        if isinstance(error, subprocess.CalledProcessError):
+            print(error.stdout or "", error.stderr or "", file=sys.stderr)
+        sys.exit(1)
+  ASSIGNMENT.md: |
+    Write `int save_number(const char *path, int value)` writing a decimal int and newline, returning 1
+    only if opening, writing and closing succeed. Write `int load_number(const char *path, int *out)`
+    returning 1 for a readable integer, otherwise 0 without changing *out. Always close opened files.
+    Include a main. Tests use files under .syntaxlab-build, not personal files.
+
+    ## Workflow
+    Create `main.c` yourself. No learner source is supplied.
+
+    ```sh
+    python3 test_exercise.py
+    syntaxlab check
+    ```
+checks:
+- type: file
+  path: main.c
+  label: main.c exists
+- type: command
+  args:
+  - python3
+  - test_exercise.py
+  requires:
+  - $cc
+  label: GCC warnings, linking and behavior tests
+solution:
+  main.c: |
+    #include <stdio.h>
+    int save_number(const char *path, int value) { FILE *f = fopen(path, "w"); if (!f) return 0; int ok = fprintf(f, "%d\n", value) >= 0; if (fclose(f) != 0) ok = 0; return ok; }
+    int load_number(const char *path, int *out) { FILE *f = fopen(path, "r"); if (!f) return 0; int value; int ok = fscanf(f, "%d", &value) == 1; if (fclose(f) != 0) ok = 0; if (ok) *out = value; return ok; }
+    int main(void) { return 0; }
+project: ''
+difficulty: 4

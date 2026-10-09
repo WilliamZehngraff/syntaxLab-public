@@ -1,0 +1,86 @@
+id: scala-text-types
+language: scala
+module: foundations
+title: 06 · Text, characters and booleans
+order: 60
+prerequisites:
+- scala-numeric-types
+concepts:
+- Char
+- String
+- Boolean
+- interpolation
+assignment: |
+  Define `initial: Char` as 'S', `course: String` as Scala, `ready: Boolean` as true,
+  and `summary: String` built with interpolation to read `Scala starts with S: true`.
+  Add a main that prints summary. Character and String delimiters differ.
+
+  ## Workflow
+  Create `Main.scala` yourself. No learner source is supplied.
+
+  ```sh
+  scala-cli run .
+  scala-cli test .
+  syntaxlab check
+  ```
+docs: scala/docs/foundations.md
+hints:
+- A Char uses single quotes; a String uses double quotes.
+- Prefix an interpolated string with s and put $ before a name.
+files:
+  project.scala: |
+    //> using scala "3.3.7"
+    //> using test.dep "org.scalameta::munit:1.0.4"
+  Exercise.test.scala: |
+    class ExerciseTests extends munit.FunSuite:
+      test("typed text") {
+               val c: Char = initial; val s: String = course; val b: Boolean = ready
+               assertEquals(c, 'S'); assertEquals(s, "Scala"); assert(b)
+               assertEquals(summary, "Scala starts with S: true")
+             }
+  ASSIGNMENT.md: |
+    Define `initial: Char` as 'S', `course: String` as Scala, `ready: Boolean` as true,
+    and `summary: String` built with interpolation to read `Scala starts with S: true`.
+    Add a main that prints summary. Character and String delimiters differ.
+
+    ## Workflow
+    Create `Main.scala` yourself. No learner source is supplied.
+
+    ```sh
+    scala-cli run .
+    scala-cli test .
+    syntaxlab check
+    ```
+checks:
+- type: file
+  path: Main.scala
+  label: Main.scala exists
+- type: command
+  args:
+  - $scala
+  - test
+  - .
+  - --server=false
+  timeout: 240
+  label: Scala compilation and MUnit behavior tests
+- type: command
+  args:
+  - $scala
+  - run
+  - .
+  - --server=false
+  timeout: 240
+  label: Application entry point runs
+- type: construct
+  path: Main.scala
+  pattern: s"
+  label: Required lesson construct (heuristic; behavior checked above)
+solution:
+  Main.scala: |
+    val initial: Char = 'S'
+    val course: String = "Scala"
+    val ready: Boolean = true
+    val summary: String = s"$course starts with $initial: $ready"
+    @main def showSummary(): Unit = println(summary)
+project: ''
+difficulty: 1

@@ -1,0 +1,83 @@
+id: python-numbers
+language: python
+module: foundations
+title: 03 · Division and numeric conversion
+order: 30
+prerequisites:
+- python-values
+concepts:
+- int
+- float
+- operators
+- conversion
+difficulty: 1
+assignment: |
+  Compute 7 divided by 2 three ways: ordinary division, floor division, and remainder. Print `3.5 3 1` on one line using the computed values. Add a comment explaining why int(-3.5) and -7 // 2 give different results. Do not hardcode the output line.
+
+  ## Workflow
+  Create `main.py` yourself. No learner implementation is supplied.
+  Read `syntaxlab docs python foundations` for syntax and independent examples.
+
+  ```sh
+  python3 main.py
+  python3 -m unittest discover -s tests -v
+  syntaxlab check
+  ```
+docs: python/docs/foundations.md
+hints:
+- / returns a float even for two integer operands.
+- // gives floor division; % gives the remainder.
+files:
+  tests/test_exercise.py: |
+    import contextlib
+    import importlib
+    import io
+    import json
+    import subprocess
+    import sys
+    import tempfile
+    import unittest
+    from pathlib import Path
+
+    class ExerciseTests(unittest.TestCase):
+        def test_program_output(self):
+            result = subprocess.run([sys.executable, "main.py"], input='', capture_output=True, text=True, timeout=5)
+            self.assertEqual(result.returncode, 0, result.stderr)
+            self.assertEqual(result.stdout, '3.5 3 1\n')
+  ASSIGNMENT.md: |
+    Compute 7 divided by 2 three ways: ordinary division, floor division, and remainder. Print `3.5 3 1` on one line using the computed values. Add a comment explaining why int(-3.5) and -7 // 2 give different results. Do not hardcode the output line.
+
+    ## Workflow
+    Create `main.py` yourself. No learner implementation is supplied.
+    Read `syntaxlab docs python foundations` for syntax and independent examples.
+
+    ```sh
+    python3 main.py
+    python3 -m unittest discover -s tests -v
+    syntaxlab check
+    ```
+checks:
+- type: file
+  path: main.py
+  label: Learner main.py exists
+- type: command
+  args:
+  - $python
+  - -m
+  - unittest
+  - discover
+  - -s
+  - tests
+  - -v
+  label: Python behavior tests (unittest)
+- type: command
+  args:
+  - $python
+  - main.py
+  label: Application runs
+  stdin: ''
+solution:
+  main.py: |
+    # int truncates toward zero; // rounds down.
+    print(7 / 2, 7 // 2, 7 % 2)
+project: ''

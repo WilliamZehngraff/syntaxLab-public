@@ -1,0 +1,80 @@
+id: scala-testing-properties
+language: scala
+module: testing
+title: 01 · Deterministic properties
+order: 390
+prerequisites:
+- scala-multiple-files
+concepts:
+- assertions
+- properties
+- deterministic-tests
+assignment: |
+  Write `def absolute(n: Int): Int` for inputs -1000000..1000000. Add a main and your own MUnit suite
+  `Learner.test.scala` with at least three assertions, including zero and a negative value.
+  Think about nonnegativity and symmetry rather than memorizing a few outputs.
+
+  ## Workflow
+  Create `Main.scala` yourself. No learner source is supplied.
+
+  ```sh
+  scala-cli run .
+  scala-cli test .
+  syntaxlab check
+  ```
+docs: scala/docs/testing.md
+hints:
+- A property describes many valid inputs.
+- 'Exclude Int.MinValue from this contract: its positive counterpart does not fit in Int.'
+files:
+  project.scala: |
+    //> using scala "3.3.7"
+    //> using test.dep "org.scalameta::munit:1.0.4"
+  Exercise.test.scala: |
+    class ExerciseTests extends munit.FunSuite:
+      test("absolute properties") { for n <- -1000 to 1000 do { assert(absolute(n) >= 0); assertEquals(absolute(n), absolute(-n)); assertEquals(absolute(n), math.abs(n)) } }
+  ASSIGNMENT.md: |
+    Write `def absolute(n: Int): Int` for inputs -1000000..1000000. Add a main and your own MUnit suite
+    `Learner.test.scala` with at least three assertions, including zero and a negative value.
+    Think about nonnegativity and symmetry rather than memorizing a few outputs.
+
+    ## Workflow
+    Create `Main.scala` yourself. No learner source is supplied.
+
+    ```sh
+    scala-cli run .
+    scala-cli test .
+    syntaxlab check
+    ```
+checks:
+- type: file
+  path: Learner.test.scala
+  label: Learner-written tests exist
+- type: file
+  path: Main.scala
+  label: Main.scala exists
+- type: command
+  args:
+  - $scala
+  - test
+  - .
+  - --server=false
+  timeout: 240
+  label: Scala compilation and MUnit behavior tests
+- type: command
+  args:
+  - $scala
+  - run
+  - .
+  - --server=false
+  timeout: 240
+  label: Application entry point runs
+solution:
+  Main.scala: |
+    def absolute(n: Int): Int = if n < 0 then -n else n
+    @main def demo(): Unit = println(absolute(-9))
+  Learner.test.scala: |
+    class LearnerTests extends munit.FunSuite:
+      test("examples") { assertEquals(absolute(0), 0); assertEquals(absolute(-3), 3); assertEquals(absolute(5), 5) }
+project: ''
+difficulty: 5

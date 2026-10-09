@@ -1,0 +1,92 @@
+id: python-functions-defaults
+language: python
+module: functions
+title: 03 · Defaults and keyword arguments
+order: 90
+prerequisites:
+- python-functions-multiple
+concepts:
+- default-arguments
+- keyword-arguments
+- f-strings
+difficulty: 2
+assignment: |
+  Define label(name: str, count: int = 1) -> str returning `name: count`. Call it with keyword arguments in reversed order in your main-guarded demo. Do not print from label itself. Consider why immutable defaults are safer than mutable list defaults.
+
+  ## Workflow
+  Create `main.py` yourself. No learner implementation is supplied.
+  Read `syntaxlab docs python functions` for syntax and independent examples.
+
+  ```sh
+  python3 main.py
+  python3 -m unittest discover -s tests -v
+  syntaxlab check
+  ```
+docs: python/docs/functions.md
+hints:
+- A default follows = in the definition.
+- At the call site use the actual parameter names.
+files:
+  tests/test_exercise.py: |
+    import contextlib
+    import importlib
+    import io
+    import json
+    import subprocess
+    import sys
+    import tempfile
+    import unittest
+    from pathlib import Path
+    import main as learner
+
+    class ExerciseTests(unittest.TestCase):
+        def test_defaults(self):
+            self.assertEqual(learner.label("books"), "books: 1")
+            self.assertEqual(learner.label(count=0, name="cards"), "cards: 0")
+  ASSIGNMENT.md: |
+    Define label(name: str, count: int = 1) -> str returning `name: count`. Call it with keyword arguments in reversed order in your main-guarded demo. Do not print from label itself. Consider why immutable defaults are safer than mutable list defaults.
+
+    ## Workflow
+    Create `main.py` yourself. No learner implementation is supplied.
+    Read `syntaxlab docs python functions` for syntax and independent examples.
+
+    ```sh
+    python3 main.py
+    python3 -m unittest discover -s tests -v
+    syntaxlab check
+    ```
+checks:
+- type: file
+  path: main.py
+  label: Learner main.py exists
+- type: command
+  args:
+  - $python
+  - -c
+  - import main
+  label: Import has no I/O side effects
+  stdout: ''
+- type: command
+  args:
+  - $python
+  - -m
+  - unittest
+  - discover
+  - -s
+  - tests
+  - -v
+  label: Python behavior tests (unittest)
+- type: command
+  args:
+  - $python
+  - main.py
+  label: Application runs
+  stdin: ''
+solution:
+  main.py: |
+    def label(name: str, count: int = 1) -> str:
+        return f"{name}: {count}"
+
+    if __name__ == "__main__":
+        print(label(count=4, name="pens"))
+project: ''

@@ -1,0 +1,77 @@
+id: scala-if-expression
+language: scala
+module: control-flow
+title: 01 · Decisions produce values
+order: 140
+prerequisites:
+- scala-functions-overloads
+concepts:
+- if
+- else
+- expressions
+- functions
+assignment: |
+  Write `def larger(a: Int, b: Int): Int` using an if/else expression, including equal/negative inputs.
+  Add a main. Do not call max: this lesson practices a decision.
+
+  ## Workflow
+  Create `Main.scala` yourself. No learner source is supplied.
+
+  ```sh
+  scala-cli run .
+  scala-cli test .
+  syntaxlab check
+  ```
+docs: scala/docs/control-flow.md
+hints:
+- An if expression can be the entire function body.
+- Both branches must return the same kind of value.
+files:
+  project.scala: |
+    //> using scala "3.3.7"
+    //> using test.dep "org.scalameta::munit:1.0.4"
+  Exercise.test.scala: |
+    class ExerciseTests extends munit.FunSuite:
+      test("larger") { assertEquals(larger(2, 7), 7); assertEquals(larger(-2, -7), -2); assertEquals(larger(4, 4), 4) }
+  ASSIGNMENT.md: |
+    Write `def larger(a: Int, b: Int): Int` using an if/else expression, including equal/negative inputs.
+    Add a main. Do not call max: this lesson practices a decision.
+
+    ## Workflow
+    Create `Main.scala` yourself. No learner source is supplied.
+
+    ```sh
+    scala-cli run .
+    scala-cli test .
+    syntaxlab check
+    ```
+checks:
+- type: file
+  path: Main.scala
+  label: Main.scala exists
+- type: command
+  args:
+  - $scala
+  - test
+  - .
+  - --server=false
+  timeout: 240
+  label: Scala compilation and MUnit behavior tests
+- type: command
+  args:
+  - $scala
+  - run
+  - .
+  - --server=false
+  timeout: 240
+  label: Application entry point runs
+- type: construct
+  path: Main.scala
+  pattern: \bif\b.*\bthen\b
+  label: Required lesson construct (heuristic; behavior checked above)
+solution:
+  Main.scala: |
+    def larger(a: Int, b: Int): Int = if a >= b then a else b
+    @main def demo(): Unit = println(larger(2, 7))
+project: ''
+difficulty: 2

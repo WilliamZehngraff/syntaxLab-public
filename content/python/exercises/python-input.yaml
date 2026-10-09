@@ -1,0 +1,83 @@
+id: python-input
+language: python
+module: foundations
+title: 06 · Read a line from the terminal
+order: 60
+prerequisites:
+- python-booleans
+concepts:
+- input
+- stdin
+- str
+- formatting
+difficulty: 1
+assignment: |
+  Read one name using input() without a prompt, strip whitespace, and print `Welcome, NAME!`. The tests supply a name through stdin; your script must not hardcode it. Manually run the program twice with different names to see input and output as separate streams.
+
+  ## Workflow
+  Create `main.py` yourself. No learner implementation is supplied.
+  Read `syntaxlab docs python foundations` for syntax and independent examples.
+
+  ```sh
+  python3 main.py
+  python3 -m unittest discover -s tests -v
+  syntaxlab check
+  ```
+docs: python/docs/foundations.md
+hints:
+- input returns a string without the trailing newline.
+- Avoid a prompt here because the contract specifies exact stdout.
+files:
+  tests/test_exercise.py: |
+    import contextlib
+    import importlib
+    import io
+    import json
+    import subprocess
+    import sys
+    import tempfile
+    import unittest
+    from pathlib import Path
+
+    class ExerciseTests(unittest.TestCase):
+        def test_program_output(self):
+            result = subprocess.run([sys.executable, "main.py"], input='  Lin  \n', capture_output=True, text=True, timeout=5)
+            self.assertEqual(result.returncode, 0, result.stderr)
+            self.assertEqual(result.stdout, 'Welcome, Lin!\n')
+  ASSIGNMENT.md: |
+    Read one name using input() without a prompt, strip whitespace, and print `Welcome, NAME!`. The tests supply a name through stdin; your script must not hardcode it. Manually run the program twice with different names to see input and output as separate streams.
+
+    ## Workflow
+    Create `main.py` yourself. No learner implementation is supplied.
+    Read `syntaxlab docs python foundations` for syntax and independent examples.
+
+    ```sh
+    python3 main.py
+    python3 -m unittest discover -s tests -v
+    syntaxlab check
+    ```
+checks:
+- type: file
+  path: main.py
+  label: Learner main.py exists
+- type: command
+  args:
+  - $python
+  - -m
+  - unittest
+  - discover
+  - -s
+  - tests
+  - -v
+  label: Python behavior tests (unittest)
+- type: command
+  args:
+  - $python
+  - main.py
+  label: Application runs
+  stdin: "  Lin  \n"
+solution:
+  main.py: |
+    name = input().strip()
+    print(f"Welcome, {name}!")
+project: ''

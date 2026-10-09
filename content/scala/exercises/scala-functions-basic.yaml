@@ -1,0 +1,73 @@
+id: scala-functions-basic
+language: scala
+module: functions
+title: 01 · A named calculation
+order: 80
+prerequisites:
+- scala-operators
+concepts:
+- functions
+- parameters
+- return-types
+- expression-bodies
+assignment: |
+  Write `def triple(n: Int): Int` with an expression body. Return three times n, including negative inputs.
+  Add a main of your own that calls it and prints the result. Tests call the function directly.
+
+  ## Workflow
+  Create `Main.scala` yourself. No learner source is supplied.
+
+  ```sh
+  scala-cli run .
+  scala-cli test .
+  syntaxlab check
+  ```
+docs: scala/docs/functions.md
+hints:
+- The final expression is the return value.
+- You do not need the return keyword for an expression body.
+files:
+  project.scala: |
+    //> using scala "3.3.7"
+    //> using test.dep "org.scalameta::munit:1.0.4"
+  Exercise.test.scala: |
+    class ExerciseTests extends munit.FunSuite:
+      test("triple values") { for n <- List(-7, 0, 1, 12) do assertEquals(triple(n), n * 3) }
+  ASSIGNMENT.md: |
+    Write `def triple(n: Int): Int` with an expression body. Return three times n, including negative inputs.
+    Add a main of your own that calls it and prints the result. Tests call the function directly.
+
+    ## Workflow
+    Create `Main.scala` yourself. No learner source is supplied.
+
+    ```sh
+    scala-cli run .
+    scala-cli test .
+    syntaxlab check
+    ```
+checks:
+- type: file
+  path: Main.scala
+  label: Main.scala exists
+- type: command
+  args:
+  - $scala
+  - test
+  - .
+  - --server=false
+  timeout: 240
+  label: Scala compilation and MUnit behavior tests
+- type: command
+  args:
+  - $scala
+  - run
+  - .
+  - --server=false
+  timeout: 240
+  label: Application entry point runs
+solution:
+  Main.scala: |
+    def triple(n: Int): Int = n * 3
+    @main def demo(): Unit = println(triple(4))
+project: ''
+difficulty: 1

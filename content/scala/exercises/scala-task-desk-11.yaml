@@ -1,0 +1,162 @@
+id: scala-task-desk-11
+language: scala
+module: projects
+title: 11 · Interactive workflow and your tests
+order: 391
+prerequisites:
+- scala-testing-properties
+- scala-task-desk-10
+concepts:
+- tests
+- input
+- parsing
+- Option
+- classes
+assignment: |
+  Add `def execute(board: Board, line: String): String` supporting: `add TITLE` → `Added ID` (trim TITLE; reject empty with `Invalid command`); `list` → lines `ID [ ] TITLE` or `ID [x] TITLE`; `done ID` → `Completed` or `Not found`; malformed/unknown input → `Invalid command`; `quit` → `Bye`. IDs must parse safely. Add --interactive to main: read lines, execute and print until quit or EOF. Preserve no-argument banner. Add Learner.test.scala with tests you wrote for malformed input and independent boards.
+
+  ## Workflow
+  Create `Main.scala` yourself. Keep all previously implemented behavior.
+
+  ```sh
+  scala-cli run .
+  scala-cli test .
+  syntaxlab check
+  ```
+
+  The interactive loop may use `> ` as its prompt, or no prompt. Print only command results.
+docs: scala/docs/projects.md
+hints:
+- Keep earlier tests green while introducing the new behavior.
+- Review the testing reference, then separate calculation from input/output.
+files:
+  project.scala: |
+    //> using scala "3.3.7"
+    //> using test.dep "org.scalameta::munit:1.0.4"
+  Stage11.test.scala: |
+    class Stage11Tests extends munit.FunSuite:
+      test("stage 11 contract") { val b = new Board(); assertEquals(execute(b, "list"), ""); assertEquals(execute(b, "add Read book"), "Added 1"); assertEquals(execute(b, "done x"), "Invalid command"); assertEquals(execute(b, "done 9"), "Not found"); assertEquals(execute(b, "done 1"), "Completed"); assertEquals(execute(b, "list"), "1 [x] Read book"); assertEquals(execute(b, "add   "), "Invalid command"); assertEquals(execute(b, "quit"), "Bye") }
+  STAGE-11.md: |
+    Add `def execute(board: Board, line: String): String` supporting: `add TITLE` → `Added ID` (trim TITLE; reject empty with `Invalid command`); `list` → lines `ID [ ] TITLE` or `ID [x] TITLE`; `done ID` → `Completed` or `Not found`; malformed/unknown input → `Invalid command`; `quit` → `Bye`. IDs must parse safely. Add --interactive to main: read lines, execute and print until quit or EOF. Preserve no-argument banner. Add Learner.test.scala with tests you wrote for malformed input and independent boards.
+
+    ## Workflow
+    Create `Main.scala` yourself. Keep all previously implemented behavior.
+
+    ```sh
+    scala-cli run .
+    scala-cli test .
+    syntaxlab check
+    ```
+
+    The interactive loop may use `> ` as its prompt, or no prompt. Print only command results.
+  Interactive.test.scala: |
+    class InteractiveTests extends munit.FunSuite:
+      test("entry point reads commands until quit") {
+        val input = new java.io.ByteArrayInputStream("add Read book\nlist\ndone 1\nlist\nquit\n".getBytes("UTF-8"))
+        val output = new java.io.ByteArrayOutputStream()
+        Console.withIn(input) { Console.withOut(output) { Main.main(Array("--interactive")) } }
+        val lines = output.toString("UTF-8").linesIterator.map(_.stripPrefix("> ")).filter(_.nonEmpty).toList
+        assertEquals(lines, List("Added 1", "1 [ ] Read book", "Completed", "1 [x] Read book", "Bye"))
+      }
+      test("end of file exits without a command") {
+        val input = new java.io.ByteArrayInputStream(Array.emptyByteArray)
+        val output = new java.io.ByteArrayOutputStream()
+        Console.withIn(input) { Console.withOut(output) { Main.main(Array("--interactive")) } }
+        assertEquals(output.toString("UTF-8").stripPrefix("> ").trim, "")
+      }
+checks:
+- type: file
+  path: Learner.test.scala
+  label: Learner.test.scala exists
+- type: file
+  path: Main.scala
+  label: Main.scala exists
+- type: command
+  args:
+  - $scala
+  - test
+  - .
+  - --server=false
+  timeout: 240
+  label: Scala compilation and MUnit behavior tests
+- type: command
+  args:
+  - $scala
+  - run
+  - .
+  - --server=false
+  timeout: 240
+  label: Application entry point runs
+solution:
+  Main.scala: |
+    def banner: String = "Task Desk ready"
+    val owner: String = "Learner"
+    val capacity: Int = 10
+    def welcome: String = s"$owner has room for $capacity tasks"
+    def taskLabel(title: String, done: Boolean = false): String =
+      val mark = if done then "x" else " "
+      s"[$mark] $title"
+    def titleFrom(args: Array[String]): String = if args.isEmpty then "Untitled" else args.mkString(" ")
+    def addTitle(titles: Vector[String], title: String): Vector[String] = titles :+ title
+    def listTitles(titles: Vector[String]): String = titles.map(t => taskLabel(t)).mkString("\n")
+    def commandKind(word: String): String = word match
+      case "add" => "add"
+      case "list" => "list"
+      case "done" => "done"
+      case "quit" => "quit"
+      case _ => "unknown"
+    def execute(board: Board, line: String): String =
+      val text = line.trim
+      if text.startsWith("add ") && text.drop(4).trim.nonEmpty then
+        s"Added ${board.add(text.drop(4).trim).id}"
+      else if text == "list" then
+        board.tasks.map(t => s"${t.id} ${taskLabel(t.title, t.done)}").mkString("\n")
+      else if text.startsWith("done ") then
+        text.drop(5).trim.toIntOption match
+          case Some(id) => if board.complete(id) then "Completed" else "Not found"
+          case None => "Invalid command"
+      else if text == "quit" then "Bye"
+      else "Invalid command"
+    object Main:
+      def main(args: Array[String]): Unit =
+        if args.contains("--interactive") then
+          val board = new Board()
+          var running = true
+          while running do
+            val line = scala.io.StdIn.readLine("> ")
+            if line == null then running = false
+            else
+              println(execute(board, line))
+              if line.trim == "quit" then running = false
+        else if args.isEmpty then println(banner)
+        else println(taskLabel(titleFrom(args)))
+  Task.scala: |
+    // Immutable task model.
+    case class Task(id: Int, title: String, done: Boolean = false)
+    def completeTask(task: Task): Task = task.copy(done = true)
+  Board.scala: |
+    // Owns one independent collection.
+    class Board(val name: String):
+      def this() = this("Inbox")
+      private var stored = Vector.empty[Task]
+      def tasks: Vector[Task] = stored
+      def add(title: String): Task =
+        val task = Task(stored.size + 1, title)
+        stored = stored :+ task
+        task
+      def find(id: Int): Option[Task] = stored.find(_.id == id)
+      def complete(id: Int): Boolean =
+        if find(id).isEmpty then false
+        else
+          stored = stored.map(t => if t.id == id then completeTask(t) else t)
+          true
+  Learner.test.scala: |
+    class LearnerTests extends munit.FunSuite:
+      test("invalid command and isolated boards") {
+        val first = new Board()
+        assertEquals(execute(first, "?"), "Invalid command")
+        execute(first, "add A")
+        assertEquals(new Board().tasks.size, 0)
+      }
+project: task-desk
+difficulty: 4

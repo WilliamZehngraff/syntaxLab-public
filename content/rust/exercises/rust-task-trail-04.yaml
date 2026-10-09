@@ -1,0 +1,90 @@
+id: rust-task-trail-04
+language: rust
+module: projects
+title: 04 · An owned title collection
+order: 161
+prerequisites:
+- rust-vectors
+- rust-task-trail-03
+concepts:
+- Vec
+- ownership
+- clone
+- borrowing
+difficulty: 2
+assignment: |
+  Add `pub fn add_title(titles: &[String], title: String) -> Vec<String>` returning an independent collection with title appended. Preserve the borrowed input and its ordering. Copying existing owned strings here is intentional: the result must own them independently.
+
+  ## Workflow
+  Create `src/lib.rs` with the public API and `src/main.rs` with a runnable demo yourself. Extend the same project; preserve earlier APIs and stage tests.
+  Read `syntaxlab docs rust projects` for syntax and independent examples.
+
+  ```sh
+  cargo run
+  cargo test
+  syntaxlab check
+  ```
+docs: rust/docs/projects.md
+hints:
+- Preserve earlier APIs; let the accumulated tests protect them during each extension.
+- Decide which values are owned, borrowed or fallible before choosing the function signatures.
+files:
+  Cargo.toml: |
+    [package]
+    name = "task_trail"
+    version = "0.1.0"
+    edition = "2021"
+    rust-version = "1.70"
+  tests/stage_04.rs: |
+    use task_trail::*;
+
+    #[test]
+    fn stage_contract() {
+    let before = vec!["A".to_owned()]; let result = add_title(&before, "B".to_owned()); assert_eq!(result, vec!["A", "B"]); assert_eq!(before, vec!["A"]);
+    }
+  STAGE-04.md: |
+    Add `pub fn add_title(titles: &[String], title: String) -> Vec<String>` returning an independent collection with title appended. Preserve the borrowed input and its ordering. Copying existing owned strings here is intentional: the result must own them independently.
+
+    ## Workflow
+    Create `src/lib.rs` with the public API and `src/main.rs` with a runnable demo yourself. Extend the same project; preserve earlier APIs and stage tests.
+    Read `syntaxlab docs rust projects` for syntax and independent examples.
+
+    ```sh
+    cargo run
+    cargo test
+    syntaxlab check
+    ```
+checks:
+- type: file
+  path: src/main.rs
+  label: Learner src/main.rs exists
+- type: file
+  path: src/lib.rs
+  label: Learner library exists
+- type: command
+  args:
+  - $cargo
+  - test
+  - --offline
+  label: Cargo compilation and behavior tests
+  requires:
+  - $cargo
+  - $rustc
+- type: command
+  args:
+  - $cargo
+  - run
+  - --offline
+  - --quiet
+  label: Application runs
+  requires:
+  - $cargo
+  - $rustc
+solution:
+  src/lib.rs: |
+    pub fn remaining(used: u32) -> u32 { 10 - used }
+    pub fn can_add(used: i32) -> bool { used >= 0 && used < 10 }
+    pub fn add_title(titles: &[String], title: String) -> Vec<String> { let mut result = titles.to_vec(); result.push(title); result }
+  src/main.rs: |
+    fn main() { println!("Task Trail ready"); }
+project: task-trail

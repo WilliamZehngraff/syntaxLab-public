@@ -1,0 +1,96 @@
+id: python-dicts
+language: python
+module: collections
+title: 02 · Frequency dictionaries
+order: 160
+prerequisites:
+- python-lists
+concepts:
+- dict
+- lookup
+- get
+- accumulation
+difficulty: 3
+assignment: |
+  Write frequencies(words: list[str]) -> dict[str, int] counting each distinct string. Matching is case-sensitive. Empty input gives an empty dictionary. Reuse loops and dictionary lookup rather than collections.Counter; add an import-safe demo.
+
+  ## Workflow
+  Create `main.py` yourself. No learner implementation is supplied.
+  Read `syntaxlab docs python collections` for syntax and independent examples.
+
+  ```sh
+  python3 main.py
+  python3 -m unittest discover -s tests -v
+  syntaxlab check
+  ```
+docs: python/docs/collections.md
+hints:
+- A missing key needs an initial count.
+- dict.get can supply a fallback without modifying the dictionary.
+files:
+  tests/test_exercise.py: |
+    import contextlib
+    import importlib
+    import io
+    import json
+    import subprocess
+    import sys
+    import tempfile
+    import unittest
+    from pathlib import Path
+    import main as learner
+
+    class ExerciseTests(unittest.TestCase):
+        def test_frequencies(self):
+            self.assertEqual(learner.frequencies(["a", "a", "A", "b"]), {"a": 2, "A": 1, "b": 1})
+            self.assertEqual(learner.frequencies([]), {})
+  ASSIGNMENT.md: |
+    Write frequencies(words: list[str]) -> dict[str, int] counting each distinct string. Matching is case-sensitive. Empty input gives an empty dictionary. Reuse loops and dictionary lookup rather than collections.Counter; add an import-safe demo.
+
+    ## Workflow
+    Create `main.py` yourself. No learner implementation is supplied.
+    Read `syntaxlab docs python collections` for syntax and independent examples.
+
+    ```sh
+    python3 main.py
+    python3 -m unittest discover -s tests -v
+    syntaxlab check
+    ```
+checks:
+- type: file
+  path: main.py
+  label: Learner main.py exists
+- type: command
+  args:
+  - $python
+  - -c
+  - import main
+  label: Import has no I/O side effects
+  stdout: ''
+- type: command
+  args:
+  - $python
+  - -m
+  - unittest
+  - discover
+  - -s
+  - tests
+  - -v
+  label: Python behavior tests (unittest)
+- type: command
+  args:
+  - $python
+  - main.py
+  label: Application runs
+  stdin: ''
+solution:
+  main.py: |
+    def frequencies(words: list[str]) -> dict[str, int]:
+        counts = {}
+        for word in words:
+            counts[word] = counts.get(word, 0) + 1
+        return counts
+
+    if __name__ == "__main__":
+        print(frequencies(["a", "b", "a"]))
+project: ''

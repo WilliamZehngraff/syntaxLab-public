@@ -1,0 +1,104 @@
+id: python-dataclasses
+language: python
+module: oop
+title: 02 · Immutable records
+order: 240
+prerequisites:
+- python-classes
+concepts:
+- dataclass
+- frozen
+- equality
+- immutable-records
+difficulty: 4
+assignment: |
+  Define a frozen dataclass Book with title: str and pages: int. Write retitle(book: Book, title: str) -> Book returning a new record with the same pages and new title. Use dataclasses.replace, preserve the original, and add an import-safe demo.
+
+  ## Workflow
+  Create `main.py` yourself. No learner implementation is supplied.
+  Read `syntaxlab docs python oop` for syntax and independent examples.
+
+  ```sh
+  python3 main.py
+  python3 -m unittest discover -s tests -v
+  syntaxlab check
+  ```
+docs: python/docs/oop.md
+hints:
+- The dataclass decorator generates initialization and value equality.
+- replace makes a new record; it does not mutate the original.
+files:
+  tests/test_exercise.py: |
+    import contextlib
+    import importlib
+    import io
+    import json
+    import subprocess
+    import sys
+    import tempfile
+    import unittest
+    from pathlib import Path
+    import main as learner
+
+    class ExerciseTests(unittest.TestCase):
+        def test_value_records(self):
+            from dataclasses import FrozenInstanceError
+            book = learner.Book("Old", 20)
+            self.assertEqual(learner.retitle(book, "New"), learner.Book("New", 20))
+            self.assertEqual(book, learner.Book("Old", 20))
+            with self.assertRaises(FrozenInstanceError):
+                book.pages = 1
+  ASSIGNMENT.md: |
+    Define a frozen dataclass Book with title: str and pages: int. Write retitle(book: Book, title: str) -> Book returning a new record with the same pages and new title. Use dataclasses.replace, preserve the original, and add an import-safe demo.
+
+    ## Workflow
+    Create `main.py` yourself. No learner implementation is supplied.
+    Read `syntaxlab docs python oop` for syntax and independent examples.
+
+    ```sh
+    python3 main.py
+    python3 -m unittest discover -s tests -v
+    syntaxlab check
+    ```
+checks:
+- type: file
+  path: main.py
+  label: Learner main.py exists
+- type: command
+  args:
+  - $python
+  - -c
+  - import main
+  label: Import has no I/O side effects
+  stdout: ''
+- type: command
+  args:
+  - $python
+  - -m
+  - unittest
+  - discover
+  - -s
+  - tests
+  - -v
+  label: Python behavior tests (unittest)
+- type: command
+  args:
+  - $python
+  - main.py
+  label: Application runs
+  stdin: ''
+solution:
+  main.py: |
+    from dataclasses import dataclass, replace
+
+    @dataclass(frozen=True)
+    class Book:
+        title: str
+        pages: int
+
+    def retitle(book: Book, title: str) -> Book:
+        return replace(book, title=title)
+
+    if __name__ == "__main__":
+        print(retitle(Book("Old", 20), "New"))
+project: ''

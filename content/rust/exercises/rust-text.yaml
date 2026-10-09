@@ -1,0 +1,82 @@
+id: rust-text
+language: rust
+module: foundations
+title: 04 · Characters, string slices and formatting
+order: 40
+prerequisites:
+- rust-numbers
+concepts:
+- char
+- str
+- String
+- format
+difficulty: 1
+assignment: |
+  Bind language to the string literal Rust and initial to the char 'R'. Build a String with format! reading `Rust begins with R`, then print it. Notice the difference between char, &str and String; ownership will receive its own module.
+
+  ## Workflow
+  Create `src/main.rs` yourself. No learner implementation is supplied.
+  Read `syntaxlab docs rust foundations` for syntax and independent examples.
+
+  ```sh
+  cargo run
+  cargo test
+  syntaxlab check
+  ```
+docs: rust/docs/foundations.md
+hints:
+- A char uses single quotes and can hold one Unicode scalar value.
+- format! returns a String; println! writes to stdout.
+files:
+  Cargo.toml: |
+    [package]
+    name = "syntaxlab_exercise"
+    version = "0.1.0"
+    edition = "2021"
+    rust-version = "1.70"
+  tests/exercise.rs: |
+    #[test]
+    fn application_output() {
+        let output = std::process::Command::new(env!("CARGO_BIN_EXE_syntaxlab_exercise")).output().unwrap();
+        assert!(output.status.success(), "{}", String::from_utf8_lossy(&output.stderr));
+        assert_eq!(String::from_utf8(output.stdout).unwrap(), "Rust begins with R\n");
+    }
+  ASSIGNMENT.md: |
+    Bind language to the string literal Rust and initial to the char 'R'. Build a String with format! reading `Rust begins with R`, then print it. Notice the difference between char, &str and String; ownership will receive its own module.
+
+    ## Workflow
+    Create `src/main.rs` yourself. No learner implementation is supplied.
+    Read `syntaxlab docs rust foundations` for syntax and independent examples.
+
+    ```sh
+    cargo run
+    cargo test
+    syntaxlab check
+    ```
+checks:
+- type: file
+  path: src/main.rs
+  label: Learner src/main.rs exists
+- type: command
+  args:
+  - $cargo
+  - test
+  - --offline
+  label: Cargo compilation and behavior tests
+  requires:
+  - $cargo
+  - $rustc
+- type: command
+  args:
+  - $cargo
+  - run
+  - --offline
+  - --quiet
+  label: Application runs
+  requires:
+  - $cargo
+  - $rustc
+solution:
+  src/main.rs: |
+    fn main() { let language: &str = "Rust"; let initial: char = 'R'; let message: String = format!("{language} begins with {initial}"); println!("{message}"); }
+project: ''

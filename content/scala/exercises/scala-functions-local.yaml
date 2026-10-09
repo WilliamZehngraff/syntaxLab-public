@@ -1,0 +1,78 @@
+id: scala-functions-local
+language: scala
+module: functions
+title: 04 · Local helper functions
+order: 110
+prerequisites:
+- scala-functions-boolean
+concepts:
+- local-functions
+- scope
+- functions
+assignment: |
+  Write `def squareSum(a: Int, b: Int): Int` returning a² + b². Define a local helper `square`
+  inside squareSum and use it twice. Add a demo. The helper should not be a global function.
+
+  ## Workflow
+  Create `Main.scala` yourself. No learner source is supplied.
+
+  ```sh
+  scala-cli run .
+  scala-cli test .
+  syntaxlab check
+  ```
+docs: scala/docs/functions.md
+hints:
+- A def may be nested in another def's indented body.
+- Return the sum of two helper calls, not the square of a sum.
+files:
+  project.scala: |
+    //> using scala "3.3.7"
+    //> using test.dep "org.scalameta::munit:1.0.4"
+  Exercise.test.scala: |
+    class ExerciseTests extends munit.FunSuite:
+      test("local calculations") { assertEquals(squareSum(3, 4), 25); assertEquals(squareSum(-2, 0), 4) }
+  ASSIGNMENT.md: |
+    Write `def squareSum(a: Int, b: Int): Int` returning a² + b². Define a local helper `square`
+    inside squareSum and use it twice. Add a demo. The helper should not be a global function.
+
+    ## Workflow
+    Create `Main.scala` yourself. No learner source is supplied.
+
+    ```sh
+    scala-cli run .
+    scala-cli test .
+    syntaxlab check
+    ```
+checks:
+- type: file
+  path: Main.scala
+  label: Main.scala exists
+- type: command
+  args:
+  - $scala
+  - test
+  - .
+  - --server=false
+  timeout: 240
+  label: Scala compilation and MUnit behavior tests
+- type: command
+  args:
+  - $scala
+  - run
+  - .
+  - --server=false
+  timeout: 240
+  label: Application entry point runs
+- type: construct
+  path: Main.scala
+  pattern: (?s)def squareSum.*\n\s+def square
+  label: Required lesson construct (heuristic; behavior checked above)
+solution:
+  Main.scala: |
+    def squareSum(a: Int, b: Int): Int =
+      def square(x: Int): Int = x * x
+      square(a) + square(b)
+    @main def demo(): Unit = println(squareSum(3, 4))
+project: ''
+difficulty: 2

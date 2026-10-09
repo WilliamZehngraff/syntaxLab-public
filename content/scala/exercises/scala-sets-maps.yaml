@@ -1,0 +1,75 @@
+id: scala-sets-maps
+language: scala
+module: collections
+title: 04 · Sets and Maps
+order: 220
+prerequisites:
+- scala-vector-seq
+concepts:
+- Set
+- Map
+- lookup
+assignment: |
+  Write `def uniqueCount(words: List[String]): Int` counting distinct words, and
+  `def lookup(prices: Map[String, Int], name: String): Int` returning a price or 0 if missing.
+  Words are case-sensitive. Demonstrate both from a main.
+
+  ## Workflow
+  Create `Main.scala` yourself. No learner source is supplied.
+
+  ```sh
+  scala-cli run .
+  scala-cli test .
+  syntaxlab check
+  ```
+docs: scala/docs/collections.md
+hints:
+- A Set retains only distinct values.
+- getOrElse avoids throwing for a missing key.
+files:
+  project.scala: |
+    //> using scala "3.3.7"
+    //> using test.dep "org.scalameta::munit:1.0.4"
+  Exercise.test.scala: |
+    class ExerciseTests extends munit.FunSuite:
+      test("distinct and missing") { assertEquals(uniqueCount(List("a", "a", "A")), 2); assertEquals(uniqueCount(Nil), 0); assertEquals(lookup(Map("pen" -> 3), "pen"), 3); assertEquals(lookup(Map.empty, "pen"), 0) }
+  ASSIGNMENT.md: |
+    Write `def uniqueCount(words: List[String]): Int` counting distinct words, and
+    `def lookup(prices: Map[String, Int], name: String): Int` returning a price or 0 if missing.
+    Words are case-sensitive. Demonstrate both from a main.
+
+    ## Workflow
+    Create `Main.scala` yourself. No learner source is supplied.
+
+    ```sh
+    scala-cli run .
+    scala-cli test .
+    syntaxlab check
+    ```
+checks:
+- type: file
+  path: Main.scala
+  label: Main.scala exists
+- type: command
+  args:
+  - $scala
+  - test
+  - .
+  - --server=false
+  timeout: 240
+  label: Scala compilation and MUnit behavior tests
+- type: command
+  args:
+  - $scala
+  - run
+  - .
+  - --server=false
+  timeout: 240
+  label: Application entry point runs
+solution:
+  Main.scala: |
+    def uniqueCount(words: List[String]): Int = words.toSet.size
+    def lookup(prices: Map[String, Int], name: String): Int = prices.getOrElse(name, 0)
+    @main def demo(): Unit = println(uniqueCount(List("a", "a")))
+project: ''
+difficulty: 3

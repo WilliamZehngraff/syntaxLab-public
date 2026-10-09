@@ -1,0 +1,100 @@
+id: python-recursion-list
+language: python
+module: recursion
+title: 02 · Structural recursion over a list
+order: 220
+prerequisites:
+- python-recursion-numbers
+concepts:
+- structural-recursion
+- slicing
+- lists
+difficulty: 4
+assignment: |
+  Write recursive total(values: list[int]) -> int returning the sum. Empty input totals zero. Recurse on a shorter slice; do not use sum or loops. Inputs contain at most 100 elements. Preserve the input and include an import-safe demo.
+
+  ## Workflow
+  Create `main.py` yourself. No learner implementation is supplied.
+  Read `syntaxlab docs python recursion` for syntax and independent examples.
+
+  ```sh
+  python3 main.py
+  python3 -m unittest discover -s tests -v
+  syntaxlab check
+  ```
+docs: python/docs/recursion.md
+hints:
+- Test emptiness before reading element zero.
+- Slicing copies lists; compare this learning implementation with an iterative sum later.
+files:
+  tests/test_exercise.py: |
+    import contextlib
+    import importlib
+    import io
+    import json
+    import subprocess
+    import sys
+    import tempfile
+    import unittest
+    from pathlib import Path
+    import main as learner
+
+    class ExerciseTests(unittest.TestCase):
+        def test_structural_recursion(self):
+            self.assertEqual(learner.total([]), 0)
+            values = [2, -3, 8]
+            self.assertEqual(learner.total(values), 7)
+            self.assertEqual(values, [2, -3, 8])
+  ASSIGNMENT.md: |
+    Write recursive total(values: list[int]) -> int returning the sum. Empty input totals zero. Recurse on a shorter slice; do not use sum or loops. Inputs contain at most 100 elements. Preserve the input and include an import-safe demo.
+
+    ## Workflow
+    Create `main.py` yourself. No learner implementation is supplied.
+    Read `syntaxlab docs python recursion` for syntax and independent examples.
+
+    ```sh
+    python3 main.py
+    python3 -m unittest discover -s tests -v
+    syntaxlab check
+    ```
+checks:
+- type: file
+  path: main.py
+  label: Learner main.py exists
+- type: command
+  args:
+  - $python
+  - -c
+  - import main
+  label: Import has no I/O side effects
+  stdout: ''
+- type: command
+  args:
+  - $python
+  - -m
+  - unittest
+  - discover
+  - -s
+  - tests
+  - -v
+  label: Python behavior tests (unittest)
+- type: command
+  args:
+  - $python
+  - main.py
+  label: Application runs
+  stdin: ''
+- type: construct
+  path: main.py
+  pattern: (?s)def total.*total\(values\[1:\]\)
+  label: Required lesson construct (heuristic; behavior tested separately)
+solution:
+  main.py: |
+    def total(values: list[int]) -> int:
+        if not values:
+            return 0
+        return values[0] + total(values[1:])
+
+    if __name__ == "__main__":
+        print(total([2, -3, 8]))
+project: ''

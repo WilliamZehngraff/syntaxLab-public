@@ -1,0 +1,74 @@
+id: scala-tuples
+language: scala
+module: collections
+title: 01 · Tuples keep related values together
+order: 190
+prerequisites:
+- scala-for-yield
+concepts:
+- tuples
+- destructuring
+- functions
+assignment: |
+  Write `def quotientRemainder(n: Int, divisor: Int): (Int, Int)` returning quotient and remainder.
+  divisor is positive; n is nonnegative. Add a main that destructures the tuple into two names.
+
+  ## Workflow
+  Create `Main.scala` yourself. No learner source is supplied.
+
+  ```sh
+  scala-cli run .
+  scala-cli test .
+  syntaxlab check
+  ```
+docs: scala/docs/collections.md
+hints:
+- Tuple syntax is parentheses around comma-separated values.
+- A tuple has one result type, even though it carries two components.
+files:
+  project.scala: |
+    //> using scala "3.3.7"
+    //> using test.dep "org.scalameta::munit:1.0.4"
+  Exercise.test.scala: |
+    class ExerciseTests extends munit.FunSuite:
+      test("quotient and remainder") { assertEquals(quotientRemainder(17, 5), (3, 2)); assertEquals(quotientRemainder(0, 2), (0, 0)) }
+  ASSIGNMENT.md: |
+    Write `def quotientRemainder(n: Int, divisor: Int): (Int, Int)` returning quotient and remainder.
+    divisor is positive; n is nonnegative. Add a main that destructures the tuple into two names.
+
+    ## Workflow
+    Create `Main.scala` yourself. No learner source is supplied.
+
+    ```sh
+    scala-cli run .
+    scala-cli test .
+    syntaxlab check
+    ```
+checks:
+- type: file
+  path: Main.scala
+  label: Main.scala exists
+- type: command
+  args:
+  - $scala
+  - test
+  - .
+  - --server=false
+  timeout: 240
+  label: Scala compilation and MUnit behavior tests
+- type: command
+  args:
+  - $scala
+  - run
+  - .
+  - --server=false
+  timeout: 240
+  label: Application entry point runs
+solution:
+  Main.scala: |
+    def quotientRemainder(n: Int, divisor: Int): (Int, Int) = (n / divisor, n % divisor)
+    @main def demo(): Unit =
+      val (q, r) = quotientRemainder(17, 5)
+      println(s"$q $r")
+project: ''
+difficulty: 3

@@ -1,0 +1,82 @@
+id: scala-classes
+language: scala
+module: oop
+title: 01 · A class and its constructor
+order: 310
+prerequisites:
+- scala-recursion-tail
+concepts:
+- classes
+- primary-constructors
+- fields
+- methods
+- visibility
+assignment: |
+  Define `class Counter(val start: Int)` with a private mutable count initialized from start,
+  `def value: Int`, and `def increment(): Unit`. Two Counter instances must be independent.
+  Add a main that constructs and uses one.
+
+  ## Workflow
+  Create `Main.scala` yourself. No learner source is supplied.
+
+  ```sh
+  scala-cli run .
+  scala-cli test .
+  syntaxlab check
+  ```
+docs: scala/docs/oop.md
+hints:
+- A constructor parameter with val becomes a readable field.
+- Keep mutable state private and expose behavior through methods.
+files:
+  project.scala: |
+    //> using scala "3.3.7"
+    //> using test.dep "org.scalameta::munit:1.0.4"
+  Exercise.test.scala: |
+    class ExerciseTests extends munit.FunSuite:
+      test("independent objects") { val a = new Counter(3); val b = new Counter(8); a.increment(); a.increment(); assertEquals(a.value, 5); assertEquals(a.start, 3); assertEquals(b.value, 8) }
+  ASSIGNMENT.md: |
+    Define `class Counter(val start: Int)` with a private mutable count initialized from start,
+    `def value: Int`, and `def increment(): Unit`. Two Counter instances must be independent.
+    Add a main that constructs and uses one.
+
+    ## Workflow
+    Create `Main.scala` yourself. No learner source is supplied.
+
+    ```sh
+    scala-cli run .
+    scala-cli test .
+    syntaxlab check
+    ```
+checks:
+- type: file
+  path: Main.scala
+  label: Main.scala exists
+- type: command
+  args:
+  - $scala
+  - test
+  - .
+  - --server=false
+  timeout: 240
+  label: Scala compilation and MUnit behavior tests
+- type: command
+  args:
+  - $scala
+  - run
+  - .
+  - --server=false
+  timeout: 240
+  label: Application entry point runs
+solution:
+  Main.scala: |
+    class Counter(val start: Int):
+      private var count = start
+      def value: Int = count
+      def increment(): Unit = count += 1
+    @main def demo(): Unit =
+      val c = new Counter(2)
+      c.increment()
+      println(c.value)
+project: ''
+difficulty: 4

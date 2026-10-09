@@ -1,0 +1,89 @@
+id: scala-hello
+language: scala
+module: foundations
+title: 01 · Your first source file
+order: 10
+prerequisites: []
+concepts:
+- source-files
+- main
+- println
+- comments
+- Unit
+assignment: |
+  A source file is text which the compiler translates into runnable code.
+  Create Main.scala with an `@main def hello(): Unit` entry point. It must print exactly
+  `Hello, SyntaxLab!` followed by a newline. Add a comment explaining what `println` does.
+  Read the Foundations reference (D / `syntaxlab docs scala foundations`) before writing.
+  The provided test calls your entry point and captures its output; it is not a solution.
+
+  ## Workflow
+  Create `Main.scala` yourself. No learner source is supplied.
+
+  ```sh
+  scala-cli run .
+  scala-cli test .
+  syntaxlab check
+  ```
+docs: scala/docs/foundations.md
+hints:
+- Create the source file next to project.scala; the supplied file only configures the toolchain.
+- An @main annotation belongs immediately above a def. Indent the body.
+- println accepts a quoted String. The function's result type is Unit.
+files:
+  project.scala: |
+    //> using scala "3.3.7"
+    //> using test.dep "org.scalameta::munit:1.0.4"
+  Exercise.test.scala: |
+    class ExerciseTests extends munit.FunSuite:
+      test("greeting has its own line") {
+               val out = new java.io.ByteArrayOutputStream()
+               Console.withOut(out) { hello() }
+               assertEquals(out.toString("UTF-8").replace("\r\n", "\n"), "Hello, SyntaxLab!\n")
+             }
+  ASSIGNMENT.md: |
+    A source file is text which the compiler translates into runnable code.
+    Create Main.scala with an `@main def hello(): Unit` entry point. It must print exactly
+    `Hello, SyntaxLab!` followed by a newline. Add a comment explaining what `println` does.
+    Read the Foundations reference (D / `syntaxlab docs scala foundations`) before writing.
+    The provided test calls your entry point and captures its output; it is not a solution.
+
+    ## Workflow
+    Create `Main.scala` yourself. No learner source is supplied.
+
+    ```sh
+    scala-cli run .
+    scala-cli test .
+    syntaxlab check
+    ```
+checks:
+- type: file
+  path: Main.scala
+  label: Main.scala exists
+- type: command
+  args:
+  - $scala
+  - test
+  - .
+  - --server=false
+  timeout: 240
+  label: Scala compilation and MUnit behavior tests
+- type: command
+  args:
+  - $scala
+  - run
+  - .
+  - --server=false
+  timeout: 240
+  label: Application entry point runs
+- type: construct
+  path: Main.scala
+  pattern: '@main'
+  label: Required lesson construct (heuristic; behavior checked above)
+solution:
+  Main.scala: |
+    @main def hello(): Unit =
+      // Print a line and its newline.
+      println("Hello, SyntaxLab!")
+project: ''
+difficulty: 1

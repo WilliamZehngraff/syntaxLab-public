@@ -1,0 +1,83 @@
+id: scala-variables
+language: scala
+module: foundations
+title: 04 · Reassignment and Unit
+order: 40
+prerequisites:
+- scala-values
+concepts:
+- var
+- assignment
+- Unit
+assignment: |
+  Create `@main def counter(): Unit`. Start a local var at 3, increment it twice, then print 5 once.
+  No loops yet. Notice that assignment changes state but produces Unit.
+
+  ## Workflow
+  Create `Main.scala` yourself. No learner source is supplied.
+
+  ```sh
+  scala-cli run .
+  scala-cli test .
+  syntaxlab check
+  ```
+docs: scala/docs/foundations.md
+hints:
+- Use var only for the binding you intend to reassign.
+- x += 1 means x = x + 1.
+files:
+  project.scala: |
+    //> using scala "3.3.7"
+    //> using test.dep "org.scalameta::munit:1.0.4"
+  Exercise.test.scala: |
+    class ExerciseTests extends munit.FunSuite:
+      test("two increments") {
+               val out = new java.io.ByteArrayOutputStream()
+               Console.withOut(out) { counter() }
+               assertEquals(out.toString.trim, "5")
+             }
+  ASSIGNMENT.md: |
+    Create `@main def counter(): Unit`. Start a local var at 3, increment it twice, then print 5 once.
+    No loops yet. Notice that assignment changes state but produces Unit.
+
+    ## Workflow
+    Create `Main.scala` yourself. No learner source is supplied.
+
+    ```sh
+    scala-cli run .
+    scala-cli test .
+    syntaxlab check
+    ```
+checks:
+- type: file
+  path: Main.scala
+  label: Main.scala exists
+- type: command
+  args:
+  - $scala
+  - test
+  - .
+  - --server=false
+  timeout: 240
+  label: Scala compilation and MUnit behavior tests
+- type: command
+  args:
+  - $scala
+  - run
+  - .
+  - --server=false
+  timeout: 240
+  label: Application entry point runs
+- type: construct
+  path: Main.scala
+  pattern: \bvar\b
+  label: Required lesson construct (heuristic; behavior checked above)
+solution:
+  Main.scala: |
+    @main def counter(): Unit =
+      var count = 3
+      count += 1
+      count += 1
+      println(count)
+project: ''
+difficulty: 1

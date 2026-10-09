@@ -1,0 +1,86 @@
+id: python-values
+language: python
+module: foundations
+title: 02 · Names and reassignment
+order: 20
+prerequisites:
+- python-hello
+concepts:
+- variables
+- assignment
+- expressions
+- f-strings
+difficulty: 1
+assignment: |
+  Bind minutes_per_hour to 60 and hours_per_day to 24. Compute minutes_per_day using those names, then print `Minutes: 1440`. Unlike Scala val, a Python name can be rebound; demonstrate this by initially setting hours_per_day to 12 and then assigning 24 before the calculation.
+
+  ## Workflow
+  Create `main.py` yourself. No learner implementation is supplied.
+  Read `syntaxlab docs python foundations` for syntax and independent examples.
+
+  ```sh
+  python3 main.py
+  python3 -m unittest discover -s tests -v
+  syntaxlab check
+  ```
+docs: python/docs/foundations.md
+hints:
+- Assignment binds a name to a value.
+- An f-string embeds expressions inside braces.
+files:
+  tests/test_exercise.py: |
+    import contextlib
+    import importlib
+    import io
+    import json
+    import subprocess
+    import sys
+    import tempfile
+    import unittest
+    from pathlib import Path
+
+    class ExerciseTests(unittest.TestCase):
+        def test_program_output(self):
+            result = subprocess.run([sys.executable, "main.py"], input='', capture_output=True, text=True, timeout=5)
+            self.assertEqual(result.returncode, 0, result.stderr)
+            self.assertEqual(result.stdout, 'Minutes: 1440\n')
+  ASSIGNMENT.md: |
+    Bind minutes_per_hour to 60 and hours_per_day to 24. Compute minutes_per_day using those names, then print `Minutes: 1440`. Unlike Scala val, a Python name can be rebound; demonstrate this by initially setting hours_per_day to 12 and then assigning 24 before the calculation.
+
+    ## Workflow
+    Create `main.py` yourself. No learner implementation is supplied.
+    Read `syntaxlab docs python foundations` for syntax and independent examples.
+
+    ```sh
+    python3 main.py
+    python3 -m unittest discover -s tests -v
+    syntaxlab check
+    ```
+checks:
+- type: file
+  path: main.py
+  label: Learner main.py exists
+- type: command
+  args:
+  - $python
+  - -m
+  - unittest
+  - discover
+  - -s
+  - tests
+  - -v
+  label: Python behavior tests (unittest)
+- type: command
+  args:
+  - $python
+  - main.py
+  label: Application runs
+  stdin: ''
+solution:
+  main.py: |
+    minutes_per_hour = 60
+    hours_per_day = 12
+    hours_per_day = 24
+    minutes_per_day = minutes_per_hour * hours_per_day
+    print(f"Minutes: {minutes_per_day}")
+project: ''

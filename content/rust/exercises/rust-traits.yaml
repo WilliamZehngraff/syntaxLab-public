@@ -1,0 +1,90 @@
+id: rust-traits
+language: rust
+module: structs
+title: 03 · A shared behavioral interface
+order: 210
+prerequisites:
+- rust-methods
+concepts:
+- trait
+- default-methods
+- impl
+- interface
+difficulty: 3
+assignment: |
+  Define public trait Named with `fn name(&self) -> &str` and default `fn greeting(&self) -> String` returning `Hello, NAME`. Define public Person with public name: String and implement Named for it. Add a demo and import the trait when calling its methods from another module.
+
+  ## Workflow
+  Create `src/lib.rs` with the public API and `src/main.rs` with a runnable demo yourself. No learner implementation is supplied.
+  Read `syntaxlab docs rust structs` for syntax and independent examples.
+
+  ```sh
+  cargo run
+  cargo test
+  syntaxlab check
+  ```
+docs: rust/docs/structs.md
+hints:
+- An impl Trait for Type block supplies required methods.
+- Return a borrow of the person's stored String rather than a reference to a temporary.
+files:
+  Cargo.toml: |
+    [package]
+    name = "syntaxlab_exercise"
+    version = "0.1.0"
+    edition = "2021"
+    rust-version = "1.70"
+  tests/exercise.rs: |
+    use syntaxlab_exercise::*;
+
+    #[test]
+    fn contract() {
+    let person = Person { name: String::from("Lin") }; assert_eq!(person.name(), "Lin"); assert_eq!(person.greeting(), "Hello, Lin");
+    }
+  ASSIGNMENT.md: |
+    Define public trait Named with `fn name(&self) -> &str` and default `fn greeting(&self) -> String` returning `Hello, NAME`. Define public Person with public name: String and implement Named for it. Add a demo and import the trait when calling its methods from another module.
+
+    ## Workflow
+    Create `src/lib.rs` with the public API and `src/main.rs` with a runnable demo yourself. No learner implementation is supplied.
+    Read `syntaxlab docs rust structs` for syntax and independent examples.
+
+    ```sh
+    cargo run
+    cargo test
+    syntaxlab check
+    ```
+checks:
+- type: file
+  path: src/main.rs
+  label: Learner src/main.rs exists
+- type: file
+  path: src/lib.rs
+  label: Learner library exists
+- type: command
+  args:
+  - $cargo
+  - test
+  - --offline
+  label: Cargo compilation and behavior tests
+  requires:
+  - $cargo
+  - $rustc
+- type: command
+  args:
+  - $cargo
+  - run
+  - --offline
+  - --quiet
+  label: Application runs
+  requires:
+  - $cargo
+  - $rustc
+solution:
+  src/lib.rs: |
+    pub trait Named { fn name(&self) -> &str; fn greeting(&self) -> String { format!("Hello, {}", self.name()) } }
+    pub struct Person { pub name: String }
+    impl Named for Person { fn name(&self) -> &str { &self.name } }
+  src/main.rs: |
+    use syntaxlab_exercise::*;
+    fn main() { println!("{:?}", Person { name: String::from("Ada") }.greeting()); }
+project: ''

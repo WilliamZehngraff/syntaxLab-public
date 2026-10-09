@@ -1,0 +1,78 @@
+id: scala-constructors
+language: scala
+module: oop
+title: 02 · Auxiliary constructors
+order: 320
+prerequisites:
+- scala-classes
+concepts:
+- auxiliary-constructors
+- constructor-parameters
+- methods
+assignment: |
+  Define `class Rectangle(val width: Int, val height: Int)` with `def area: Int` and an auxiliary
+  constructor taking one side to make a square. Inputs are nonnegative. Add a main using both constructors.
+
+  ## Workflow
+  Create `Main.scala` yourself. No learner source is supplied.
+
+  ```sh
+  scala-cli run .
+  scala-cli test .
+  syntaxlab check
+  ```
+docs: scala/docs/oop.md
+hints:
+- An auxiliary constructor is named this.
+- Its first action delegates to the primary constructor.
+files:
+  project.scala: |
+    //> using scala "3.3.7"
+    //> using test.dep "org.scalameta::munit:1.0.4"
+  Exercise.test.scala: |
+    class ExerciseTests extends munit.FunSuite:
+      test("constructor delegation") { assertEquals(new Rectangle(3, 5).area, 15); val square = new Rectangle(4); assertEquals(square.width, 4); assertEquals(square.height, 4); assertEquals(square.area, 16) }
+  ASSIGNMENT.md: |
+    Define `class Rectangle(val width: Int, val height: Int)` with `def area: Int` and an auxiliary
+    constructor taking one side to make a square. Inputs are nonnegative. Add a main using both constructors.
+
+    ## Workflow
+    Create `Main.scala` yourself. No learner source is supplied.
+
+    ```sh
+    scala-cli run .
+    scala-cli test .
+    syntaxlab check
+    ```
+checks:
+- type: file
+  path: Main.scala
+  label: Main.scala exists
+- type: command
+  args:
+  - $scala
+  - test
+  - .
+  - --server=false
+  timeout: 240
+  label: Scala compilation and MUnit behavior tests
+- type: command
+  args:
+  - $scala
+  - run
+  - .
+  - --server=false
+  timeout: 240
+  label: Application entry point runs
+- type: construct
+  path: Main.scala
+  pattern: def\s+this\(
+  label: Required lesson construct (heuristic; behavior checked above)
+solution:
+  Main.scala: |
+    class Rectangle(val width: Int, val height: Int):
+      def this(side: Int) = this(side, side)
+      def area: Int = width * height
+    @main def demo(): Unit = println(new Rectangle(4).area)
+project: ''
+difficulty: 4

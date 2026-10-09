@@ -1,0 +1,87 @@
+id: rust-task-trail-02
+language: rust
+module: projects
+title: 02 · Capacity as a function
+order: 71
+prerequisites:
+- rust-functions-basic
+- rust-task-trail-01
+concepts:
+- functions
+- u32
+- library
+difficulty: 1
+assignment: |
+  Add `pub fn remaining(used: u32) -> u32` to src/lib.rs, returning 10 - used for used <= 10. Retain the no-argument banner in src/main.rs. Your library can now be imported by integration tests without invoking the binary.
+
+  ## Workflow
+  Create `src/lib.rs` with the public API and `src/main.rs` with a runnable demo yourself. Extend the same project; preserve earlier APIs and stage tests.
+  Read `syntaxlab docs rust projects` for syntax and independent examples.
+
+  ```sh
+  cargo run
+  cargo test
+  syntaxlab check
+  ```
+docs: rust/docs/projects.md
+hints:
+- Preserve earlier APIs; let the accumulated tests protect them during each extension.
+- Decide which values are owned, borrowed or fallible before choosing the function signatures.
+files:
+  Cargo.toml: |
+    [package]
+    name = "task_trail"
+    version = "0.1.0"
+    edition = "2021"
+    rust-version = "1.70"
+  tests/stage_02.rs: |
+    use task_trail::*;
+
+    #[test]
+    fn stage_contract() {
+    assert_eq!(remaining(0), 10); assert_eq!(remaining(7), 3); assert_eq!(remaining(10), 0);
+    }
+  STAGE-02.md: |
+    Add `pub fn remaining(used: u32) -> u32` to src/lib.rs, returning 10 - used for used <= 10. Retain the no-argument banner in src/main.rs. Your library can now be imported by integration tests without invoking the binary.
+
+    ## Workflow
+    Create `src/lib.rs` with the public API and `src/main.rs` with a runnable demo yourself. Extend the same project; preserve earlier APIs and stage tests.
+    Read `syntaxlab docs rust projects` for syntax and independent examples.
+
+    ```sh
+    cargo run
+    cargo test
+    syntaxlab check
+    ```
+checks:
+- type: file
+  path: src/main.rs
+  label: Learner src/main.rs exists
+- type: file
+  path: src/lib.rs
+  label: Learner library exists
+- type: command
+  args:
+  - $cargo
+  - test
+  - --offline
+  label: Cargo compilation and behavior tests
+  requires:
+  - $cargo
+  - $rustc
+- type: command
+  args:
+  - $cargo
+  - run
+  - --offline
+  - --quiet
+  label: Application runs
+  requires:
+  - $cargo
+  - $rustc
+solution:
+  src/lib.rs: |
+    pub fn remaining(used: u32) -> u32 { 10 - used }
+  src/main.rs: |
+    fn main() { println!("Task Trail ready"); }
+project: task-trail
